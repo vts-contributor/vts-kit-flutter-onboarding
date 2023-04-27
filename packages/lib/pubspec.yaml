@@ -1,0 +1,13 @@
+name: vts_kit_flutter_onboarding
+description: VTS Flutter Onboarding Library
+version: 0.0.1
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies: 
+  device_info_plus: ^8.2.1
+  dio: ^5.1.1
+  shared_preferences: ^2.1.0
+
+dev_dependencies:

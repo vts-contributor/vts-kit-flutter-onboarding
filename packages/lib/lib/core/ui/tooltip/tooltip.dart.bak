@@ -1,0 +1,17 @@
+import 'package:flutter/src/widgets/basic.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/showcase_widget.dart';
+
+class Tooltip extends ShowCaseWidget implements UIAbstract {
+  Tooltip({required Builder builder}) : super(builder: builder);
+
+  @override
+  Future<void> hide(payload) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> show(payload) {
+    throw UnimplementedError();
+  }
+}
