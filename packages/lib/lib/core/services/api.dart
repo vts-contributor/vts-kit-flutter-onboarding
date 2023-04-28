@@ -26,10 +26,13 @@ class ApiClient {
 
   //#region Public Methods
   Future<ApiResponse<InitInfo>> validateApplication() async {
-    final appId = OnboardingClient.options.applicationId;
-    final info = await _httpClient.post(
-        ApiUrl.VALIDATE, (data) => InitInfo.fromJson(data),
-        queryParameters: {"appId": appId});
+    final info = await _httpClient
+        .post(ApiUrl.VALIDATE, (data) => InitInfo.fromJson(data), data: {
+      "appId": OnboardingClient.options.applicationId,
+      "deviceType": OnboardingClient.meta.deviceType,
+      "deviceId": OnboardingClient.meta.deviceId,
+      "userId": OnboardingClient.userId
+    });
     return info;
   }
 

@@ -7,7 +7,6 @@ import 'package:vts_kit_flutter_onboarding/core/types/event.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:collection/src/iterable_extensions.dart';
 
-const STATE_KEY = "STATE";
 const PUSHING_STATE = "1";
 const PREF_EVENT_KEY = "PREF_EVENT_KEY";
 
@@ -50,14 +49,10 @@ class EventService {
       Logger.log('DO PUSH');
     }
     final toPush = [];
-    _queue.forEach((app) {
+    _queue.forEach((event) {
       // Mark for pushing
-      app.data.forEach((element) {
-        element[STATE_KEY] = PUSHING_STATE;
-      });
-      toPush.add(json.encode(
-          Event(appId: app.appId, sessionId: app.sessionId, data: app.data)
-              .toJson()));
+      event.status = PUSHING_STATE;
+      toPush.add(json.encode(event.toJson()));
     });
     final logs = '[${toPush.join(",")}]';
     if (OnboardingClient.options.debug) {
@@ -71,10 +66,8 @@ class EventService {
         print(s);
       }
       // Rollback
-      _queue.forEach((app) {
-        app.data.forEach((element) {
-          element[STATE_KEY] = '';
-        });
+      _queue.forEach((event) {
+        event.status = '';
       });
     }
   }
@@ -90,18 +83,18 @@ class EventService {
   //#endregion
 
   //#region Public Methods
-  Event _collectAppInfo() {
-    return Event(
-        appId: OnboardingClient.appId, sessionId: OnboardingClient.sessionId);
-  }
-
-  void addMessage(Map<String, dynamic> message) {
-    final appInfo = _collectAppInfo();
+  void addMessage(String guideCode, String actionType, String? payload) {
     final existed = _queue.firstWhereOrNull((element) =>
-        element.appId == appInfo.appId &&
-        element.sessionId == appInfo.sessionId);
+        element.appId == OnboardingClient.appId &&
+        element.sessionId == OnboardingClient.sessionId);
     if (existed == null) {
-      Event newItem = appInfo;
+      Event newItem = Event(
+          appId: OnboardingClient.appId,
+          sessionId: OnboardingClient.sessionId,
+          userId: OnboardingClient.userId!,
+          guideCode: guideCode,
+          actionType: actionType,
+          timeRun: timeRun);
       newItem.data.add(message);
       _queue.add(newItem);
     } else {

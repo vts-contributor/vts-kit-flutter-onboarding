@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/http_client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/state.dart';
@@ -5,15 +6,18 @@ import 'package:vts_kit_flutter_onboarding/core/services/api.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/event_service.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/http_client.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/client_context.dart';
+import 'package:vts_kit_flutter_onboarding/core/types/meta.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/platform.dart';
+
+const PREF_USERID_KEY = "PREF_USERID_KEY";
 
 class OnboardingClient {
   //#region Property
   static late State state;
-  static late Map<String, dynamic> meta;
+  static late Meta meta;
   static late String appId;
-  static late String userId;
+  static late String? userId;
   static late String sessionId;
 
   static late ClientOption options;
@@ -51,10 +55,10 @@ class OnboardingClient {
     // Initialize Application
     _singleton!._setState(State.INITIALIZATING);
 
-    new Future.value().then((_) async => {
-          await _singleton!._prepare(),
-          await _singleton!._validateApplication()
-        });
+    _singleton!._prepare().then((_) async {
+      await _singleton!._validateApplication();
+      return;
+    });
     return _singleton!;
   }
 
@@ -76,6 +80,10 @@ class OnboardingClient {
 
   Future<void> _prepare() async {
     OnboardingClient.meta = await PlatformInfo.get();
+    OnboardingClient.userId =
+        await SharedPreferences.getInstance().then((instance) {
+      return instance.getString(PREF_USERID_KEY);
+    });
   }
 
   Future<void> _validateApplication() async {
@@ -84,6 +92,9 @@ class OnboardingClient {
       OnboardingClient.appId = initInfo.data.appId;
       OnboardingClient.userId = initInfo.data.userId;
       OnboardingClient.sessionId = initInfo.data.sessionId;
+      await SharedPreferences.getInstance().then((instance) {
+        instance.setString(PREF_USERID_KEY, initInfo.data.userId);
+      });
       Logger.logSuccess("Success Initialized");
       _setState(State.INITIALIZED);
     } catch (e) {
@@ -110,5 +121,4 @@ class OnboardingClient {
     _onStateChanged.add(func);
   }
   //#endregion
-
 }

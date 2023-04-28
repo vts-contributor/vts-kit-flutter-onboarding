@@ -1,9 +1,0 @@
-name: vts_kit_flutter_onboarding_workspace
-
-environment:
-  sdk: '>=2.12.0 <3.0.0'
-
-dependencies:
-
-dev_dependencies: 
-  melos: ^3.0.1

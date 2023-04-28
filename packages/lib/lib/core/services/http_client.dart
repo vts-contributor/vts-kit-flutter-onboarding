@@ -89,6 +89,7 @@ class DebugInterceptors extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     Logger.log('REQUEST[${options.method}] ${options.path}');
+    Logger.log('=> PARAM: ${options.queryParameters}');
     Logger.log('=> BODY: ${options.data}');
     super.onRequest(options, handler);
   }

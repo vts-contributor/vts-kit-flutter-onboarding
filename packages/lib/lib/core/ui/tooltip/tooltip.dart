@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
 
-class VtsTooltip extends StatefulWidget {
+class VtsTooltip extends StatefulWidget implements UIAbstract {
   final Builder builder;
 
   /// Triggered when all the showcases are completed.
@@ -93,6 +94,16 @@ class VtsTooltip extends StatefulWidget {
 
   @override
   VtsTooltipState createState() => VtsTooltipState();
+
+  @override
+  Future<void> hide(payload) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> show(payload) {
+    throw UnimplementedError();
+  }
 }
 
 class VtsTooltipState extends State<VtsTooltip> {

@@ -2,30 +2,24 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:vts_kit_flutter_onboarding/core/types/meta.dart';
 
 class PlatformInfo {
-  static Future<Map<String, dynamic>> get() async {
+  static Future<Meta> get() async {
     var info = DeviceInfoPlugin();
-    var platformData = <String, dynamic>{};
 
     if (kIsWeb) {
-      platformData['platform'] = 'Web';
-      platformData['deviceId'] = 'Web';
+      return Meta(deviceId: 'Web', deviceType: 'Web');
     } else {
       if (Platform.isAndroid) {
         final androidInfo = await info.androidInfo;
-        platformData['platform'] = 'Android';
-        platformData['deviceId'] = androidInfo.id;
+        return Meta(deviceId: androidInfo.id, deviceType: 'Android');
       } else if (Platform.isIOS) {
         final iosInfo = await info.iosInfo;
-        platformData['platform'] = 'IOS';
-        platformData['deviceId'] = iosInfo.identifierForVendor;
+        return Meta(deviceId: iosInfo.identifierForVendor!, deviceType: 'IOS');
       } else {
-        platformData['platform'] = 'Other';
-        platformData['deviceId'] = 'Other';
+        return Meta(deviceId: 'Other', deviceType: 'Other');
       }
     }
-
-    return platformData;
   }
 }
