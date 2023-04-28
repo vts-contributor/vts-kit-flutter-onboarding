@@ -1,14 +1,4 @@
-abstract class JsonSerializable {
-  JsonSerializable();
-
-  factory JsonSerializable.fromJson(Map<String, dynamic> json) {
-    throw UnimplementedError('fromJson() not implemented');
-  }
-
-  Map<String, dynamic> toJson() {
-    throw UnimplementedError('toJson() not implemented');
-  }
-}
+import 'package:vts_kit_flutter_onboarding/core/types/dto/json_serializable.dart';
 
 class ApiResponse<T extends JsonSerializable> {
   final T data;

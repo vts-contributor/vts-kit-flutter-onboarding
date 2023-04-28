@@ -4,6 +4,7 @@ import 'package:vts_kit_flutter_onboarding/core/services/http_client.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/api_response.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/empty_reponse.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/init_info.dart';
+import 'package:vts_kit_flutter_onboarding/core/types/event.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 
 class ApiClient {
@@ -36,10 +37,10 @@ class ApiClient {
     return info;
   }
 
-  Future<ApiResponse> pushLog(String logs) async {
-    return await _httpClient.post('http://phucnh.free.beeceptor.com/',
-        (data) => EmptyResponse.fromJson(data),
-        data: logs);
+  Future<ApiResponse> pushLog(List<Event> events) async {
+    return await _httpClient.post(
+        ApiUrl.VALIDATE, (data) => EmptyResponse.fromJson(data),
+        data: {"logs": events});
   }
   //#endregion
 }

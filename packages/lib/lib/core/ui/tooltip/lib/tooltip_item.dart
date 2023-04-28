@@ -25,6 +25,8 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 
 import 'enum.dart';
@@ -34,16 +36,16 @@ import 'layout_overlays.dart';
 import 'shape_clipper.dart';
 import 'tooltip_widget.dart';
 
-class Showcase extends StatefulWidget {
+class TooltipItem extends StatefulWidget {
   /// A key that is unique across the entire app.
   ///
-  /// This Key will be used to control state of individual showcase and also
-  /// used in [ShowCaseWidgetState.startShowCase] to define position of current
-  /// target widget while showcasing.
+  /// This Key will be used to control state of individual item and also
+  /// used in [UITooltip.start] to define position of current
+  /// target widget while highlighting.
   @override
   final GlobalKey key;
 
-  /// Target widget that will be showcased or highlighted
+  /// Target widget that will be highlighted
   final Widget child;
 
   /// Represents subject line of target widget
@@ -57,7 +59,7 @@ class Showcase extends StatefulWidget {
   /// Represents summary description of target widget
   final String? description;
 
-  /// ShapeBorder of the highlighted box when target widget will be showcased.
+  /// ShapeBorder of the highlighted box when target widget will be highlighted.
   ///
   /// Note: If [targetBorderRadius] is specified, this parameter will be ignored.
   ///
@@ -69,7 +71,7 @@ class Showcase extends StatefulWidget {
   /// ```
   final ShapeBorder targetShapeBorder;
 
-  /// Radius of rectangle box while target widget is being showcased.
+  /// Radius of rectangle box while target widget is being highlighted.
   final BorderRadius? targetBorderRadius;
 
   /// TextStyle for default tooltip title
@@ -80,13 +82,13 @@ class Showcase extends StatefulWidget {
 
   /// Empty space around tooltip content.
   ///
-  /// Default Value for [Showcase] widget is:
+  /// Default Value for [TooltipItem] widget is:
   /// ```dart
   /// EdgeInsets.symmetric(vertical: 8, horizontal: 8)
   /// ```
   final EdgeInsets tooltipPadding;
 
-  /// Background color of overlay during showcase.
+  /// Background color of overlay.
   ///
   /// Default value is [Colors.black45]
   final Color overlayColor;
@@ -96,7 +98,7 @@ class Showcase extends StatefulWidget {
   /// Default to 0.75
   final double overlayOpacity;
 
-  /// Custom tooltip widget when [Showcase.withWidget] is used.
+  /// Custom tooltip widget when [TooltipItem.withWidget] is used.
   final Widget? container;
 
   /// Defines background color for tooltip widget.
@@ -133,26 +135,26 @@ class Showcase extends StatefulWidget {
   /// Triggered when default tooltip is tapped
   final VoidCallback? onToolTipClick;
 
-  /// Triggered when showcased target widget is tapped
+  /// Triggered when highlighted target widget is tapped
   ///
   /// Note: [disposeOnTap] is required if you're using [onTargetClick]
   /// otherwise throws error
   final VoidCallback? onTargetClick;
 
-  /// Will dispose all showcases if tapped on target widget or tooltip
+  /// Will dispose all highlighted if tapped on target widget or tooltip
   ///
   /// Note: [onTargetClick] is required if you're using [disposeOnTap]
   /// otherwise throws error
   final bool? disposeOnTap;
 
-  /// Whether tooltip should have bouncing animation while showcasing
+  /// Whether tooltip should have bouncing animation while highlighting
   ///
   /// If null value is provided,
-  /// [ShowCaseWidget.disableAnimation] will be considered.
+  /// [UITooltip.disableAnimation] will be considered.
   final bool? disableMovingAnimation;
 
   /// Whether disabling initial scale animation for default tooltip when
-  /// showcase is started and completed
+  /// highlighted is started and completed
   ///
   /// Default to `false`
   final bool? disableScaleAnimation;
@@ -185,16 +187,16 @@ class Showcase extends StatefulWidget {
   /// disposeOnTap parameter will not work
   ///
   /// Note: If `disableDefaultTargetGestures` is true then make sure to
-  /// dismiss current showcase with `ShowCaseWidget.of(context).dismiss()`
+  /// dismiss current item with `UITooltip.of(context).dismiss()`
   /// if you are navigating to other screen. This will be handled by default
   /// if `disableDefaultTargetGestures` is set to false.
   final bool disableDefaultTargetGestures;
 
   /// Defines blur value.
-  /// This will blur the background while displaying showcase.
+  /// This will blur the background while displaying item.
   ///
   /// If null value is provided,
-  /// [ShowCaseWidget.blurValue] will be considered.
+  /// [UITooltip.blurValue] will be considered.
   ///
   final double? blurValue;
 
@@ -244,7 +246,7 @@ class Showcase extends StatefulWidget {
   /// will still provide a callback.
   final VoidCallback? onBarrierClick;
 
-  const Showcase({
+  const TooltipItem({
     required this.key,
     required this.description,
     required this.child,
@@ -298,7 +300,7 @@ class Showcase extends StatefulWidget {
         assert(disposeOnTap == null || onTargetClick != null,
             "onTargetClick is required if you're using disposeOnTap");
 
-  const Showcase.withWidget({
+  const TooltipItem.withWidget({
     required this.key,
     required this.height,
     required this.width,
@@ -349,51 +351,54 @@ class Showcase extends StatefulWidget {
             "overlay opacity must be between 0 and 1.");
 
   @override
-  State<Showcase> createState() => _ShowcaseState();
+  State<TooltipItem> createState() => _TooltipItemState();
 }
 
-class _ShowcaseState extends State<Showcase> {
-  bool _showShowCase = false;
+class _TooltipItemState extends State<TooltipItem> {
+  bool _showItem = false;
   bool _isScrollRunning = false;
   bool _isTooltipDismissed = false;
-  bool _enableShowcase = true;
   Timer? timer;
   GetPosition? position;
 
-  VtsTooltipState get showCaseWidgetState => VtsTooltip.of(context);
+  ToolTipContext get state => context.read<ToolTipContext>();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ToolTipContext>().addListener(() {
+      showOverlay();
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _enableShowcase = showCaseWidgetState.enableShowcase;
 
-    if (_enableShowcase) {
-      position ??= GetPosition(
-        key: widget.key,
-        padding: widget.targetPadding,
-        screenWidth: MediaQuery.of(context).size.width,
-        screenHeight: MediaQuery.of(context).size.height,
-      );
-      showOverlay();
-    }
+    position ??= GetPosition(
+      key: widget.key,
+      padding: widget.targetPadding,
+      screenWidth: MediaQuery.of(context).size.width,
+      screenHeight: MediaQuery.of(context).size.height,
+    );
+    showOverlay();
   }
 
   /// show overlay if there is any target widget
   void showOverlay() {
-    final activeStep = VtsTooltip.activeTargetWidget(context);
+    final activeStep = state.getActiveWidgetKey();
     setState(() {
-      _showShowCase = activeStep == widget.key;
+      _showItem = activeStep == widget.key;
     });
 
     if (activeStep == widget.key) {
-      if (showCaseWidgetState.enableAutoScroll) {
+      if (state.enableAutoScroll) {
         _scrollIntoView();
       }
 
-      if (showCaseWidgetState.autoPlay) {
-        timer = Timer(
-            Duration(seconds: showCaseWidgetState.autoPlayDelay.inSeconds),
-            _nextIfAny);
+      if (state.autoPlay) {
+        timer =
+            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
       }
     }
   }
@@ -403,7 +408,7 @@ class _ShowcaseState extends State<Showcase> {
       setState(() => _isScrollRunning = true);
       await Scrollable.ensureVisible(
         widget.key.currentContext!,
-        duration: showCaseWidgetState.widget.scrollDuration,
+        duration: state.scrollDuration,
         alignment: 0.5,
       );
       setState(() => _isScrollRunning = false);
@@ -412,28 +417,25 @@ class _ShowcaseState extends State<Showcase> {
 
   @override
   Widget build(BuildContext context) {
-    if (_enableShowcase) {
-      return AnchoredOverlay(
-        overlayBuilder: (context, rectBound, offset) {
-          final size = MediaQuery.of(context).size;
-          position = GetPosition(
-            key: widget.key,
-            padding: widget.targetPadding,
-            screenWidth: size.width,
-            screenHeight: size.height,
-          );
-          return buildOverlayOnTarget(offset, rectBound.size, rectBound, size);
-        },
-        showOverlay: true,
-        child: widget.child,
-      );
-    }
-    return widget.child;
+    return AnchoredOverlay(
+      overlayBuilder: (context, rectBound, offset) {
+        final size = MediaQuery.of(context).size;
+        position = GetPosition(
+          key: widget.key,
+          padding: widget.targetPadding,
+          screenWidth: size.width,
+          screenHeight: size.height,
+        );
+        return buildOverlayOnTarget(offset, rectBound.size, rectBound, size);
+      },
+      showOverlay: true,
+      child: widget.child,
+    );
   }
 
   Future<void> _nextIfAny() async {
     if (timer != null && timer!.isActive) {
-      if (showCaseWidgetState.enableAutoPlayLock) {
+      if (state.enableAutoPlayLock) {
         return;
       }
       timer!.cancel();
@@ -441,13 +443,13 @@ class _ShowcaseState extends State<Showcase> {
       timer = null;
     }
     await _reverseAnimateTooltip();
-    showCaseWidgetState.completed(widget.key);
+    state.completed(widget.key);
   }
 
   Future<void> _getOnTargetTap() async {
     if (widget.disposeOnTap == true) {
       await _reverseAnimateTooltip();
-      showCaseWidgetState.dismiss();
+      state.dismiss();
       widget.onTargetClick!();
     } else {
       (widget.onTargetClick ?? _nextIfAny).call();
@@ -457,7 +459,7 @@ class _ShowcaseState extends State<Showcase> {
   Future<void> _getOnTooltipTap() async {
     if (widget.disposeOnTap == true) {
       await _reverseAnimateTooltip();
-      showCaseWidgetState.dismiss();
+      state.dismiss();
     }
     widget.onToolTipClick?.call();
   }
@@ -477,21 +479,21 @@ class _ShowcaseState extends State<Showcase> {
     Size screenSize,
   ) {
     var blur = 0.0;
-    if (_showShowCase) {
-      blur = widget.blurValue ?? showCaseWidgetState.blurValue;
+    if (_showItem) {
+      blur = widget.blurValue ?? state.blurValue;
     }
 
     // Set blur to 0 if application is running on web and
     // provided blur is less than 0.
     blur = kIsWeb && blur < 0 ? 0 : blur;
 
-    if (!_showShowCase) return const Offstage();
+    if (!_showItem) return const Offstage();
 
     return Stack(
       children: [
         GestureDetector(
           onTap: () {
-            if (!showCaseWidgetState.disableBarrierInteraction) {
+            if (!state.disableBarrierInteraction) {
               _nextIfAny();
             }
             widget.onBarrierClick?.call();
@@ -558,10 +560,10 @@ class _ShowcaseState extends State<Showcase> {
             contentWidth: widget.width,
             onTooltipTap: _getOnTooltipTap,
             tooltipPadding: widget.tooltipPadding,
-            disableMovingAnimation: widget.disableMovingAnimation ??
-                showCaseWidgetState.disableMovingAnimation,
-            disableScaleAnimation: widget.disableScaleAnimation ??
-                showCaseWidgetState.disableScaleAnimation,
+            disableMovingAnimation:
+                widget.disableMovingAnimation ?? state.disableMovingAnimation,
+            disableScaleAnimation:
+                widget.disableScaleAnimation ?? state.disableScaleAnimation,
             movingAnimationDuration: widget.movingAnimationDuration,
             tooltipBorderRadius: widget.tooltipBorderRadius,
             scaleAnimationDuration: widget.scaleAnimationDuration,

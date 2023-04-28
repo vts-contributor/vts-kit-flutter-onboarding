@@ -97,10 +97,10 @@ class ToolTipWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ToolTipWidget> createState() => _ToolTipWidgetState();
+  State<ToolTipWidget> createState() => UITooltipWidgetState();
 }
 
-class _ToolTipWidgetState extends State<ToolTipWidget>
+class UITooltipWidgetState extends State<ToolTipWidget>
     with TickerProviderStateMixin {
   Offset? position;
 

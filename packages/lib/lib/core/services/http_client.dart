@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/http_client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/api_response.dart';
+import 'package:vts_kit_flutter_onboarding/core/types/dto/json_serializable.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 
 class HttpClient {

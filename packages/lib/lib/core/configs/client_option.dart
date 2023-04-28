@@ -3,6 +3,7 @@ class ClientOption {
   final String applicationId;
   final bool debug;
   final Duration logInterval = Duration(seconds: 5);
+  final Duration actionInterval = Duration(seconds: 5);
 
   ClientOption(
       {required this.serverUrl,

@@ -21,7 +21,8 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
+import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 
 import 'extension.dart';
 
@@ -120,6 +121,8 @@ class OverlayBuilder extends StatefulWidget {
 }
 
 class _OverlayBuilderState extends State<OverlayBuilder> {
+  ToolTipContext get state => context.read<ToolTipContext>();
+
   OverlayEntry? _overlayEntry;
 
   @override
@@ -172,9 +175,9 @@ class _OverlayBuilderState extends State<OverlayBuilder> {
 
   void addToOverlay(OverlayEntry overlayEntry) async {
     if (mounted) {
-      final showCaseContext = VtsTooltip.of(context).context;
-      if (Overlay.maybeOf(showCaseContext) != null) {
-        Overlay.of(showCaseContext).insert(overlayEntry);
+      final tooltipContext = state.context;
+      if (Overlay.maybeOf(tooltipContext) != null) {
+        Overlay.of(tooltipContext).insert(overlayEntry);
       } else if (Overlay.maybeOf(context) != null) {
         Overlay.of(context).insert(overlayEntry);
       }

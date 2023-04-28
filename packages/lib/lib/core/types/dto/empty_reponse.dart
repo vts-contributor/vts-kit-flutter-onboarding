@@ -1,4 +1,4 @@
-import 'package:vts_kit_flutter_onboarding/core/types/dto/api_response.dart';
+import 'package:vts_kit_flutter_onboarding/core/types/dto/json_serializable.dart';
 
 class EmptyResponse extends JsonSerializable {
   EmptyResponse();

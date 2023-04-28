@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/events.dart';
+import 'package:vts_kit_flutter_onboarding/core/types/dto/json_serializable.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/event.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
-import 'package:collection/src/iterable_extensions.dart';
 
 const PUSHING_STATE = "1";
 const PREF_EVENT_KEY = "PREF_EVENT_KEY";
@@ -20,7 +19,7 @@ class EventService {
     if (_singleton == null) {
       _singleton = EventService._();
       _singleton!._flushCache();
-      // _singleton!._createInterval();
+      _singleton!._createInterval();
       return _singleton!;
     } else {
       throw Logger.throwError('Invalid operator');
@@ -34,32 +33,30 @@ class EventService {
     final cache =
         await _prefs.then((pref) => pref.getStringList(PREF_EVENT_KEY));
     if (cache != null && cache.isNotEmpty) {
-      _queue = cache.map((item) => Event.fromJson(json.decode(item))).toList();
+      _queue = cache.fromJson((item) => Event.fromJson(item));
       _doPush();
     }
   }
 
   void _saveCache() {
-    final caching = _queue.map((e) => json.encode(e.toJson())).toList();
-    _prefs.then((pref) => pref.setStringList(PREF_EVENT_KEY, caching));
+    _prefs.then((pref) => pref.setStringList(PREF_EVENT_KEY, _queue.toJson()));
   }
 
   void _doPush() async {
-    if (OnboardingClient.options.debug) {
-      Logger.log('DO PUSH');
-    }
-    final toPush = [];
+    final List<Event> toPush = [];
     _queue.forEach((event) {
       // Mark for pushing
       event.status = PUSHING_STATE;
-      toPush.add(json.encode(event.toJson()));
+      toPush.add(event);
     });
-    final logs = '[${toPush.join(",")}]';
+    if (toPush.isEmpty) return;
     if (OnboardingClient.options.debug) {
-      Logger.log('PUSHING: $logs');
+      Logger.log('PUSHING ${toPush.length} events');
     }
     try {
-      await OnboardingClient.context.apiClient!.pushLog(logs);
+      await OnboardingClient.context.apiClient!.pushLog(toPush);
+      _queue.removeWhere((event) => event.status == PUSHING_STATE);
+      _saveCache();
     } catch (e, s) {
       if (OnboardingClient.options.debug) {
         Logger.logError('PUSHING ERROR ${e.toString()}');
@@ -83,25 +80,42 @@ class EventService {
   //#endregion
 
   //#region Public Methods
-  void addMessage(String guideCode, String actionType, String? payload) {
-    final existed = _queue.firstWhereOrNull((element) =>
-        element.appId == OnboardingClient.appId &&
-        element.sessionId == OnboardingClient.sessionId);
-    if (existed == null) {
-      Event newItem = Event(
-          appId: OnboardingClient.appId,
-          sessionId: OnboardingClient.sessionId,
-          userId: OnboardingClient.userId!,
-          guideCode: guideCode,
-          actionType: actionType,
-          timeRun: timeRun);
-      newItem.data.add(message);
-      _queue.add(newItem);
-    } else {
-      existed.data.add(message);
-    }
-
+  void logEvent(
+      {required String guideCode,
+      required String actionType,
+      String? payload}) {
+    Event newItem = Event(
+        appId: OnboardingClient.appId,
+        sessionId: OnboardingClient.sessionId,
+        userId: OnboardingClient.userId!,
+        guideCode: guideCode,
+        actionType: actionType,
+        timeRun: DateTime.now().toIso8601String(),
+        payload: payload);
+    _queue.add(newItem);
     _saveCache();
+
+    if (OnboardingClient.options.debug) {
+      Logger.log('NEW EVENT ${newItem.toJson().toString()}');
+    }
+  }
+
+  void logStartEvent({
+    required String guideCode,
+  }) {
+    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_START);
+  }
+
+  void logEndEvent({
+    required String guideCode,
+  }) {
+    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_END);
+  }
+
+  void logDismissEvent({
+    required String guideCode,
+  }) {
+    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_DISMISS);
   }
   //#endregion
 }

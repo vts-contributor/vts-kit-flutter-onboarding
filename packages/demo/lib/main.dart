@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/showcase.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
 
@@ -35,10 +36,8 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: OnboardingWidget(
-        builder: Builder(
-            builder: (_) => const MyHomePage(title: 'Flutter Demo Home Page')),
-      ),
+      home: OnboardingProvider(
+          child: const MyHomePage(title: 'Flutter Demo Home Page')),
     );
   }
 }
@@ -64,13 +63,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _one = GlobalKey();
   final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
+  final GlobalKey _five = GlobalKey();
+  final GlobalKey _six = GlobalKey();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback(
-        (_) => VtsTooltip.of(context).startShowCase([_one, _two]));
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      OnboardingClient.start(
+          guideCode: "GUIDE_1",
+          guideType: UIName.Tooltip,
+          context: context,
+          payload: [_one, _two, _three, _four]);
+      // OnboardingClient.start(
+      //     guideCode: "GUIDE_2",
+      //     guideType: UIName.Tooltip,
+      //     context: context,
+      //     payload: [_five, _six]);
+    });
   }
 
   int _counter = 0;
@@ -120,14 +133,49 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Showcase(
+            TooltipItem(
                 key: _one,
                 description: "hehe",
                 child: const Text(
                   'You have pushed the button this many times:',
                 )),
-            Showcase(
+            TooltipItem.withWidget(
                 key: _two,
+                container: Container(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: TextButton(
+                    child: Text('Dismiss'),
+                    onPressed: () {
+                      OnboardingClient.dismiss();
+                    },
+                  ),
+                ),
+                targetShapeBorder: CircleBorder(),
+                height: 40,
+                width: 200,
+                child: const Text(
+                  'You have pushed the button this many times:',
+                )),
+            TooltipItem(
+                key: _three,
+                description: "hehe",
+                child: const Text(
+                  'You have pushed the button this many times:',
+                )),
+            TooltipItem(
+                key: _four,
+                description: "haha",
+                child: const Text(
+                  'Second:',
+                )),
+            TooltipItem(
+                key: _five,
+                description: "haha",
+                child: const Text(
+                  'Second:',
+                )),
+            TooltipItem(
+                key: _six,
                 description: "haha",
                 child: const Text(
                   'Second:',
