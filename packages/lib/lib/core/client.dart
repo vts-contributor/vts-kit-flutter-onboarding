@@ -37,7 +37,10 @@ class OnboardingClient {
   static OnboardingClient? _singleton;
 
   factory OnboardingClient.initialize(ClientOption options) {
-    if (_singleton != null) return _singleton!;
+    if (_singleton != null) {
+      throw Logger.throwError("OnboardingClient can only initialized once");
+    }
+    ;
     _singleton = OnboardingClient._();
 
     // Cache options
@@ -108,7 +111,8 @@ class OnboardingClient {
       Logger.logSuccess("Success Initialized");
       _setState(ClientState.State.INITIALIZED);
     } catch (e) {
-      Logger.logError("Invalid config provided");
+      Logger.logError(
+          "Unable to initialize. Please recheck internet connection and identity provided");
       _setState(ClientState.State.UNAUTHORIZED);
     }
   }

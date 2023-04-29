@@ -39,7 +39,7 @@ class ApiClient {
 
   Future<ApiResponse> pushLog(List<Event> events) async {
     return await _httpClient.post(
-        ApiUrl.VALIDATE, (data) => EmptyResponse.fromJson(data),
+        ApiUrl.LOG_PUSH, (data) => EmptyResponse.fromJson(data),
         data: {"logs": events});
   }
   //#endregion

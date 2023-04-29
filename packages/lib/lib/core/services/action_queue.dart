@@ -13,6 +13,7 @@ class ActionQueue {
   static ActionQueue? _singleton;
   List<Type.Action> _queue = [];
   Type.Action? isPlaying;
+  Timer? _interval;
 
   factory ActionQueue.create() {
     if (_singleton == null) {
@@ -29,11 +30,15 @@ class ActionQueue {
 
   //#region Private Methods
   void _createInterval() {
-    Timer.periodic(OnboardingClient.options.actionInterval, (_) {
+    _interval = Timer.periodic(OnboardingClient.options.actionInterval, (_) {
       if (OnboardingClient.options.debug) {
         Logger.log('ACTION INTERVAL TRIGGER');
       }
       _playAction();
+
+      // Cancel on Authentication Failed
+      if (OnboardingClient.state == ClientState.State.UNAUTHORIZED)
+        _interval!.cancel();
     });
   }
 
