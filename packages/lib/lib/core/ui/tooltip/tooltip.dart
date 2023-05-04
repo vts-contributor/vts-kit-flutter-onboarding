@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 
 class UITooltip implements UIAbstract {
   late Function(int?, GlobalKey) _startCb;
-  late Function(int?, GlobalKey) _completeCb;
-  late VoidCallback _finishCb;
+  // late Function(int?, GlobalKey) _completeCb;
+  // late VoidCallback _finishCb;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -30,23 +30,23 @@ class UITooltip implements UIAbstract {
     _startCb = (idx, key) => {
           OnboardingClient.context.eventService!.logEvent(
               guideCode: action.guideCode,
-              actionType: Events.TOOLTIP_STEP_START,
+              actionType: Events.TOOLTIP_STEP_FINISH,
               payload: idx?.toString())
         };
-    _completeCb = (idx, key) => {
-          OnboardingClient.context.eventService!.logEvent(
-              guideCode: action.guideCode,
-              actionType: Events.TOOLTIP_STEP_COMPLETE,
-              payload: idx?.toString())
-        };
-    _finishCb = () => {
-          OnboardingClient.context.eventService!.logEvent(
-              guideCode: action.guideCode,
-              actionType: Events.TOOLTIP_STEP_FINISH)
-        };
+    // _completeCb = (idx, key) => {
+    //       OnboardingClient.context.eventService!.logEvent(
+    //           guideCode: action.guideCode,
+    //           actionType: Events.TOOLTIP_STEP_COMPLETE,
+    //           payload: idx?.toString())
+    //     };
+    // _finishCb = () => {
+    //       OnboardingClient.context.eventService!.logEvent(
+    //           guideCode: action.guideCode,
+    //           actionType: Events.TOOLTIP_STEP_FINISH)
+    //     };
     context.read<ToolTipContext>().onStart(_startCb);
-    context.read<ToolTipContext>().onComplete(_completeCb);
-    context.read<ToolTipContext>().onFinish(_finishCb);
+    // context.read<ToolTipContext>().onComplete(_completeCb);
+    // context.read<ToolTipContext>().onFinish(_finishCb);
     return Future.value(true);
   }
 
@@ -82,8 +82,8 @@ class UITooltip implements UIAbstract {
     final context = action.context;
     try {
       context.read<ToolTipContext>().offStart(_startCb);
-      context.read<ToolTipContext>().offComplete(_completeCb);
-      context.read<ToolTipContext>().offFinish(_finishCb);
+      // context.read<ToolTipContext>().offComplete(_completeCb);
+      // context.read<ToolTipContext>().offFinish(_finishCb);
     } catch (e) {}
     ;
     return Future.value(true);

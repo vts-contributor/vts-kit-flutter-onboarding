@@ -2,7 +2,6 @@ import 'package:vts_kit_flutter_onboarding/core/client.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/api_url.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/http_client.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/api_response.dart';
-import 'package:vts_kit_flutter_onboarding/core/types/dto/empty_reponse.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/dto/init_info.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/event.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
@@ -38,9 +37,8 @@ class ApiClient {
   }
 
   Future<ApiResponse> pushLog(List<Event> events) async {
-    return await _httpClient.post(
-        ApiUrl.LOG_PUSH, (data) => EmptyResponse.fromJson(data),
-        data: {"logs": events});
+    return await _httpClient
+        .post(ApiUrl.LOG_PUSH, null, data: {"logs": events});
   }
   //#endregion
 }

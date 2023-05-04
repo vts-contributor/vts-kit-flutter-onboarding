@@ -40,7 +40,7 @@ class HttpClient {
 
   //#region Private Methods
   _mappingResponse<T extends JsonSerializable>(
-      Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJson) {
+      Map<String, dynamic> json, T Function(Map<String, dynamic>)? fromJson) {
     return ApiResponse.fromJson(json, fromJson);
   }
   //#endregion
@@ -48,7 +48,7 @@ class HttpClient {
   //#region Public Methods
   Future<ApiResponse<T>> get<T extends JsonSerializable>(
     String path,
-    T Function(Map<String, dynamic>) fromJson, {
+    T Function(Map<String, dynamic>)? fromJson, {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -66,7 +66,7 @@ class HttpClient {
 
   Future<ApiResponse<T>> post<T extends JsonSerializable>(
     String path,
-    T Function(Map<String, dynamic>) fromJson, {
+    T Function(Map<String, dynamic>)? fromJson, {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,

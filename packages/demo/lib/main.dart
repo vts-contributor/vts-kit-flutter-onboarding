@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     ClientOption options = ClientOption(
-        serverUrl: 'http://10.60.156.125:8313/onboarding',
+        serverUrl: '<server_url>',
         applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
         debug: true);
     OnboardingClient.initialize(options);
@@ -74,15 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       OnboardingClient.start(
-          guideCode: "GUIDE_1",
+          guideCode: "SHOW_2",
           guideType: UIName.Tooltip,
           context: context,
           payload: [_one, _two, _three, _four]);
-      // OnboardingClient.start(
-      //     guideCode: "GUIDE_2",
-      //     guideType: UIName.Tooltip,
-      //     context: context,
-      //     payload: [_five, _six]);
+      OnboardingClient.start(
+          guideCode: "SHOW_4",
+          guideType: UIName.Tooltip,
+          context: context,
+          payload: [_five, _six]);
     });
   }
 
