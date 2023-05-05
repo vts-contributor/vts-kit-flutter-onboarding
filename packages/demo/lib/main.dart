@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
 
 void main() {
@@ -24,7 +22,6 @@ class _MyAppState extends State<MyApp> {
         debug: true);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
-    // TODO: implement initState
     super.initState();
   }
 

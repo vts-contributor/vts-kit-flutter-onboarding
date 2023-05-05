@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:provider/provider.dart';
 import 'package:vts_kit_flutter_onboarding/core/client.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/events.dart';
@@ -11,8 +13,6 @@ import 'package:flutter/material.dart';
 
 class UITooltip implements UIAbstract {
   late Function(int?, GlobalKey) _startCb;
-  // late Function(int?, GlobalKey) _completeCb;
-  // late VoidCallback _finishCb;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -27,26 +27,11 @@ class UITooltip implements UIAbstract {
       Logger.logWarning('INITIALIZE ${getName()} for ${action.guideCode}');
 
     final context = action.context;
-    _startCb = (idx, key) => {
-          OnboardingClient.context.eventService!.logEvent(
-              guideCode: action.guideCode,
-              actionType: Events.TOOLTIP_STEP_FINISH,
-              payload: idx?.toString())
-        };
-    // _completeCb = (idx, key) => {
-    //       OnboardingClient.context.eventService!.logEvent(
-    //           guideCode: action.guideCode,
-    //           actionType: Events.TOOLTIP_STEP_COMPLETE,
-    //           payload: idx?.toString())
-    //     };
-    // _finishCb = () => {
-    //       OnboardingClient.context.eventService!.logEvent(
-    //           guideCode: action.guideCode,
-    //           actionType: Events.TOOLTIP_STEP_FINISH)
-    //     };
+    _startCb = (idx, key) {
+      action.logEvent(
+          actionType: Events.TOOLTIP_STEP_CHANGE, payload: idx?.toString());
+    };
     context.read<ToolTipContext>().onStart(_startCb);
-    // context.read<ToolTipContext>().onComplete(_completeCb);
-    // context.read<ToolTipContext>().onFinish(_finishCb);
     return Future.value(true);
   }
 
@@ -54,6 +39,15 @@ class UITooltip implements UIAbstract {
   Future<void> show(Type.Action action) {
     if (OnboardingClient.options.debug)
       Logger.logWarning('SHOWING ${getName()} for ${action.guideCode}');
+
+    // Push meta data event
+    final Map<String, dynamic> meta = {
+      "stepNumber": (action.payload as List).length
+    };
+    action.logEvent(
+        actionType: Events.GUIDE_INITIALIZE, payload: json.encode(meta));
+
+    // Play
     final context = action.context;
     final payload = action.payload;
     context.read<ToolTipContext>().start(payload);
@@ -79,11 +73,10 @@ class UITooltip implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
 
+    // Clean callback event binding
     final context = action.context;
     try {
       context.read<ToolTipContext>().offStart(_startCb);
-      // context.read<ToolTipContext>().offComplete(_completeCb);
-      // context.read<ToolTipContext>().offFinish(_finishCb);
     } catch (e) {}
     ;
     return Future.value(true);

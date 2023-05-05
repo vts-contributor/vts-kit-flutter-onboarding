@@ -8,6 +8,8 @@ class Action {
   final dynamic payload;
   final BuildContext context;
   late CancelableCompleter? completer;
+  late Function({required String actionType, String? payload}) logEvent =
+      ({required actionType, payload}) => {};
 
   Action(
       {required this.guideCode,

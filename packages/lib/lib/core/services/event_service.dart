@@ -83,12 +83,14 @@ class EventService {
   void logEvent(
       {required String guideCode,
       required String actionType,
+      required String guideType,
       String? payload}) {
     Event newItem = Event(
         appId: OnboardingClient.appId,
         sessionId: OnboardingClient.sessionId,
         userId: OnboardingClient.userId!,
         guideCode: guideCode,
+        guideType: guideType,
         actionType: actionType,
         timeRun: DateTime.now().toIso8601String(),
         payload: payload);
@@ -102,20 +104,32 @@ class EventService {
 
   void logStartEvent({
     required String guideCode,
+    required String guideType,
   }) {
-    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_START);
+    this.logEvent(
+        guideCode: guideCode,
+        guideType: guideType,
+        actionType: Events.GUIDE_START);
   }
 
   void logEndEvent({
     required String guideCode,
+    required String guideType,
   }) {
-    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_END);
+    this.logEvent(
+        guideCode: guideCode,
+        guideType: guideType,
+        actionType: Events.GUIDE_END);
   }
 
   void logDismissEvent({
     required String guideCode,
+    required String guideType,
   }) {
-    this.logEvent(guideCode: guideCode, actionType: Events.GUIDE_DISMISS);
+    this.logEvent(
+        guideCode: guideCode,
+        guideType: guideType,
+        actionType: Events.GUIDE_DISMISS);
   }
   //#endregion
 }

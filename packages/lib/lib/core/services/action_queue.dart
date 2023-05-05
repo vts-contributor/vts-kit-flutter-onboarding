@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:async/async.dart';
 import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/state.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
 import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/state.dart'
-    as ClientState;
 
 class ActionQueue {
   //#region Singleton Constructor
@@ -37,13 +36,13 @@ class ActionQueue {
       _playAction();
 
       // Cancel on Authentication Failed
-      if (OnboardingClient.state == ClientState.State.UNAUTHORIZED)
+      if (OnboardingClient.state == ClientState.UNAUTHORIZED)
         _interval!.cancel();
     });
   }
 
   void _playAction() async {
-    if (OnboardingClient.state != ClientState.State.INITIALIZED ||
+    if (OnboardingClient.state != ClientState.INITIALIZED ||
         _queue.isEmpty ||
         isPlaying != null) return;
 
@@ -60,6 +59,7 @@ class ActionQueue {
 
     // UI Abstract Lifecycle: Initialize - Validate - Show - Destroy
     try {
+      // Try initializing and validating
       await isPlaying!.ui.initialize(isPlaying!);
       final playable = await isPlaying!.ui.validate(isPlaying!);
       if (playable) {
@@ -80,18 +80,32 @@ class ActionQueue {
       _playAction();
     } else {
       // Play
-      final completer = CancelableCompleter(onCancel: () {
-        print('cancle');
-      });
+      final completer = CancelableCompleter();
       isPlaying!.completer = completer;
       Future.value(true).then((_) {
-        OnboardingClient.context.eventService!
-            .logStartEvent(guideCode: isPlaying!.guideCode);
+        // Create shorthand logger
+        isPlaying!.logEvent = (({required actionType, payload}) =>
+            OnboardingClient.context.eventService!.logEvent(
+                guideCode: isPlaying!.guideCode,
+                actionType: actionType,
+                guideType: isPlaying!.ui.getName(),
+                payload: payload));
+
+        // Push start event
+        OnboardingClient.context.eventService!.logStartEvent(
+            guideCode: isPlaying!.guideCode,
+            guideType: isPlaying!.ui.getName());
+
+        // Start guide
         completer.complete(isPlaying!.ui.show(isPlaying!));
         return completer.operation.value;
       }).then((_) async {
-        OnboardingClient.context.eventService!
-            .logEndEvent(guideCode: isPlaying!.guideCode);
+        // Successfully played
+        // Push end event
+        OnboardingClient.context.eventService!.logEndEvent(
+            guideCode: isPlaying!.guideCode,
+            guideType: isPlaying!.ui.getName());
+        // Clean
         await isPlaying!.ui.destroy(isPlaying!);
         isPlaying = null;
         // Instantly play next action if current one ended successfully
@@ -113,20 +127,26 @@ class ActionQueue {
 
   void dismiss() async {
     if (isPlaying != null) {
+      // Cancel any playing guide
       if (isPlaying?.completer != null) {
         await isPlaying!.completer!.operation.cancel();
       }
+
+      Future.value(true).then((_) {
+        // Push dismiss event
+        OnboardingClient.context.eventService!.logDismissEvent(
+            guideCode: isPlaying!.guideCode,
+            guideType: isPlaying!.ui.getName());
+        // Dismiss lifecycle
+        return isPlaying!.ui.dismiss(isPlaying!);
+      }).then((_) async {
+        // Clean
+        await isPlaying!.ui.destroy(isPlaying!);
+        isPlaying = null;
+        // Instantly play next action if current one ended successfully
+        _playAction();
+      });
     }
-    Future.value(true).then((_) {
-      OnboardingClient.context.eventService!
-          .logDismissEvent(guideCode: isPlaying!.guideCode);
-      return isPlaying!.ui.dismiss(isPlaying!);
-    }).then((_) async {
-      await isPlaying!.ui.destroy(isPlaying!);
-      isPlaying = null;
-      // Instantly play next action if current one ended successfully
-      _playAction();
-    });
   }
   //#endregion
 }

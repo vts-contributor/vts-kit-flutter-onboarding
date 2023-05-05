@@ -1,8 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/http_client_option.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/state.dart'
-    as ClientState;
+import 'package:vts_kit_flutter_onboarding/core/configs/state.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/action_queue.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/api.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/event_service.dart';
@@ -19,7 +18,7 @@ const PREF_USERID_KEY = "PREF_USERID_KEY";
 
 class OnboardingClient {
   //#region Property
-  static late ClientState.State state = ClientState.State.UNSET;
+  static late ClientState state = ClientState.UNSET;
   static late Meta meta;
   static late String appId;
   static late String? userId;
@@ -30,7 +29,7 @@ class OnboardingClient {
   static late ClientContext context;
   static late Map<String, UIAbstract> _ui = {};
   static List<Function()> _onInitialized = [];
-  static List<Function(ClientState.State state)> _onStateChanged = [];
+  static List<Function(ClientState state)> _onStateChanged = [];
   //#endregion
 
   //#region Singleton Constructor
@@ -64,7 +63,7 @@ class OnboardingClient {
         actionQueue: ActionQueue.create());
 
     // Initialize Application
-    _singleton!._setState(ClientState.State.INITIALIZATING);
+    _singleton!._setState(ClientState.INITIALIZATING);
 
     _singleton!._prepare().then((_) async {
       await _singleton!._validateApplication();
@@ -77,12 +76,12 @@ class OnboardingClient {
   //#endregion
 
   //#region Private Methods
-  _setState(ClientState.State state) {
+  _setState(ClientState state) {
     OnboardingClient.state = state;
     _onStateChanged.forEach((func) {
       func.call(state);
     });
-    if (state == ClientState.State.INITIALIZED) {
+    if (state == ClientState.INITIALIZED) {
       _onInitialized.forEach((func) {
         func.call();
       });
@@ -109,11 +108,11 @@ class OnboardingClient {
         instance.setString(PREF_USERID_KEY, initInfo.data.userId);
       });
       Logger.logSuccess("Success Initialized");
-      _setState(ClientState.State.INITIALIZED);
+      _setState(ClientState.INITIALIZED);
     } catch (e) {
       Logger.logError(
           "Unable to initialize. Please recheck internet connection and identity provided");
-      _setState(ClientState.State.UNAUTHORIZED);
+      _setState(ClientState.UNAUTHORIZED);
     }
   }
   //#endregion
@@ -148,7 +147,7 @@ class OnboardingClient {
     _onInitialized.add(func);
   }
 
-  static void onStateChange(Function(ClientState.State state) func) {
+  static void onStateChange(Function(ClientState state) func) {
     _onStateChanged.add(func);
   }
   //#endregion

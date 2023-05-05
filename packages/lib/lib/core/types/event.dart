@@ -5,6 +5,7 @@ class Event implements JsonSerializable {
   final String sessionId;
   final String userId;
   final String guideCode;
+  final String guideType;
   final String actionType;
   final String timeRun;
   final String? payload;
@@ -15,6 +16,7 @@ class Event implements JsonSerializable {
       required this.sessionId,
       required this.userId,
       required this.guideCode,
+      required this.guideType,
       required this.actionType,
       required this.timeRun,
       this.payload,
@@ -26,6 +28,7 @@ class Event implements JsonSerializable {
         sessionId: json['sessionId'],
         userId: json['userId'],
         guideCode: json['guideCode'],
+        guideType: json['guideType'],
         actionType: json['actionType'],
         timeRun: json['timeRun'],
         payload: json['payload']);
@@ -37,6 +40,7 @@ class Event implements JsonSerializable {
       "sessionId": this.sessionId,
       "userId": this.userId,
       "guideCode": this.guideCode,
+      "guideType": this.guideType,
       "actionType": this.actionType,
       "timeRun": this.timeRun,
       "payload": this.payload,
