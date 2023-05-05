@@ -1,3 +1,3 @@
 class UIName {
-  static const Tooltip = 'Tooltip';
+  static const Tooltip = 'TOOLTIP_GUIDE';
 }

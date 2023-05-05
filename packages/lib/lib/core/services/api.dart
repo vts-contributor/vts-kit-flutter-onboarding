@@ -31,7 +31,8 @@ class ApiClient {
       "appId": OnboardingClient.options.applicationId,
       "deviceType": OnboardingClient.meta.deviceType,
       "deviceId": OnboardingClient.meta.deviceId,
-      "userId": OnboardingClient.userId
+      "userId": OnboardingClient.userId,
+      "createdDate": DateTime.now().toIso8601String()
     });
     return info;
   }
