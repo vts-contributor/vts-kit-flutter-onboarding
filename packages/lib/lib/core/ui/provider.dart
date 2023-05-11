@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 
 class OnboardingProvider extends StatefulWidget {
@@ -17,6 +18,8 @@ class OnboardingProviderState extends State<OnboardingProvider> {
     return MultiProvider(providers: [
       ChangeNotifierProvider(
           create: (context) => ToolTipContext(context: context)),
+      ChangeNotifierProvider(
+          create: (context) => PopupContext(context: context)),
     ], child: widget.child);
   }
 }

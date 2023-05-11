@@ -9,6 +9,7 @@ import 'package:vts_kit_flutter_onboarding/core/services/http_client.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/client_context.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/meta.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/popup.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/platform.dart';
@@ -89,12 +90,14 @@ class OnboardingClient {
   }
 
   Future<void> _prepare() async {
+    OnboardingClient.registerUI(UITooltip());
+    OnboardingClient.registerUI(UIPopup());
+
     OnboardingClient.meta = await PlatformInfo.get();
     OnboardingClient.userId =
         await SharedPreferences.getInstance().then((instance) {
       return instance.getString(PREF_USERID_KEY);
     });
-    OnboardingClient.registerUI(UITooltip());
   }
 
   Future<void> _validateApplication() async {

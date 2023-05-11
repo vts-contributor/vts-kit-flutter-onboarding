@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/dialogs.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
 
@@ -17,7 +21,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     ClientOption options = ClientOption(
-        serverUrl: '<server_url>',
+        serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
         applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
         debug: true);
     OnboardingClient.initialize(options);
@@ -34,7 +38,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       home: OnboardingProvider(
-          child: const MyHomePage(title: 'Flutter Demo Home Page')),
+          child: const MyHomePage(title: 'Flutter Demo Home Page 1111')),
     );
   }
 }
@@ -64,17 +68,19 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _four = GlobalKey();
   final GlobalKey _five = GlobalKey();
   final GlobalKey _six = GlobalKey();
+  final GlobalKey _seven = GlobalKey();
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       OnboardingClient.start(
           guideCode: "SHOW_2",
           guideType: UIName.Tooltip,
           context: context,
-          payload: [_one, _two, _three, _four]);
+          payload: [_one, _two,_three,_four]);
       OnboardingClient.start(
           guideCode: "SHOW_4",
           guideType: UIName.Tooltip,
@@ -85,15 +91,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _showDialog() {
+    Dialogs.showPopup(
+      key: _seven,
+      color: Colors.white,
+      msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+      title: 'Chào mừng bạn đến với Viettel-S',
+      image: "images/image.png",
+      dialogWidth: kIsWeb ? 0.3 : null,
+      context: context,
+      actions: [
+        IconsButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          text: 'Bỏ qua',
+          color: Colors.white,
+          textStyle: const TextStyle(color: Colors.black),
+          iconColor: Colors.white,
+        ),
+        IconsButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          text: 'Đăng ký',
+          color: Colors.black,
+          textStyle: const TextStyle(color: Colors.white),
+          iconColor: Colors.white,
+        ),
+      ],
+    );
   }
 
   @override
@@ -130,12 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TooltipItem(
-                key: _one,
-                description: "hehe",
-                child: const Text(
-                  'You have pushed the button this many times:',
-                )),
+
             TooltipItem.withWidget(
                 key: _two,
                 container: Container(
@@ -157,19 +179,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 key: _three,
                 description: "hehe",
                 child: const Text(
-                  'You have pushed the button this many times:',
+                  'Ban nang 55 can:',
                 )),
             TooltipItem(
                 key: _four,
                 description: "haha",
                 child: const Text(
-                  'Second:',
-                )),
-            TooltipItem(
-                key: _five,
-                description: "haha",
-                child: const Text(
-                  'Second:',
+                  'Ban cao 1m8:',
                 )),
             TooltipItem(
                 key: _six,
@@ -177,6 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text(
                   'Second:',
                 )),
+
+
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
@@ -185,10 +203,101 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _showDialog,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+//
+//
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
+// import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/dialogs.dart';
+//
+//
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         title: 'Material design Dialogs',
+//         theme: ThemeData(
+//           primarySwatch: Colors.blue,
+//         ),
+//         home: SafeArea(
+//           child: Scaffold(
+//               backgroundColor: Colors.white,
+//               appBar: AppBar(
+//                 title: Text("Material design Dialogs"),
+//               ),
+//               body: TestPage()),
+//         ));
+//   }
+// }
+//
+// class TestPage extends StatefulWidget {
+//   @override
+//   State<StatefulWidget> createState() {
+//     return TestState();
+//   }
+// }
+//
+// class TestState extends State<TestPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           btn3(context),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget btn3(BuildContext context) {
+//     return MaterialButton(
+//       minWidth: 300,
+//       color: Colors.grey[300],
+//       onPressed: () => Dialogs.materialDialog(
+//         color: Colors.white,
+//         msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+//         title: 'Chào mừng bạn đến với Viettel-S',
+//         image: "images/image.png",
+//         dialogWidth: kIsWeb ? 0.3 : null,
+//         context: context,
+//         actions: [
+//           IconsButton(
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//             text: 'Bỏ qua',
+//             color: Colors.white,
+//             textStyle: const TextStyle(color: Colors.black),
+//             iconColor: Colors.white,
+//           ),
+//           IconsButton(
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//             text: 'Đăng ký',
+//             color: Colors.black,
+//             textStyle: const TextStyle(color: Colors.white),
+//             iconColor: Colors.white,
+//           ),
+//         ],
+//       ),
+//       child: Text("Show animations Material Dialog"),
+//     );
+//   }
+//
+// }
+
