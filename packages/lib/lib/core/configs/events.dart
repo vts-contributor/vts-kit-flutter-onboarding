@@ -6,6 +6,6 @@ class Events {
   static const GUIDE_INITIALIZE = 'GUIDE_INITIALIZE';
   static const TOOLTIP_STEP_CHANGE = 'TOOLTIP_STEP_CHANGE';
 
-  static const POPUP_STEP_CHANGE = 'POPUP_STEP_CHANGE';
+  // static const POPUP_STEP_CHANGE = 'POPUP_STEP_CHANGE';
 
 }

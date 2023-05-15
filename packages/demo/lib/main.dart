@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/dialogs.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
 
@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
-        applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
+        applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
         debug: true);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
@@ -77,51 +77,32 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       OnboardingClient.start(
-          guideCode: "SHOW_2",
-          guideType: UIName.Tooltip,
+          guideCode: "TOAN",
+          guideType: UIName.Popup,
           context: context,
-          payload: [_one, _two,_three,_four]);
+          payload: [_three,_four]);
       OnboardingClient.start(
-          guideCode: "SHOW_4",
+          guideCode: "TOAN",
           guideType: UIName.Tooltip,
           context: context,
-          payload: [_five, _six]);
+          payload: [_one]);
+      // OnboardingClient.start(
+      //     guideCode: "SHOW_4",
+      //     guideType: UIName.Popup,
+      //     context: context,
+      //     payload: [_five, _six]);
+
+      OnboardingClient.start(
+          guideCode: "TOAN",
+          guideType: UIName.Tooltip,
+          context: context,
+          payload: [_six]);
     });
+
   }
 
   int _counter = 0;
 
-  void _showDialog() {
-    Dialogs.showPopup(
-      key: _seven,
-      color: Colors.white,
-      msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
-      title: 'Chào mừng bạn đến với Viettel-S',
-      image: "images/image.png",
-      dialogWidth: kIsWeb ? 0.3 : null,
-      context: context,
-      actions: [
-        IconsButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          text: 'Bỏ qua',
-          color: Colors.white,
-          textStyle: const TextStyle(color: Colors.black),
-          iconColor: Colors.white,
-        ),
-        IconsButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          text: 'Đăng ký',
-          color: Colors.black,
-          textStyle: const TextStyle(color: Colors.white),
-          iconColor: Colors.white,
-        ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,31 +139,89 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
 
-            TooltipItem.withWidget(
-                key: _two,
-                container: Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: TextButton(
-                    child: Text('Dismiss'),
-                    onPressed: () {
-                      OnboardingClient.dismiss();
-                    },
-                  ),
-                ),
-                targetShapeBorder: CircleBorder(),
-                height: 40,
-                width: 200,
-                child: const Text(
-                  'You have pushed the button this many times:',
-                )),
+            // TooltipItem.withWidget(
+            //     key: _two,
+            //     container: Container(
+            //       decoration: BoxDecoration(color: Colors.white),
+            //       child: TextButton(
+            //         child: Text('Dismiss'),
+            //         onPressed: () {
+            //           OnboardingClient.dismiss();
+            //         },
+            //       ),
+            //     ),
+            //     targetShapeBorder: CircleBorder(),
+            //     height: 40,
+            //     width: 200,
+            //     child: const Text(
+            //       'You have pushed the button this many times:',
+            //     )),
             TooltipItem(
-                key: _three,
+                key: _one,
                 description: "hehe",
                 child: const Text(
                   'Ban nang 55 can:',
                 )),
+            PopupItem(
+              key: _three,
+              backgroundColor: Colors.white,
+              msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+              title: 'Chào mừng bạn đến với Viettel-S',
+              image: "images/image.png",
+              popupWidth: kIsWeb ? 0.3 : null,
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Bỏ qua',
+                  color: Colors.white,
+                  textStyle: const TextStyle(color: Colors.black),
+                  iconColor: Colors.white,
+                ),
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Đăng ký',
+                  color: Colors.black,
+                  textStyle: const TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ],
+            ),
+            PopupItem(
+              key: _four,
+              backgroundColor: Colors.white,
+              msg: 'Viettel Solutions',
+              title: 'Chào mừng bạn đến với Viettel-SS',
+              image: "images/image.png",
+              popupWidth: kIsWeb ? 0.3 : null,
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Bỏ qua',
+                  color: Colors.white,
+                  textStyle: const TextStyle(color: Colors.black),
+                  iconColor: Colors.white,
+                ),
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Đăng ký',
+                  color: Colors.black,
+                  textStyle: const TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ],
+            ),
             TooltipItem(
-                key: _four,
+                key: _two,
                 description: "haha",
                 child: const Text(
                   'Ban cao 1m8:',
@@ -202,11 +241,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showDialog,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _showDialog,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

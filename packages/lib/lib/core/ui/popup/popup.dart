@@ -26,12 +26,12 @@ class UIPopup implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('INITIALIZE ${getName()} for ${action.guideCode}');
 
-    final context = action.context;
-    _startCb = (idx, key) {
-      action.logEvent(
-          actionType: Events.POPUP_STEP_CHANGE, payload: idx?.toString());
-    };
-    context.read<PopupContext>().onStart(_startCb);
+    // final context = action.context;
+    // _startCb = (idx, key) {
+    //   action.logEvent(
+    //       actionType: Events.POPUP_STEP_CHANGE, payload: idx?.toString());
+    // };
+    // context.read<PopupContext>().onStart(_startCb);
 
     return Future.value(true);
   }
@@ -75,11 +75,11 @@ class UIPopup implements UIAbstract {
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
 
     // Clean callback event binding
-    final context = action.context;
-    try {
-      context.read<PopupContext>().offStart(_startCb);
-    } catch (e) {}
-    ;
+    // final context = action.context;
+    // try {
+    //   context.read<PopupContext>().offStart(_startCb);
+    // } catch (e) {}
+    // ;
     return Future.value(true);
   }
 

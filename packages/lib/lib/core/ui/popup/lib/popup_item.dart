@@ -1,153 +1,157 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_widget.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 
-/// Displays Material dialog above the current contents of the app
+import 'icon_button.dart';
 
-class PopupItem extends StatelessWidget {
 
-  PopupItem({
-    required this.key,
-    this.title,
-    this.msg,
-    this.actions,
-    this.image,
-    this.customView = const SizedBox(),
-    this.customViewPosition = CustomViewPosition.BEFORE_TITLE,
-    this.titleStyle,
-    this.msgStyle,
-    this.titleAlign,
-    this.msgAlign,
-    this.popupWidth,
-    this.color,
-  });
-
+class PopupItem extends StatefulWidget{
   final GlobalKey key;
-
-  /// [actions]Widgets to display a row of buttons after the [msg] widget.
+  final VoidCallback? onActionClick;
+  final Color? backgroundColor;
+  final String msg;
+  final String title;
   final List<Widget>? actions;
-
-  /// [customView] a widget to display a custom widget instead of the animation view.
-  final Widget customView;
-
-  final CustomViewPosition customViewPosition;
-
-  /// [title] your popup title
-  final String? title;
-
-  /// [msg] your popup description message
-  final String? msg;
-
+  final double? popupWidth;
+  final BuildContext context;
+  final ShapeBorder? dialogShape;
+  final CustomViewPosition? customViewPosition;
   final String? image;
 
-  /// [titleStyle] popup title text style
-  final TextStyle? titleStyle;
 
-  /// [animation] lottie animations path
-  final TextStyle? msgStyle;
 
-  /// [titleAlign] popup title text alignment
-  final TextAlign? titleAlign;
+      PopupItem({
+        required this.key,
+        this.onActionClick,
+        this.backgroundColor,
+        required this.msg,
+        required this.title,
+        this.actions,
+        this.popupWidth,
+        required this.context,
+        this.dialogShape,
+        this.customViewPosition,
+        this.image
+    });
 
-  /// [textAlign] dialog description text alignment
-  final TextAlign? msgAlign;
 
-  /// [color] popup's backgorund color
-  final Color? color;
+  @override
+  State<StatefulWidget> createState() => _PopupState();
 
-  /// [popupWidth] dialog's width compared to the screen width
-  final double? popupWidth;
+}
+
+class _PopupState extends State<PopupItem>{
+  ///[titleStyle] can be used to change the dialog title style
+  static const TextStyle titleStyle =
+    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  PopupContext get state => context.read<PopupContext>();
+  bool _showItem = false;
+  Timer? timer;
+
+
+  // ///[bcgColor] background default value
+  // static const Color bcgColor = const Color(0xfffefefe);
+  //
+  // ///[holder] holder for the custom view
+  // static const Widget holder = const SizedBox(
+  //   height: 0,
+  // );
+
+  /// [dialogShape] dialog outer shape
+  static const ShapeBorder dialogShape = const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(16)));
+
+  static const CustomViewPosition customViewPosition =
+      CustomViewPosition.BEFORE_TITLE;
+
+  Future<void> _nextIfAny() async {
+    if (timer != null && timer!.isActive) {
+      if (state.enableAutoPlayLock) {
+        return;
+      }
+      timer!.cancel();
+    } else if (timer != null && !timer!.isActive) {
+      timer = null;
+    }
+    state.completed(widget.key);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<PopupContext>().addListener(() {
+      showPopup();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    showPopup();
+  }
+
+  void showPopup() {
+    final activeStep = state.getActiveWidgetKey();
+    setState(() {
+      _showItem = activeStep == widget.key;
+    });
+
+    if (activeStep == widget.key) {
+      if (state.autoPlay) {
+        timer =
+            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: popupWidth == null
-          ? null
-          : MediaQuery.of(context).size.width * popupWidth!,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          customViewPosition == CustomViewPosition.BEFORE_ANIMATION
-              ? customView
-              : const SizedBox(),
-          if (image != null)
-            Container(
-              padding: EdgeInsets.only(top: 20),
-              height: 200,
-              width: double.infinity,
-              child: Image.asset(image!),
+    if (_showItem)
+    return Dialog(
+        backgroundColor: Colors.white,
+        shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
+        child: PopupWidget(
+          title: widget.title,
+          msg: widget.msg,
+          image: widget.image,
+          popupWidth: widget.popupWidth,
+          actions: [
+            IconsButton(
+              onPressed: () {
+                if (!state.disableBarrierInteraction) {
+                  _nextIfAny();
+                }
+                widget.onActionClick?.call();
+              },
+              text: 'Bỏ qua',
+              color: Colors.white,
+              textStyle: const TextStyle(color: Colors.black),
+              iconColor: Colors.white,
             ),
-          customViewPosition == CustomViewPosition.BEFORE_TITLE
-              ? customView
-              : const SizedBox(),
-          title != null
-              ? Padding(
-                  padding:
-                      const EdgeInsets.only(right: 20, left: 20, top: 24.0),
-                  child: Text(
-                    title!,
-                    style: titleStyle,
-                    textAlign: titleAlign,
-                  ),
-                )
-              : SizedBox(
-                  height: 4,
-                ),
-          customViewPosition == CustomViewPosition.BEFORE_MESSAGE
-              ? customView
-              : const SizedBox(),
-          msg != null
-              ? Padding(
-                  padding:
-                      const EdgeInsets.only(right: 20, left: 20, top: 16.0),
-                  child: Text(
-                    msg!,
-                    style: msgStyle,
-                    textAlign: msgAlign,
-                  ),
-                )
-              : SizedBox(
-                  height: 20,
-                ),
-          customViewPosition == CustomViewPosition.BEFORE_ACTION
-              ? customView
-              : const SizedBox(),
-          actions?.isNotEmpty == true
-              ? buttons(context)
-              : SizedBox(
-                  height: 20,
-                ),
-          customViewPosition == CustomViewPosition.AFTER_ACTION
-              ? customView
-              : const SizedBox(),
-        ],
-      ),
-    );
+            IconsButton(
+              onPressed: () {
+                if (!state.disableBarrierInteraction) {
+                  _nextIfAny();
+                }
+                widget.onActionClick?.call();
+              },
+              text: 'Đăng ký',
+              color: Colors.black,
+              textStyle: const TextStyle(color: Colors.white),
+              iconColor: Colors.white,
+            ),
+          ],
+          customViewPosition: widget.customViewPosition == null ? customViewPosition : widget.customViewPosition!,
+          titleStyle: titleStyle,
+          color: Colors.red,
+        ));
+    return SizedBox(height: 0,);
   }
 
-  Widget buttons(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(right: 20, left: 20, top: 16.0, bottom: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(actions!.length, (index) {
-          final TextDirection direction = Directionality.of(context);
-          double padding = index != 0 ? 8 : 0;
-          double rightPadding = 0;
-          double leftPadding = 0;
-          direction == TextDirection.rtl
-              ? rightPadding = padding
-              : leftPadding = padding;
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: leftPadding, right: rightPadding),
-              child: actions![index],
-            ),
-          );
-        }),
-      ),
-    );
-  }
 }
+
