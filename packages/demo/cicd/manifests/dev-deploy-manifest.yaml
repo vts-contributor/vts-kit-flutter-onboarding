@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rnd-vts-kit-doc-config
+  namespace: {{devNamespace}}
+data:
+  rnd-environment.json : |
+    {
+      "guidelineUrl": "http://design.atviettelsolutions.com/guideline/",
+      "guidelineInfoUrl": "http://design.atviettelsolutions.com/guideline/info.json",
+      "platform": [
+        {
+          "name": "Angular",
+          "link": "http://design.atviettelsolutions.com/uikit/installation",
+          "linkDomain": "http://design.atviettelsolutions.com/uikit/installation"
+        },
+        {
+          "name": "Flutter",
+          "link": "http://design.atviettelsolutions.com/flutterkit/installation",
+          "linkDomain": "http://design.atviettelsolutions.com/flutterkit/installation"
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{appName}}-svc
+  labels:
+    app: {{appName}}
+  namespace: {{devNamespace}}
+spec:
+  type: NodePort
+  ports:
+    - port: {{devPort}}
+      name: {{appName}}-external-port
+      protocol: TCP
+      targetPort: {{devTargetPort}}
+      nodePort: {{devNodePort}}
+  selector:
+    app: {{appName}}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{appName}}-deployment
+  labels:
+    app: {{appName}}
+  namespace: {{devNamespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{appName}}
+  template:
+    metadata:
+      labels:
+        app: {{appName}}
+    spec:
+      volumes:
+      - name: rnd-vts-kit-doc-config
+        configMap:
+          name: rnd-vts-kit-doc-config
+      containers:
+        - name: {{appName}}-container
+          image: {{imageName}}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{devTargetPort}}
+          volumeMounts:
+            - name: rnd-vts-kit-doc-config
+              mountPath: /usr/share/nginx/html/rnd_config
+            - name: rnd-vts-kit-doc-config
+              mountPath: /usr/share/nginx/html/docs/rnd_config
+      imagePullSecrets:
+        - name: {{devImagePullSecrets}}
