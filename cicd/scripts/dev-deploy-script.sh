@@ -14,6 +14,6 @@ echo  'Waiting for Running'
 sleep 90
 
 echo  'View result deploy'
-kubectl --context=center -n "$devNamespace" get pods,svc,hpa --kubeconfig=__kubeconfig__
+kubectl --context=center get pods,svc --kubeconfig=__kubeconfig__
 
 rm __kubeconfig__
