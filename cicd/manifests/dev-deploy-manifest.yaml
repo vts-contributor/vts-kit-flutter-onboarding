@@ -36,6 +36,13 @@ spec:
       containers:
         - name: {{appName}}-container
           image: {{imageName}}
+          resources:
+            limits:
+              cpu: "0.3"
+              memory: "300Mi"
+            requests:
+              cpu: "0.1"
+              memory: "100Mi"  
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{devTargetPort}}
