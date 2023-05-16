@@ -8,12 +8,8 @@ import groovy.transform.Field
 // ------------------------------------ VTS KIT ----------------------------------------
 
 def initVTSKit() {
-    // Load local environment
+    // Load environment
     try {
-        echo 'Load local environment: Loading'
-        load 'cicd/jenkinsfile/environment.groovy'
-        echo 'Load local environment: Success'
-
         // Load remote environment
         if (env.remoteConfigFile != null && env.remoteConfigFile != '') {
             try {
@@ -27,7 +23,7 @@ def initVTSKit() {
             }
         }
     } catch (Exception e) {
-        echo 'Load local environment: Error'
+        echo 'Load environment: Error'
     }
 
     // Extra project environments
