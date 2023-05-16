@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{appName}}-svc
+  labels:
+    app: {{appName}}
+spec:
+  type: NodePort
+  ports:
+    - port: {{devPort}}
+      name: {{appName}}-external-port
+      protocol: TCP
+      targetPort: {{devTargetPort}}
+      nodePort: {{devNodePort}}
+  selector:
+    app: {{appName}}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{appName}}-deployment
+  labels:
+    app: {{appName}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{appName}}
+  template:
+    metadata:
+      labels:
+        app: {{appName}}
+    spec:
+      containers:
+        - name: {{appName}}-container
+          image: {{imageName}}
+          resources:
+            limits:
+              cpu: "0.3"
+              memory: "300Mi"
+            requests:
+              cpu: "0.1"
+              memory: "100Mi"  
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{devTargetPort}}
+      imagePullSecrets:
+        - name: {{devImagePullSecrets}}
