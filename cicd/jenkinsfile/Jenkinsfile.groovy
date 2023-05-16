@@ -6,7 +6,6 @@ import groovy.transform.Field
 @Field def isBackend = false
 
 // ------------------------------------ VTS KIT ----------------------------------------
-
 def initVTSKit() {
     // Load environment
     try {
