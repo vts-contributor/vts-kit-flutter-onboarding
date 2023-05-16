@@ -97,9 +97,8 @@ def unitTestAndCodeCoverage(buildType) {
 
 def deployDevTest(version) {
     echo "Deploy to development server"
-    echo "Test server: ${env.imageRegistry}"
     echo "Version to deploy: $version"
-	env.imageName = "${env.harborServer}/${env.harborProject}/${env.appName}:${version}"
+	env.imageName = "${env.imageRegistry}/${env.harborProject}/${env.appName}:${version}"
 	withCredentials([file(credentialsId: "${env.devKubeConfigFileSecret}", variable: 'kubeconfig')]){
 		sh """
 			sh cicd/scripts/dev-deploy-script.sh $kubeconfig
