@@ -9,11 +9,8 @@ import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/task.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
-import 'package:flutter/material.dart';
 
 class UIPopup implements UIAbstract {
-  late Function(int?, GlobalKey) _startCb;
-
   @override
   Future<bool> validate(Type.Action action) {
     if (OnboardingClient.options.debug)
@@ -25,14 +22,6 @@ class UIPopup implements UIAbstract {
   Future<bool> initialize(Type.Action action) {
     if (OnboardingClient.options.debug)
       Logger.logWarning('INITIALIZE ${getName()} for ${action.guideCode}');
-
-    // final context = action.context;
-    // _startCb = (idx, key) {
-    //   action.logEvent(
-    //       actionType: Events.POPUP_STEP_CHANGE, payload: idx?.toString());
-    // };
-    // context.read<PopupContext>().onStart(_startCb);
-
     return Future.value(true);
   }
 
@@ -42,9 +31,7 @@ class UIPopup implements UIAbstract {
       Logger.logWarning('SHOWING ${getName()} for ${action.guideCode}');
 
     // Push meta data event
-    final Map<String, dynamic> meta = {
-      "stepNumber": (action.payload as List).length
-    };
+    final Map<String, dynamic> meta = {};
     action.logEvent(
         actionType: Events.GUIDE_INITIALIZE, payload: json.encode(meta));
 
@@ -53,7 +40,7 @@ class UIPopup implements UIAbstract {
     final payload = action.payload;
     context.read<PopupContext>().start(payload);
     return Task.waitUtil(() =>
-    context.read<PopupContext>().activeWidgetId == null &&
+        context.read<PopupContext>().activeWidgetId == null &&
         context.read<PopupContext>().ids == null).then((_) {
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
@@ -73,13 +60,6 @@ class UIPopup implements UIAbstract {
   Future<bool> destroy(Type.Action action) {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
-
-    // Clean callback event binding
-    // final context = action.context;
-    // try {
-    //   context.read<PopupContext>().offStart(_startCb);
-    // } catch (e) {}
-    // ;
     return Future.value(true);
   }
 

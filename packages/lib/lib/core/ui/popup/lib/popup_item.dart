@@ -8,8 +8,7 @@ import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 
 import 'icon_button.dart';
 
-
-class PopupItem extends StatefulWidget{
+class PopupItem extends StatefulWidget {
   final GlobalKey key;
   final VoidCallback? onActionClick;
   final Color? backgroundColor;
@@ -22,36 +21,30 @@ class PopupItem extends StatefulWidget{
   final CustomViewPosition? customViewPosition;
   final String? image;
 
-
-
-      PopupItem({
-        required this.key,
-        this.onActionClick,
-        this.backgroundColor,
-        required this.msg,
-        required this.title,
-        this.actions,
-        this.popupWidth,
-        required this.context,
-        this.dialogShape,
-        this.customViewPosition,
-        this.image
-    });
-
+  PopupItem(
+      {required this.key,
+      this.onActionClick,
+      this.backgroundColor,
+      required this.msg,
+      required this.title,
+      this.actions,
+      this.popupWidth,
+      required this.context,
+      this.dialogShape,
+      this.customViewPosition,
+      this.image});
 
   @override
   State<StatefulWidget> createState() => _PopupState();
-
 }
 
-class _PopupState extends State<PopupItem>{
+class _PopupState extends State<PopupItem> {
   ///[titleStyle] can be used to change the dialog title style
   static const TextStyle titleStyle =
-    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+      const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   PopupContext get state => context.read<PopupContext>();
   bool _showItem = false;
   Timer? timer;
-
 
   // ///[bcgColor] background default value
   // static const Color bcgColor = const Color(0xfffefefe);
@@ -112,46 +105,48 @@ class _PopupState extends State<PopupItem>{
   @override
   Widget build(BuildContext context) {
     if (_showItem)
-    return Dialog(
-        backgroundColor: Colors.white,
-        shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
-        child: PopupWidget(
-          title: widget.title,
-          msg: widget.msg,
-          image: widget.image,
-          popupWidth: widget.popupWidth,
-          actions: [
-            IconsButton(
-              onPressed: () {
-                if (!state.disableBarrierInteraction) {
-                  _nextIfAny();
-                }
-                widget.onActionClick?.call();
-              },
-              text: 'Bỏ qua',
-              color: Colors.white,
-              textStyle: const TextStyle(color: Colors.black),
-              iconColor: Colors.white,
-            ),
-            IconsButton(
-              onPressed: () {
-                if (!state.disableBarrierInteraction) {
-                  _nextIfAny();
-                }
-                widget.onActionClick?.call();
-              },
-              text: 'Đăng ký',
-              color: Colors.black,
-              textStyle: const TextStyle(color: Colors.white),
-              iconColor: Colors.white,
-            ),
-          ],
-          customViewPosition: widget.customViewPosition == null ? customViewPosition : widget.customViewPosition!,
-          titleStyle: titleStyle,
-          color: Colors.red,
-        ));
-    return SizedBox(height: 0,);
+      return Dialog(
+          backgroundColor: Colors.white,
+          shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
+          child: PopupWidget(
+            title: widget.title,
+            msg: widget.msg,
+            image: widget.image,
+            popupWidth: widget.popupWidth,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  if (!state.disableBarrierInteraction) {
+                    _nextIfAny();
+                  }
+                  widget.onActionClick?.call();
+                },
+                text: 'Bỏ qua',
+                color: Colors.white,
+                textStyle: const TextStyle(color: Colors.black),
+                iconColor: Colors.white,
+              ),
+              IconsButton(
+                onPressed: () {
+                  if (!state.disableBarrierInteraction) {
+                    _nextIfAny();
+                  }
+                  widget.onActionClick?.call();
+                },
+                text: 'Đăng ký',
+                color: Colors.black,
+                textStyle: const TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ],
+            customViewPosition: widget.customViewPosition == null
+                ? customViewPosition
+                : widget.customViewPosition!,
+            titleStyle: titleStyle,
+            color: Colors.red,
+          ));
+    return SizedBox(
+      height: 0,
+    );
   }
-
 }
-

@@ -70,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _six = GlobalKey();
   final GlobalKey _seven = GlobalKey();
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -80,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           guideCode: "TOAN",
           guideType: UIName.Popup,
           context: context,
-          payload: [_three,_four]);
+          payload: [_three, _four]);
       OnboardingClient.start(
           guideCode: "TOAN",
           guideType: UIName.Tooltip,
@@ -98,11 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           payload: [_six]);
     });
-
   }
 
   int _counter = 0;
-
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
             // TooltipItem.withWidget(
             //     key: _two,
             //     container: Container(
@@ -165,7 +161,8 @@ class _MyHomePageState extends State<MyHomePage> {
             PopupItem(
               key: _three,
               backgroundColor: Colors.white,
-              msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+              msg:
+                  'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
               title: 'Chào mừng bạn đến với Viettel-S',
               image: "images/image.png",
               popupWidth: kIsWeb ? 0.3 : null,
@@ -232,7 +229,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text(
                   'Second:',
                 )),
-
 
             Text(
               '$_counter',
