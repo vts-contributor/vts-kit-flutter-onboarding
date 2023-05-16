@@ -5,7 +5,6 @@ metadata:
   name: {{appName}}-svc
   labels:
     app: {{appName}}
-  namespace: {{devNamespace}}
 spec:
   type: NodePort
   ports:
@@ -24,7 +23,6 @@ metadata:
   name: {{appName}}-deployment
   labels:
     app: {{appName}}
-  namespace: {{devNamespace}}
 spec:
   replicas: 1
   selector:
