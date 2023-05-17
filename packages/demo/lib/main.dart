@@ -21,8 +21,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     ClientOption options = ClientOption(
-        serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
-        applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
+        serverUrl: 'http://10.30.176.43:8080',
+        applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
+        offline: true,
         debug: true);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
@@ -75,13 +76,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // OnboardingClient.start(
+      //     guideCode: "TOAN",
+      //     guideType: UIName.Popup,
+      //     context: context,
+      //     payload: [_three, _four]);
       OnboardingClient.start(
-          guideCode: "TOAN",
-          guideType: UIName.Popup,
-          context: context,
-          payload: [_three, _four]);
-      OnboardingClient.start(
-          guideCode: "TOAN",
+          guideCode: "SHOW_1",
           guideType: UIName.Tooltip,
           context: context,
           payload: [_one]);
@@ -91,11 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
       //     context: context,
       //     payload: [_five, _six]);
 
-      OnboardingClient.start(
-          guideCode: "TOAN",
-          guideType: UIName.Tooltip,
-          context: context,
-          payload: [_six]);
+      // OnboardingClient.start(
+      //     guideCode: "TOAN",
+      //     guideType: UIName.Tooltip,
+      //     context: context,
+      //     payload: [_six]);
     });
   }
 
@@ -154,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //     )),
             TooltipItem(
                 key: _one,
-                description: "hehe",
+                container: Text('hahau'),
                 child: const Text(
                   'Ban nang 55 can:',
                 )),
@@ -217,18 +218,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            TooltipItem(
-                key: _two,
-                description: "haha",
-                child: const Text(
-                  'Ban cao 1m8:',
-                )),
-            TooltipItem(
-                key: _six,
-                description: "haha",
-                child: const Text(
-                  'Second:',
-                )),
+            // TooltipItem(
+            //     key: _two,
+            //     description: "haha",
+            //     child: const Text(
+            //       'Ban cao 1m8:',
+            //     )),
+            // TooltipItem(
+            //     key: _six,
+            //     description: "haha",
+            //     child: const Text(
+            //       'Second:',
+            //     )),
 
             Text(
               '$_counter',

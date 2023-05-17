@@ -81,7 +81,7 @@ class ToolTipWidget extends StatefulWidget {
     required this.onTooltipTap,
     required this.movingAnimationDuration,
     required this.descriptionAlignment,
-    this.tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
+    required this.tooltipPadding,
     required this.disableMovingAnimation,
     required this.disableScaleAnimation,
     required this.tooltipBorderRadius,
@@ -351,168 +351,166 @@ class UITooltipWidgetState extends State<ToolTipWidget>
       _scaleAnimationController.reverse();
     }
 
-    if (widget.container == null) {
-      return Positioned(
-        top: contentY,
-        left: _getLeft(),
-        right: _getRight(),
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          alignment: widget.scaleAnimationAlignment ??
-              Alignment(
-                _getAlignmentX(),
-                _getAlignmentY(),
-              ),
-          child: FractionalTranslation(
-            translation: Offset(0.0, contentFractionalOffset as double),
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset(0.0, contentFractionalOffset / 10),
-                end: const Offset(0.0, 0.100),
-              ).animate(_movingAnimation),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Container(
-                  padding: widget.showArrow
-                      ? EdgeInsets.only(
-                          top: paddingTop - (isArrowUp ? arrowHeight : 0),
-                          bottom: paddingBottom - (isArrowUp ? 0 : arrowHeight),
-                        )
-                      : null,
-                  child: Stack(
-                    alignment: isArrowUp
-                        ? Alignment.topLeft
-                        : _getLeft() == null
-                            ? Alignment.bottomRight
-                            : Alignment.bottomLeft,
-                    children: [
-                      if (widget.showArrow)
-                        Positioned(
-                          left: _getArrowLeft(arrowWidth),
-                          right: _getArrowRight(arrowWidth),
-                          child: CustomPaint(
-                            painter: _Arrow(
-                              strokeColor: widget.tooltipBackgroundColor!,
-                              strokeWidth: 10,
-                              paintingStyle: PaintingStyle.fill,
-                              isUpArrow: isArrowUp,
-                            ),
-                            child: const SizedBox(
-                              height: arrowHeight,
-                              width: arrowWidth,
-                            ),
+    // if (widget.container == null) {
+    return Positioned(
+      left: _getSpace(),
+      top: contentY - 10,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        alignment: widget.scaleAnimationAlignment ??
+            Alignment(
+              _getAlignmentX(),
+              _getAlignmentY(),
+            ),
+        child: FractionalTranslation(
+          translation: Offset(0.0, contentFractionalOffset as double),
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0.0, contentFractionalOffset / 10),
+              end: const Offset(0.0, 0.100),
+            ).animate(_movingAnimation),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                padding: widget.showArrow
+                    ? EdgeInsets.only(
+                        top: paddingTop - (isArrowUp ? arrowHeight : 0),
+                        bottom: paddingBottom - (isArrowUp ? 0 : arrowHeight),
+                      )
+                    : null,
+                child: Stack(
+                  alignment: isArrowUp
+                      ? Alignment.topLeft
+                      : _getLeft() == null
+                          ? Alignment.bottomRight
+                          : Alignment.bottomLeft,
+                  children: [
+                    if (widget.showArrow)
+                      Positioned(
+                        left: _getSpace(),
+                        child: CustomPaint(
+                          painter: _Arrow(
+                            strokeColor: widget.tooltipBackgroundColor!,
+                            strokeWidth: 10,
+                            paintingStyle: PaintingStyle.fill,
+                            isUpArrow: isArrowUp,
+                          ),
+                          child: const SizedBox(
+                            height: arrowHeight,
+                            width: arrowWidth,
                           ),
                         ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: isArrowUp ? arrowHeight - 1 : 0,
-                          bottom: isArrowUp ? 0 : arrowHeight - 1,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: widget.tooltipBorderRadius ??
-                              BorderRadius.circular(8.0),
-                          child: GestureDetector(
-                            onTap: widget.onTooltipTap,
-                            child: Container(
-                              width: tooltipWidth,
-                              padding: widget.tooltipPadding,
-                              color: widget.tooltipBackgroundColor,
-                              child: Column(
-                                crossAxisAlignment: widget.title != null
-                                    ? CrossAxisAlignment.start
-                                    : CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  if (widget.title != null)
-                                    Padding(
-                                      padding: widget.titlePadding ??
-                                          EdgeInsets.zero,
-                                      child: Text(
-                                        widget.title!,
-                                        textAlign: widget.titleAlignment,
-                                        textDirection:
-                                            widget.titleTextDirection,
-                                        style: widget.titleTextStyle ??
-                                            Theme.of(context)
-                                                .textTheme
-                                                .titleLarge!
-                                                .merge(
-                                                  TextStyle(
-                                                    color: widget.textColor,
-                                                  ),
-                                                ),
-                                      ),
-                                    ),
-                                  Padding(
-                                    padding: widget.descriptionPadding ??
-                                        EdgeInsets.zero,
-                                    child: Text(
-                                      widget.description!,
-                                      textAlign: widget.descriptionAlignment,
-                                      textDirection:
-                                          widget.descriptionTextDirection,
-                                      style: widget.descTextStyle ??
-                                          Theme.of(context)
-                                              .textTheme
-                                              .titleSmall!
-                                              .merge(
-                                                TextStyle(
-                                                  color: widget.textColor,
-                                                ),
-                                              ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: isArrowUp ? arrowHeight - 1 : 0,
+                        bottom: isArrowUp ? 0 : arrowHeight - 1,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: widget.tooltipBorderRadius ??
+                            BorderRadius.circular(8.0),
+                        child: GestureDetector(
+                          onTap: widget.onTooltipTap,
+                          child: Container(
+                            width: widget.contentWidth,
+                            padding: widget.tooltipPadding,
+                            color: widget.tooltipBackgroundColor,
+                            child: Column(
+                              crossAxisAlignment: widget.title != null
+                                  ? CrossAxisAlignment.start
+                                  : CrossAxisAlignment.center,
+                              children: <Widget>[
+                                // if (widget.title != null)
+                                //   Padding(
+                                //     padding:
+                                //         widget.titlePadding ?? EdgeInsets.zero,
+                                //     child: Text(
+                                //       widget.title!,
+                                //       textAlign: widget.titleAlignment,
+                                //       textDirection: widget.titleTextDirection,
+                                //       style: widget.titleTextStyle ??
+                                //           Theme.of(context)
+                                //               .textTheme
+                                //               .titleLarge!
+                                //               .merge(
+                                //                 TextStyle(
+                                //                   color: widget.textColor,
+                                //                 ),
+                                //               ),
+                                //     ),
+                                //   ),
+                                // Padding(
+                                //   padding: widget.descriptionPadding ??
+                                //       EdgeInsets.zero,
+                                //   child: Text(
+                                //     widget.description!,
+                                //     textAlign: widget.descriptionAlignment,
+                                //     textDirection:
+                                //         widget.descriptionTextDirection,
+                                //     style: widget.descTextStyle ??
+                                //         Theme.of(context)
+                                //             .textTheme
+                                //             .titleSmall!
+                                //             .merge(
+                                //               TextStyle(
+                                //                 color: widget.textColor,
+                                //               ),
+                                //             ),
+                                //   ),
+                                // ),
+                                widget.container!
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
-      );
-    }
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          left: _getSpace(),
-          top: contentY - 10,
-          child: FractionalTranslation(
-            translation: Offset(0.0, contentFractionalOffset as double),
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset(0.0, contentFractionalOffset / 10),
-                end: !widget.showArrow && !isArrowUp
-                    ? const Offset(0.0, 0.0)
-                    : const Offset(0.0, 0.100),
-              ).animate(_movingAnimation),
-              child: Material(
-                color: Colors.transparent,
-                child: GestureDetector(
-                  onTap: widget.onTooltipTap,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      top: paddingTop,
-                    ),
-                    color: Colors.transparent,
-                    child: Center(
-                      child: MeasureSize(
-                        onSizeChange: onSizeChange,
-                        child: widget.container,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
+    // }
+    // return Stack(
+    //   children: <Widget>[
+    //     Positioned(
+    //       left: _getSpace(),
+    //       top: contentY - 10,
+    //       child: FractionalTranslation(
+    //         translation: Offset(0.0, contentFractionalOffset as double),
+    //         child: SlideTransition(
+    //           position: Tween<Offset>(
+    //             begin: Offset(0.0, contentFractionalOffset / 10),
+    //             end: !widget.showArrow && !isArrowUp
+    //                 ? const Offset(0.0, 0.0)
+    //                 : const Offset(0.0, 0.100),
+    //           ).animate(_movingAnimation),
+    //           child: Material(
+    //             color: Colors.transparent,
+    //             child: GestureDetector(
+    //               onTap: widget.onTooltipTap,
+    //               child: Container(
+    //                 padding: EdgeInsets.only(
+    //                   top: paddingTop,
+    //                 ),
+    //                 color: Colors.transparent,
+    //                 child: Center(
+    //                   child: MeasureSize(
+    //                     onSizeChange: onSizeChange,
+    //                     child: widget.container,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 
   void onSizeChange(Size? size) {

@@ -27,6 +27,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/dotted_border.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 
 import 'enum.dart';
@@ -59,20 +60,11 @@ class TooltipItem extends StatefulWidget {
   /// Represents summary description of target widget
   final String? description;
 
-  /// ShapeBorder of the highlighted box when target widget will be highlighted.
-  ///
-  /// Note: If [targetBorderRadius] is specified, this parameter will be ignored.
-  ///
-  /// Default value is:
-  /// ```dart
-  /// RoundedRectangleBorder(
-  ///   borderRadius: BorderRadius.all(Radius.circular(8)),
-  /// ),
-  /// ```
-  final ShapeBorder targetShapeBorder;
-
   /// Radius of rectangle box while target widget is being highlighted.
-  final BorderRadius? targetBorderRadius;
+  final Radius targetBorderRadius;
+
+  // Whether object shape is circle
+  final bool isCircle;
 
   /// TextStyle for default tooltip title
   final TextStyle? titleTextStyle;
@@ -246,53 +238,58 @@ class TooltipItem extends StatefulWidget {
   /// will still provide a callback.
   final VoidCallback? onBarrierClick;
 
-  const TooltipItem({
-    required this.key,
-    required this.description,
-    required this.child,
-    this.title,
-    this.titleAlignment = TextAlign.start,
-    this.descriptionAlignment = TextAlign.start,
-    this.targetShapeBorder = const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
-    ),
-    this.overlayColor = Colors.black45,
-    this.overlayOpacity = 0.75,
-    this.titleTextStyle,
-    this.descTextStyle,
-    this.tooltipBackgroundColor = Colors.white,
-    this.textColor = Colors.black,
-    this.scrollLoadingWidget = const CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Colors.white),
-    ),
-    this.showArrow = true,
-    this.onTargetClick,
-    this.disposeOnTap,
-    this.movingAnimationDuration = const Duration(milliseconds: 2000),
-    this.disableMovingAnimation,
-    this.disableScaleAnimation,
-    this.tooltipPadding =
-        const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-    this.onToolTipClick,
-    this.targetPadding = EdgeInsets.zero,
-    this.blurValue,
-    this.targetBorderRadius,
-    this.onTargetLongPress,
-    this.onTargetDoubleTap,
-    this.tooltipBorderRadius,
-    this.disableDefaultTargetGestures = false,
-    this.scaleAnimationDuration = const Duration(milliseconds: 300),
-    this.scaleAnimationCurve = Curves.easeIn,
-    this.scaleAnimationAlignment,
-    this.tooltipPosition,
-    this.titlePadding,
-    this.descriptionPadding,
-    this.titleTextDirection,
-    this.descriptionTextDirection,
-    this.onBarrierClick,
-  })  : height = null,
+  final EdgeInsets outlinePadding;
+  final List<double> outlinePattern;
+  final double outlineWidth;
+
+  const TooltipItem(
+      {required this.key,
+      this.description,
+      required this.child,
+      this.container,
+      this.title,
+      this.titleAlignment = TextAlign.start,
+      this.descriptionAlignment = TextAlign.start,
+      this.overlayColor = Colors.black45,
+      this.overlayOpacity = 0.75,
+      this.titleTextStyle,
+      this.descTextStyle,
+      this.tooltipBackgroundColor = Colors.white,
+      this.textColor = Colors.black,
+      this.scrollLoadingWidget = const CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation(Colors.white),
+      ),
+      this.showArrow = true,
+      this.onTargetClick,
+      this.disposeOnTap,
+      this.movingAnimationDuration = const Duration(milliseconds: 2000),
+      this.disableMovingAnimation = true,
+      this.disableScaleAnimation,
+      this.tooltipPadding =
+          const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      this.onToolTipClick,
+      this.targetPadding = const EdgeInsets.all(5.0),
+      this.blurValue,
+      this.targetBorderRadius = const Radius.circular(8.0),
+      this.isCircle = false,
+      this.onTargetLongPress,
+      this.onTargetDoubleTap,
+      this.tooltipBorderRadius,
+      this.disableDefaultTargetGestures = false,
+      this.scaleAnimationDuration = const Duration(milliseconds: 300),
+      this.scaleAnimationCurve = Curves.easeIn,
+      this.scaleAnimationAlignment,
+      this.tooltipPosition,
+      this.titlePadding,
+      this.descriptionPadding,
+      this.titleTextDirection,
+      this.descriptionTextDirection,
+      this.onBarrierClick,
+      this.outlinePadding = const EdgeInsets.all(5.0),
+      this.outlinePattern = const [8, 8],
+      this.outlineWidth = 2.0})
+      : height = null,
         width = null,
-        container = null,
         assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
             "overlay opacity must be between 0 and 1."),
         assert(onTargetClick == null || disposeOnTap != null,
@@ -300,55 +297,50 @@ class TooltipItem extends StatefulWidget {
         assert(disposeOnTap == null || onTargetClick != null,
             "onTargetClick is required if you're using disposeOnTap");
 
-  const TooltipItem.withWidget({
-    required this.key,
-    required this.height,
-    required this.width,
-    required this.container,
-    required this.child,
-    this.targetShapeBorder = const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(8),
-      ),
-    ),
-    this.overlayColor = Colors.black45,
-    this.targetBorderRadius,
-    this.overlayOpacity = 0.75,
-    this.scrollLoadingWidget = const CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Colors.white)),
-    this.onTargetClick,
-    this.disposeOnTap,
-    this.movingAnimationDuration = const Duration(milliseconds: 2000),
-    this.disableMovingAnimation,
-    this.targetPadding = EdgeInsets.zero,
-    this.blurValue,
-    this.onTargetLongPress,
-    this.onTargetDoubleTap,
-    this.disableDefaultTargetGestures = false,
-    this.tooltipPosition,
-    this.onBarrierClick,
-  })  : showArrow = false,
-        onToolTipClick = null,
-        scaleAnimationDuration = const Duration(milliseconds: 300),
-        scaleAnimationCurve = Curves.decelerate,
-        scaleAnimationAlignment = null,
-        disableScaleAnimation = null,
-        title = null,
-        description = null,
-        titleAlignment = TextAlign.start,
-        descriptionAlignment = TextAlign.start,
-        titleTextStyle = null,
-        descTextStyle = null,
-        tooltipBackgroundColor = Colors.white,
-        textColor = Colors.black,
-        tooltipBorderRadius = null,
-        tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
-        titlePadding = null,
-        descriptionPadding = null,
-        titleTextDirection = null,
-        descriptionTextDirection = null,
-        assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
-            "overlay opacity must be between 0 and 1.");
+  // const TooltipItem.withWidget(
+  //     {required this.key,
+  //     required this.height,
+  //     required this.width,
+  //     required this.container,
+  //     required this.child,
+  //     this.overlayColor = Colors.black45,
+  //     this.targetBorderRadius,
+  //     this.overlayOpacity = 0.75,
+  //     this.scrollLoadingWidget = const CircularProgressIndicator(
+  //         valueColor: AlwaysStoppedAnimation(Colors.white)),
+  //     this.onTargetClick,
+  //     this.disposeOnTap,
+  //     this.movingAnimationDuration = const Duration(milliseconds: 2000),
+  //     this.disableMovingAnimation,
+  //     this.targetPadding = EdgeInsets.zero,
+  //     this.blurValue,
+  //     this.onTargetLongPress,
+  //     this.onTargetDoubleTap,
+  //     this.disableDefaultTargetGestures = false,
+  //     this.tooltipPosition,
+  //     this.onBarrierClick})
+  //     : showArrow = false,
+  //       onToolTipClick = null,
+  //       scaleAnimationDuration = const Duration(milliseconds: 300),
+  //       scaleAnimationCurve = Curves.decelerate,
+  //       scaleAnimationAlignment = null,
+  //       disableScaleAnimation = null,
+  //       title = null,
+  //       description = null,
+  //       titleAlignment = TextAlign.start,
+  //       descriptionAlignment = TextAlign.start,
+  //       titleTextStyle = null,
+  //       descTextStyle = null,
+  //       tooltipBackgroundColor = Colors.white,
+  //       textColor = Colors.black,
+  //       tooltipBorderRadius = null,
+  //       tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
+  //       titlePadding = null,
+  //       descriptionPadding = null,
+  //       titleTextDirection = null,
+  //       descriptionTextDirection = null,
+  //       assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
+  //           "overlay opacity must be between 0 and 1.");
 
   @override
   State<TooltipItem> createState() => _TooltipItemState();
@@ -418,19 +410,19 @@ class _TooltipItemState extends State<TooltipItem> {
   @override
   Widget build(BuildContext context) {
     return AnchoredOverlay(
-      overlayBuilder: (context, rectBound, offset) {
-        final size = MediaQuery.of(context).size;
-        position = GetPosition(
-          key: widget.key,
-          padding: widget.targetPadding,
-          screenWidth: size.width,
-          screenHeight: size.height,
-        );
-        return buildOverlayOnTarget(offset, rectBound.size, rectBound, size);
-      },
-      showOverlay: true,
-      child: widget.child,
-    );
+        padding: widget.targetPadding,
+        overlayBuilder: (context, rectBound, offset) {
+          final size = MediaQuery.of(context).size;
+          position = GetPosition(
+            key: widget.key,
+            padding: widget.targetPadding,
+            screenWidth: size.width,
+            screenHeight: size.height,
+          );
+          return buildOverlayOnTarget(offset, rectBound.size, rectBound, size);
+        },
+        showOverlay: true,
+        child: widget.child);
   }
 
   Future<void> _nextIfAny() async {
@@ -500,14 +492,14 @@ class _TooltipItemState extends State<TooltipItem> {
           },
           child: ClipPath(
             clipper: RRectClipper(
-              area: _isScrollRunning ? Rect.zero : rectBound,
-              isCircle: widget.targetShapeBorder is CircleBorder,
-              radius: _isScrollRunning
-                  ? BorderRadius.zero
-                  : widget.targetBorderRadius,
-              overlayPadding:
-                  _isScrollRunning ? EdgeInsets.zero : widget.targetPadding,
-            ),
+                area: _isScrollRunning ? Rect.zero : rectBound,
+                isCircle: widget.isCircle,
+                radius: _isScrollRunning
+                    ? BorderRadius.zero
+                    : BorderRadius.all(widget.targetBorderRadius),
+                // overlayPadding:
+                //     _isScrollRunning ? EdgeInsets.zero : widget.targetPadding,
+                overlayPadding: EdgeInsets.zero),
             child: blur != 0
                 ? BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
@@ -535,12 +527,17 @@ class _TooltipItemState extends State<TooltipItem> {
           _TargetWidget(
             offset: offset,
             size: size,
+            padding: widget.targetPadding,
             onTap: _getOnTargetTap,
+            isCircle: widget.isCircle,
             radius: widget.targetBorderRadius,
+            outlinePadding: widget.outlinePadding,
+            outlinePattern: widget.outlinePattern,
+            outlineWidth: widget.outlineWidth,
             onDoubleTap: widget.onTargetDoubleTap,
             onLongPress: widget.onTargetLongPress,
-            shapeBorder: widget.targetShapeBorder,
             disableDefaultChildGestures: widget.disableDefaultTargetGestures,
+            child: widget.child,
           ),
           ToolTipWidget(
             position: position,
@@ -556,8 +553,8 @@ class _TooltipItemState extends State<TooltipItem> {
             tooltipBackgroundColor: widget.tooltipBackgroundColor,
             textColor: widget.textColor,
             showArrow: widget.showArrow,
-            contentHeight: widget.height,
-            contentWidth: widget.width,
+            contentHeight: widget.height ?? screenSize.height * 0.5,
+            contentWidth: widget.width ?? screenSize.width * 0.5,
             onTooltipTap: _getOnTooltipTap,
             tooltipPadding: widget.tooltipPadding,
             disableMovingAnimation:
@@ -585,20 +582,32 @@ class _TooltipItemState extends State<TooltipItem> {
 class _TargetWidget extends StatelessWidget {
   final Offset offset;
   final Size? size;
+  final EdgeInsets padding;
   final VoidCallback? onTap;
   final VoidCallback? onDoubleTap;
   final VoidCallback? onLongPress;
-  final ShapeBorder? shapeBorder;
-  final BorderRadius? radius;
+
+  final bool isCircle;
+  final Radius radius;
+  final double outlineWidth;
+  final List<double> outlinePattern;
+  final EdgeInsets outlinePadding;
+
   final bool disableDefaultChildGestures;
+  final Widget child;
 
   const _TargetWidget({
     Key? key,
     required this.offset,
+    required this.child,
+    required this.radius,
+    required this.outlineWidth,
+    required this.outlinePattern,
+    required this.outlinePadding,
+    required this.isCircle,
     this.size,
+    this.padding = EdgeInsets.zero,
     this.onTap,
-    this.shapeBorder,
-    this.radius,
     this.onDoubleTap,
     this.onLongPress,
     this.disableDefaultChildGestures = false,
@@ -624,16 +633,27 @@ class _TargetWidget extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         onDoubleTap: onDoubleTap,
-        child: Container(
-          height: size!.height + 16,
-          width: size!.width + 16,
-          decoration: ShapeDecoration(
-            shape: radius != null
-                ? RoundedRectangleBorder(borderRadius: radius!)
-                : shapeBorder ??
-                    const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
+        child: DottedBorder(
+          strokeWidth: outlineWidth,
+          color: Colors.redAccent,
+          dashPattern: outlinePattern,
+          padding: outlinePadding,
+          strokeCap: StrokeCap.round,
+          radius: radius,
+          borderType: isCircle ? BorderType.Circle : BorderType.RRect,
+          child: Material(
+            borderRadius: !isCircle ? BorderRadius.all(radius) : null,
+            shape: isCircle ? CircleBorder() : null,
+            child: Container(
+              padding: padding,
+              decoration: ShapeDecoration(
+                shape: isCircle
+                    ? CircleBorder()
+                    : RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(radius)),
+              ),
+              child: child,
+            ),
           ),
         ),
       ),

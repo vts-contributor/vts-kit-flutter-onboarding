@@ -19,7 +19,6 @@ class EventService {
     if (_singleton == null) {
       _singleton = EventService._();
       _singleton!._flushCache();
-      _singleton!._createInterval();
       return _singleton!;
     } else {
       throw Logger.throwError('Invalid operator');
@@ -33,8 +32,15 @@ class EventService {
     final cache =
         await _prefs.then((pref) => pref.getStringList(PREF_EVENT_KEY));
     if (cache != null && cache.isNotEmpty) {
-      _queue = cache.fromJson((item) => Event.fromJson(item));
-      _doPush();
+      // If offline mode, any old events will be discarded
+      // Else make an attempt to push
+
+      if (OnboardingClient.options.offline) {
+        _prefs.then((pref) => pref.remove(PREF_EVENT_KEY));
+      } else {
+        _queue = cache.fromJson((item) => Event.fromJson(item));
+        _doPush();
+      }
     }
   }
 
@@ -69,7 +75,10 @@ class EventService {
     }
   }
 
-  void _createInterval() {
+  void createInterval() {
+    // Uncreate interval on offline mode
+    if (OnboardingClient.options.offline) return;
+
     Timer.periodic(OnboardingClient.options.logInterval, (_) {
       if (OnboardingClient.options.debug) {
         Logger.log('PUSH INTERVAL TRIGGER');
@@ -94,12 +103,19 @@ class EventService {
         actionType: actionType,
         timeRun: DateTime.now().toIso8601String(),
         payload: payload);
-    _queue.add(newItem);
-    _saveCache();
 
     if (OnboardingClient.options.debug) {
       Logger.log('NEW EVENT ${newItem.toJson().toString()}');
     }
+
+    // Log event do nothing in offline mode
+    // Else save to storage
+    if (OnboardingClient.options.offline) {
+      return;
+    }
+
+    _queue.add(newItem);
+    _saveCache();
   }
 
   void logStartEvent({
