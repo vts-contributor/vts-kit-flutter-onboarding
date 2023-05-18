@@ -46,14 +46,12 @@ typedef OverlayBuilderCallback = Widget Function(
 ///
 class AnchoredOverlay extends StatefulWidget {
   final bool showOverlay;
-  final EdgeInsets padding;
   final OverlayBuilderCallback? overlayBuilder;
   final Widget? child;
 
   const AnchoredOverlay({
     Key? key,
     this.showOverlay = false,
-    this.padding = EdgeInsets.zero,
     this.overlayBuilder,
     this.child,
   }) : super(key: key);

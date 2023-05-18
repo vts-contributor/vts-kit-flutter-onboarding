@@ -14,6 +14,7 @@ class EventService {
   static EventService? _singleton;
   static List<Event> _queue = [];
   static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  bool _isPushing = false;
 
   factory EventService.create() {
     if (_singleton == null) {
@@ -49,13 +50,24 @@ class EventService {
   }
 
   void _doPush() async {
+    // Lock while pushing
+    if (_isPushing) return;
+    _isPushing = true;
+
     final List<Event> toPush = [];
     _queue.forEach((event) {
       // Mark for pushing
       event.status = PUSHING_STATE;
       toPush.add(event);
     });
-    if (toPush.isEmpty) return;
+
+    // Release lock and do nothing
+    if (toPush.isEmpty) {
+      _isPushing = false;
+      return;
+    }
+
+    // Start pushing
     if (OnboardingClient.options.debug) {
       Logger.log('PUSHING ${toPush.length} events');
     }
@@ -72,6 +84,8 @@ class EventService {
       _queue.forEach((event) {
         event.status = '';
       });
+    } finally {
+      _isPushing = false;
     }
   }
 
