@@ -67,8 +67,9 @@ class OnboardingClient {
     _singleton!._setState(ClientState.INITIALIZATING);
 
     _singleton!._prepare().then((_) async {
-      await _singleton!._validateApplication();
-      return;
+      await _singleton!._validateApplication(options.offline);
+      OnboardingClient.context.eventService!.createInterval();
+      OnboardingClient.context.actionQueue!.createInterval();
     });
     return _singleton!;
   }
@@ -100,7 +101,17 @@ class OnboardingClient {
     });
   }
 
-  Future<void> _validateApplication() async {
+  Future<void> _validateApplication(bool offline) async {
+    if (offline) {
+      OnboardingClient.appId = '';
+      OnboardingClient.userId = '';
+      OnboardingClient.sessionId = '';
+      OnboardingClient.guides = [];
+      Logger.logSuccess("Success Initialized");
+      _setState(ClientState.INITIALIZED);
+      return;
+    }
+
     try {
       final initInfo = await context.apiClient!.validateApplication();
       OnboardingClient.appId = initInfo.data.appId;

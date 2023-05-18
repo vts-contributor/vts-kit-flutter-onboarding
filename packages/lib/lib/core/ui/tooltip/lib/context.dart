@@ -56,7 +56,7 @@ class ToolTipContext extends ChangeNotifier {
       this.disableMovingAnimation = false,
       this.disableScaleAnimation = false,
       this.enableAutoScroll = false,
-      this.disableBarrierInteraction = false,
+      this.disableBarrierInteraction = true,
       required this.context});
 
   // State
@@ -133,6 +133,14 @@ class ToolTipContext extends ChangeNotifier {
     ids = null;
     activeWidgetId = null;
     if (notify) notifyListeners();
+  }
+
+  bool isFirst() {
+    return activeWidgetId == 0;
+  }
+
+  bool isLast() {
+    return ids != null && activeWidgetId == ids!.length - 1;
   }
 
   void _onStart() {

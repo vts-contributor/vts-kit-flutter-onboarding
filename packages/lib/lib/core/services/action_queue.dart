@@ -17,8 +17,6 @@ class ActionQueue {
   factory ActionQueue.create() {
     if (_singleton == null) {
       _singleton = ActionQueue._();
-      _singleton!._createInterval();
-      OnboardingClient.onInitialized(() => _singleton!._playAction());
       return _singleton!;
     } else {
       throw Logger.throwError('Invalid operator');
@@ -28,16 +26,20 @@ class ActionQueue {
   ActionQueue._();
 
   //#region Private Methods
-  void _createInterval() {
-    _interval = Timer.periodic(OnboardingClient.options.actionInterval, (_) {
-      if (OnboardingClient.options.debug) {
-        Logger.log('ACTION INTERVAL TRIGGER');
-      }
-      _playAction();
+  void createInterval() {
+    final delayBeforeCreate = OnboardingClient.options.actionDelayAfterInit;
+    Timer(delayBeforeCreate, () {
+      _interval = Timer.periodic(OnboardingClient.options.actionInterval, (_) {
+        if (OnboardingClient.options.debug) {
+          Logger.log('ACTION INTERVAL TRIGGER');
+        }
+        _playAction();
 
-      // Cancel on Authentication Failed
-      if (OnboardingClient.state == ClientState.UNAUTHORIZED)
-        _interval!.cancel();
+        // Cancel on Authentication Failed
+        if (OnboardingClient.state == ClientState.UNAUTHORIZED)
+          _interval!.cancel();
+      });
+      _playAction();
     });
   }
 
@@ -49,8 +51,9 @@ class ActionQueue {
     isPlaying = _queue.first;
 
     // If guide is disabled, ignore and continue to next one
-    final allowance = OnboardingClient.guides;
-    if (!allowance.contains(isPlaying!.guideCode)) {
+    final enabled = OnboardingClient.options.offline ||
+        OnboardingClient.guides.contains(isPlaying!.guideCode);
+    if (!enabled) {
       isPlaying = null;
       _queue.removeAt(0);
       _playAction();

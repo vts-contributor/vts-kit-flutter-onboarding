@@ -5,7 +5,6 @@ import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 /// Displays Material dialog above the current contents of the app
 
 class PopupWidget extends StatelessWidget {
-
   PopupWidget({
     // required this.key,
     this.title,
