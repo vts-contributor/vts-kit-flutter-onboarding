@@ -35,6 +35,8 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
           scaffoldBackgroundColor: VTSColors.ILUS_GRAY_7,
           fontFamily: 'Sarabun',
+          textTheme:
+              TextTheme(bodyMedium: TextStyle(fontWeight: FontWeight.w500)),
           scrollbarTheme: ScrollbarThemeData(
             isAlwaysShown: true,
             thickness: MaterialStateProperty.all(5),

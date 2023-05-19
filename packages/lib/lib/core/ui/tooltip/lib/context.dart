@@ -53,13 +53,14 @@ class ToolTipContext extends ChangeNotifier {
       this.enableAutoPlayLock = false,
       this.blurValue = 0,
       this.scrollDuration = const Duration(milliseconds: 300),
-      this.disableMovingAnimation = false,
+      this.disableMovingAnimation = true,
       this.disableScaleAnimation = false,
-      this.enableAutoScroll = false,
+      this.enableAutoScroll = true,
       this.disableBarrierInteraction = true,
       required this.context});
 
   // State
+  bool manualDismiss = false;
   List<GlobalKey>? ids;
   int? activeWidgetId;
   List<VoidCallback> _onFinishCb = [];
@@ -77,6 +78,7 @@ class ToolTipContext extends ChangeNotifier {
   void start(List<GlobalKey> widgetIds) {
     ids = widgetIds;
     activeWidgetId = 0;
+    manualDismiss = false;
     notifyListeners();
     _onStart();
   }
@@ -129,10 +131,20 @@ class ToolTipContext extends ChangeNotifier {
   }
 
   /// Dismiss entire item view
-  void dismiss({notify = false}) {
+  void dismiss({manual = false}) {
+    if (manualDismiss) {
+      // Already be dismissed
+      // Do nothing
+      return;
+    }
+
     ids = null;
     activeWidgetId = null;
-    if (notify) notifyListeners();
+    manualDismiss = false;
+    if (manual) {
+      manualDismiss = true;
+      notifyListeners();
+    }
   }
 
   bool isFirst() {

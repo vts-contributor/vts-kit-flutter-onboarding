@@ -30,6 +30,7 @@ flutter:
   assets:
     - images/image.png
     - lib/assets/icons/
+    - lib/assets/images/giphy.gif
     - lib/assets/images/image.png
     - lib/assets/images/image1.png
     - lib/assets/images/red.png

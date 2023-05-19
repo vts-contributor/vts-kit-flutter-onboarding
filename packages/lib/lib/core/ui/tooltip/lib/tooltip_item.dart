@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/dotted_border.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
 import 'enum.dart';
 import 'extension.dart';
@@ -100,7 +101,7 @@ class TooltipItem extends StatefulWidget {
   //#region Rendering (custom)
 
   /// Custom tooltip widget
-  final Widget? container;
+  final Widget? widget;
 
   //#endregion
 
@@ -149,11 +150,17 @@ class TooltipItem extends StatefulWidget {
   final String Function(int current, int total)? prevTextFn;
   final ButtonStyle? nextBtnStyle;
   final ButtonStyle? prevBtnStyle;
+  final bool showCurrent;
+  final TextStyle? currentTextStyle;
+  final TextStyle? totalTextStyle;
   final bool allowBack;
   final VoidCallback? onNextClick;
   final VoidCallback? onPrevClick;
   final Widget? footer;
   final EdgeInsets footerPadding;
+
+  final bool showDismissIcon;
+  final Widget? dismissIcon;
 
   //#endregion
 
@@ -297,7 +304,7 @@ class TooltipItem extends StatefulWidget {
         const TextStyle(color: Colors.black87, fontSize: 16.0, height: 1.4),
     this.descAlignment = TextAlign.start,
     this.descTextDirection,
-    this.container,
+    this.widget,
     this.showArrow = true,
     this.tooltipPadding =
         const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
@@ -312,25 +319,43 @@ class TooltipItem extends StatefulWidget {
     this.nextTextFn,
     this.prevTextFn,
     this.nextBtnStyle = const ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0)),
+        minimumSize: MaterialStatePropertyAll(Size.zero),
+        textStyle:
+            MaterialStatePropertyAll(TextStyle(fontSize: 14.0, height: 1.5)),
         backgroundColor:
-            MaterialStatePropertyAll<Color>(Color.fromARGB(255, 248, 69, 91)),
-        shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent)),
+            MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+        shadowColor: MaterialStatePropertyAll(Colors.transparent)),
     this.prevBtnStyle = const ButtonStyle(
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: MaterialStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0)),
+      minimumSize: MaterialStatePropertyAll(Size.zero),
+      textStyle:
+          MaterialStatePropertyAll(TextStyle(fontSize: 14.0, height: 1.5)),
       foregroundColor:
-          MaterialStatePropertyAll<Color>(Color.fromARGB(255, 248, 69, 91)),
-      side: MaterialStatePropertyAll<BorderSide>(BorderSide(
+          MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+      side: MaterialStatePropertyAll(BorderSide(
           color: Color.fromARGB(255, 248, 69, 91),
           width: 1.0,
           style: BorderStyle.solid)),
       backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
       shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
     ),
+    this.showCurrent = true,
+    this.currentTextStyle = const TextStyle(
+        fontSize: 16.0, fontWeight: FontWeight.bold, height: 1.5),
+    this.totalTextStyle = const TextStyle(fontSize: 14.0, height: 1.5),
     this.allowBack = false,
     this.onNextClick,
     this.onPrevClick,
     this.footer,
-    this.footerPadding = const EdgeInsets.only(top: 16),
-    this.disableMovingAnimation = true,
+    this.footerPadding = const EdgeInsets.only(top: 8),
+    this.showDismissIcon = true,
+    this.dismissIcon,
+    this.disableMovingAnimation,
     this.movingAnimationDuration = const Duration(milliseconds: 2000),
     this.disableScaleAnimation = true,
     this.disposeOnTap,
@@ -354,8 +379,8 @@ class TooltipItem extends StatefulWidget {
     this.onTargetDoubleTap,
     this.onBarrierClick,
     this.blurValue,
-  })  : assert(container != null || description != null,
-            "container or description is required"),
+  })  : assert(widget != null || description != null,
+            "widget or description is required"),
         assert(nextText != null || nextTextFn != null,
             "nextText or nextTextFn is required"),
         assert(prevText != null || prevTextFn != null,
@@ -565,54 +590,62 @@ class _TooltipItemState extends State<TooltipItem> {
             child: widget.child,
           ),
           ToolTipWidget(
-            position: position,
-            offset: offset,
-            screenSize: screenSize,
-            title: widget.title,
-            titleAlignment: widget.titleAlignment,
-            description: widget.description,
-            descAlignment: widget.descAlignment,
-            titleTextStyle: widget.titleTextStyle,
-            descTextStyle: widget.descTextStyle,
-            container: widget.container,
-            tooltipBackgroundColor: widget.tooltipBackgroundColor,
-            showArrow: widget.showArrow,
-            height: widget.height,
-            width: widget.width,
-            onTooltipTap: _getOnTooltipTap,
-            tooltipPadding: widget.tooltipPadding,
-            disableMovingAnimation:
-                widget.disableMovingAnimation ?? state.disableMovingAnimation,
-            disableScaleAnimation:
-                widget.disableScaleAnimation ?? state.disableScaleAnimation,
-            movingAnimationDuration: widget.movingAnimationDuration,
-            tooltipBorderRadius: widget.tooltipBorderRadius,
-            scaleAnimationDuration: widget.scaleAnimationDuration,
-            scaleAnimationCurve: widget.scaleAnimationCurve,
-            scaleAnimationAlignment: widget.scaleAnimationAlignment,
-            isTooltipDismissed: _isTooltipDismissed,
-            tooltipPosition: widget.tooltipPosition,
-            titlePadding: widget.titlePadding,
-            descPadding: widget.descPadding,
-            titleTextDirection: widget.titleTextDirection,
-            descTextDirection: widget.descTextDirection,
-            footerPadding: widget.footerPadding,
-            footer: widget.showFooter
-                ? widget.footer ??
-                    _DefaultFooter(
-                      state: state,
-                      allowBack: widget.allowBack,
-                      nextText: widget.nextText,
-                      prevText: widget.prevText,
-                      nextTextFn: widget.nextTextFn,
-                      prevTextFn: widget.prevTextFn,
-                      nextBtnStyle: widget.nextBtnStyle,
-                      prevBtnStyle: widget.prevBtnStyle,
-                      onNextClick: widget.onNextClick,
-                      onPrevClick: widget.onPrevClick,
-                    )
-                : null,
-          ),
+              position: position,
+              offset: offset,
+              screenSize: screenSize,
+              title: widget.title,
+              titleAlignment: widget.titleAlignment,
+              description: widget.description,
+              descAlignment: widget.descAlignment,
+              titleTextStyle: widget.titleTextStyle,
+              descTextStyle: widget.descTextStyle,
+              widget: widget.widget,
+              tooltipBackgroundColor: widget.tooltipBackgroundColor,
+              showArrow: widget.showArrow,
+              height: widget.height,
+              width: widget.width,
+              onTooltipTap: _getOnTooltipTap,
+              tooltipPadding: widget.tooltipPadding,
+              disableMovingAnimation:
+                  widget.disableMovingAnimation ?? state.disableMovingAnimation,
+              disableScaleAnimation:
+                  widget.disableScaleAnimation ?? state.disableScaleAnimation,
+              movingAnimationDuration: widget.movingAnimationDuration,
+              tooltipBorderRadius: widget.tooltipBorderRadius,
+              scaleAnimationDuration: widget.scaleAnimationDuration,
+              scaleAnimationCurve: widget.scaleAnimationCurve,
+              scaleAnimationAlignment: widget.scaleAnimationAlignment,
+              isTooltipDismissed: _isTooltipDismissed,
+              tooltipPosition: widget.tooltipPosition,
+              titlePadding: widget.titlePadding,
+              descPadding: widget.descPadding,
+              titleTextDirection: widget.titleTextDirection,
+              descTextDirection: widget.descTextDirection,
+              footerPadding: widget.footerPadding,
+              footer: widget.showFooter
+                  ? widget.footer ??
+                      _DefaultFooter(
+                        state: state,
+                        showCurrent: widget.showCurrent,
+                        currentTextStyle: widget.currentTextStyle,
+                        totalTextStyle: widget.totalTextStyle,
+                        allowBack: widget.allowBack,
+                        nextText: widget.nextText,
+                        prevText: widget.prevText,
+                        nextTextFn: widget.nextTextFn,
+                        prevTextFn: widget.prevTextFn,
+                        nextBtnStyle: widget.nextBtnStyle,
+                        prevBtnStyle: widget.prevBtnStyle,
+                        onNextClick: widget.onNextClick,
+                        onPrevClick: widget.onPrevClick,
+                      )
+                  : null,
+              onDismissIconTap: () {
+                state.dismiss(manual: true);
+              },
+              dismissIcon: widget.showDismissIcon
+                  ? widget.dismissIcon ?? _DefaultDismissIcon()
+                  : null),
         ],
       ],
     );
@@ -708,6 +741,9 @@ class _TargetWidget extends StatelessWidget {
 
 class _DefaultFooter extends StatefulWidget {
   final ToolTipContext state;
+  final bool showCurrent;
+  final TextStyle? currentTextStyle;
+  final TextStyle? totalTextStyle;
   final bool allowBack;
   final String? nextText;
   final String? prevText;
@@ -722,6 +758,9 @@ class _DefaultFooter extends StatefulWidget {
       {Key? key,
       required this.state,
       this.allowBack = true,
+      this.showCurrent = true,
+      this.currentTextStyle,
+      this.totalTextStyle,
       this.nextText,
       this.prevText,
       this.nextTextFn,
@@ -765,13 +804,19 @@ class _DefaultFooterState extends State<_DefaultFooter> {
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(
           children: [
-            Row(
-              children: [
-                Text(((widget.state.activeWidgetId ?? 0) + 1).toString()),
-                Text('/'),
-                Text((widget.state.ids?.length ?? 0).toString())
-              ],
-            )
+            if (widget.showCurrent)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    ((widget.state.activeWidgetId ?? 0) + 1).toString(),
+                    style: widget.currentTextStyle,
+                  ),
+                  Text('/'),
+                  Text((widget.state.ids?.length ?? 0).toString(),
+                      style: widget.totalTextStyle)
+                ],
+              )
           ],
         ),
         Column(
@@ -785,7 +830,7 @@ class _DefaultFooterState extends State<_DefaultFooter> {
                         onPressed: _onPrevClick,
                       )
                     : SizedBox(),
-                (showNext && showPrev) ? SizedBox(width: 4.0) : SizedBox(),
+                (showNext && showPrev) ? SizedBox(width: 8.0) : SizedBox(),
                 showNext
                     ? ElevatedButton(
                         child: Text(nextTxt),
@@ -798,6 +843,23 @@ class _DefaultFooterState extends State<_DefaultFooter> {
           ],
         )
       ]),
+    );
+  }
+}
+
+class _DefaultDismissIcon extends StatelessWidget {
+  const _DefaultDismissIcon({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(100)),
+      child: Icon(
+        Icons.cancel,
+        color: Color.fromARGB(255, 248, 69, 91),
+        size: 24,
+      ),
     );
   }
 }

@@ -15,10 +15,8 @@ class UITooltip implements UIAbstract {
   late Function(int?, GlobalKey) _startCb;
 
   // Temp state for tracking
-  late int prevStep = -100;
-  late int currentStep = -100;
-  late Map<int, int> totalVisit = {};
-  late Map<int, int> successNext = {};
+  late int prevStep = -1;
+  late int currentStep = -1;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -26,7 +24,7 @@ class UITooltip implements UIAbstract {
       Logger.logWarning('VALIDATING ${getName()} for ${action.guideCode}');
     final payload = action.payload;
     if (payload is List) {
-      if (!(payload as List).every((element) => element is GlobalKey))
+      if (!payload.every((element) => element is GlobalKey))
         return Future.value(false);
     } else
       return Future.value(false);
@@ -37,33 +35,12 @@ class UITooltip implements UIAbstract {
     // Store current data
     this.prevStep = this.currentStep;
     this.currentStep = idx;
-    if (this.totalVisit.containsKey(this.currentStep))
-      this.totalVisit[this.currentStep] =
-          this.totalVisit[this.currentStep]! + 1;
-    else
-      this.totalVisit[this.currentStep] = 1;
-
-    // If going back or new added
-    // Reset count to 0
-    this.successNext[this.currentStep] = 0;
-
-    // If this is the transition (from lower level to higher)
-    // Add 1 for previous step
-    if (this.currentStep == this.prevStep + 1)
-      this.successNext[this.prevStep] = this.successNext[this.prevStep]! + 1;
 
     List<Map<String, dynamic>> events = [];
-    // If step is above 0 and it's an transition event (from lower level to higher)
-    // Create an extra event for adding 'successNext' using the payload of previous step
-    if (this.currentStep > 0 && this.currentStep == this.prevStep + 1) {
-      Map<String, dynamic> transitionEvent = {};
-      transitionEvent['current'] = this.prevStep;
-      transitionEvent['successNext'] = this.successNext[this.prevStep];
-      events.add(transitionEvent);
-    }
+
     Map<String, dynamic> currentEvent = {};
     currentEvent['current'] = this.currentStep;
-    currentEvent['successNext'] = this.successNext[this.currentStep];
+    currentEvent['from'] = this.prevStep;
     events.add(currentEvent);
     return events;
   }
@@ -102,10 +79,14 @@ class UITooltip implements UIAbstract {
     // Play
     final context = action.context;
     final payload = action.payload;
+    final state = context.read<ToolTipContext>();
     context.read<ToolTipContext>().start(payload);
     return Task.waitUtil(() =>
-        context.read<ToolTipContext>().activeWidgetId == null &&
-        context.read<ToolTipContext>().ids == null).then((_) {
+        (state.activeWidgetId == null && state.ids == null) ||
+        (state.manualDismiss == true)).then((_) {
+      if (state.manualDismiss) {
+        OnboardingClient.dismiss();
+      }
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
     });
@@ -116,7 +97,7 @@ class UITooltip implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DISMISS ${getName()} for ${action.guideCode}');
     final context = action.context;
-    context.read<ToolTipContext>().dismiss(notify: true);
+    context.read<ToolTipContext>().dismiss(manual: true);
     return Future.value(true);
   }
 
@@ -126,10 +107,8 @@ class UITooltip implements UIAbstract {
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
 
     // Clean temp data
-    this.prevStep = -100;
-    this.currentStep = -100;
-    this.totalVisit = {};
-    this.successNext = {};
+    this.prevStep = -1;
+    this.currentStep = -1;
 
     // Clean callback event binding
     final context = action.context;
