@@ -303,6 +303,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
     }
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         if (widget.showArrow)
           Positioned(
@@ -365,6 +366,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
                       });
                   },
                   child: Material(
+                    color: Colors.transparent,
                     type: MaterialType.transparency,
                     child: Container(
                       padding: isArrowUp
@@ -406,17 +408,16 @@ class UITooltipWidgetState extends State<ToolTipWidget>
                           ),
                           if (widget.dismissIcon != null)
                             Positioned(
-                              child: GestureDetector(
-                                onTap: () {
-                                  widget.onDismissIconTap?.call();
-                                },
-                                child: FractionalTranslation(
-                                  translation: Offset(0.4, -0.4),
-                                  child: widget.dismissIcon,
-                                ),
-                              ),
                               right: 0,
                               top: isArrowUp ? arrowHeight - 1 : 0,
+                              child: FractionalTranslation(
+                                translation: Offset(0.4, -0.4),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      widget.onDismissIconTap?.call();
+                                    },
+                                    child: widget.dismissIcon),
+                              ),
                             )
                         ],
                       ),

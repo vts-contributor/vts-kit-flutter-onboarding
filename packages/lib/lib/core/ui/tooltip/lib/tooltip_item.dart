@@ -488,21 +488,21 @@ class _TooltipItemState extends State<TooltipItem> {
   }
 
   Future<void> _getOnTargetTap() async {
-    if (widget.disposeOnTap == true) {
-      await _reverseAnimateTooltip();
-      state.dismiss();
-      widget.onTargetClick!();
-    } else {
-      (widget.onTargetClick ?? _nextIfAny).call();
-    }
+    // if (widget.disposeOnTap == true) {
+    //   await _reverseAnimateTooltip();
+    //   state.dismiss();
+    //   widget.onTargetClick!();
+    // } else {
+    //   (widget.onTargetClick ?? _nextIfAny).call();
+    // }
   }
 
   Future<void> _getOnTooltipTap() async {
-    if (widget.disposeOnTap == true) {
-      await _reverseAnimateTooltip();
-      state.dismiss();
-    }
-    widget.onToolTipClick?.call();
+    // if (widget.disposeOnTap == true) {
+    //   await _reverseAnimateTooltip();
+    //   state.dismiss();
+    // }
+    // widget.onToolTipClick?.call();
   }
 
   /// Reverse animates the provided tooltip or
@@ -586,7 +586,6 @@ class _TooltipItemState extends State<TooltipItem> {
             outlineColor: widget.outlineColor,
             onDoubleTap: widget.onTargetDoubleTap,
             onLongPress: widget.onTargetLongPress,
-            disableDefaultChildGestures: widget.disableDefaultTargetGestures,
             child: widget.child,
           ),
           ToolTipWidget(
@@ -668,7 +667,6 @@ class _TargetWidget extends StatelessWidget {
   final List<double> outlinePattern;
   final EdgeInsets outlinePadding;
 
-  final bool disableDefaultChildGestures;
   final Widget child;
 
   const _TargetWidget({
@@ -686,7 +684,6 @@ class _TargetWidget extends StatelessWidget {
     this.onTap,
     this.onDoubleTap,
     this.onLongPress,
-    this.disableDefaultChildGestures = false,
   }) : super(key: key);
 
   @override
@@ -694,11 +691,7 @@ class _TargetWidget extends StatelessWidget {
     return Positioned(
       top: offset.dy,
       left: offset.dx,
-      child: disableDefaultChildGestures
-          ? IgnorePointer(
-              child: targetWidgetContent(),
-            )
-          : targetWidgetContent(),
+      child: targetWidgetContent(),
     );
   }
 
@@ -717,20 +710,23 @@ class _TargetWidget extends StatelessWidget {
           strokeCap: StrokeCap.round,
           radius: radius,
           borderType: isCircle ? BorderType.Circle : BorderType.RRect,
-          child: Material(
-            borderRadius: !isCircle ? BorderRadius.all(radius) : null,
-            shape: isCircle ? CircleBorder() : null,
-            child: Container(
-              width: size!.width,
-              height: size!.height,
-              padding: targetPadding,
-              decoration: ShapeDecoration(
-                shape: isCircle
-                    ? CircleBorder()
-                    : RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(radius)),
+          child: AbsorbPointer(
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: !isCircle ? BorderRadius.all(radius) : null,
+              shape: isCircle ? CircleBorder() : null,
+              child: Container(
+                width: size!.width,
+                height: size!.height,
+                padding: targetPadding,
+                decoration: ShapeDecoration(
+                  shape: isCircle
+                      ? CircleBorder()
+                      : RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(radius)),
+                ),
+                child: child,
               ),
-              child: child,
             ),
           ),
         ),
@@ -801,6 +797,7 @@ class _DefaultFooterState extends State<_DefaultFooter> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(
           children: [
