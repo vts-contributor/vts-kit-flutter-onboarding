@@ -146,7 +146,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
 
   double _getTooltipLeft() {
     var space = widget.position!.getCenter() - (widget.width / 2);
-    if (space + widget.width > widget.screenSize!.width) {
+    if (space + widget.width + 16 > widget.screenSize!.width) {
       space = widget.screenSize!.width - widget.width - 16;
     } else if (space < (widget.width / 2)) {
       space = 8;
@@ -369,65 +369,68 @@ class UITooltipWidgetState extends State<ToolTipWidget>
                     color: Colors.transparent,
                     type: MaterialType.transparency,
                     child: Container(
-                      padding: isArrowUp
-                          ? EdgeInsets.only(top: tooltipPadding)
-                          : EdgeInsets.only(bottom: tooltipPadding),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: isArrowUp ? arrowHeight - 1 : 0,
-                              bottom: isArrowUp ? 0 : arrowHeight - 1,
-                            ),
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(widget.tooltipBorderRadius),
-                              child: GestureDetector(
-                                onTap: widget.onTooltipTap,
-                                child: Container(
-                                  width: widget.width,
-                                  padding: widget.tooltipPadding,
-                                  color: widget.tooltipBackgroundColor,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      widget.description != null
-                                          ? _renderBodyText(context)
-                                          : _renderBodyCustom(context),
-                                      widget.footer != null
-                                          ? _renderFooter(context)
-                                          : SizedBox()
-                                    ],
-                                  ),
+                        padding: isArrowUp
+                            ? EdgeInsets.only(top: tooltipPadding)
+                            : EdgeInsets.only(bottom: tooltipPadding),
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: isArrowUp ? arrowHeight - 1 : 0,
+                            bottom: isArrowUp ? 0 : arrowHeight - 1,
+                          ),
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.all(widget.tooltipBorderRadius),
+                            child: GestureDetector(
+                              onTap: widget.onTooltipTap,
+                              child: Container(
+                                width: widget.width,
+                                padding: widget.tooltipPadding,
+                                color: widget.tooltipBackgroundColor,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    widget.description != null
+                                        ? _renderBodyText(context)
+                                        : _renderBodyCustom(context),
+                                    widget.footer != null
+                                        ? _renderFooter(context)
+                                        : SizedBox()
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                          if (widget.dismissIcon != null)
-                            Positioned(
-                              right: 0,
-                              top: isArrowUp ? arrowHeight - 1 : 0,
-                              child: FractionalTranslation(
-                                translation: Offset(0.4, -0.4),
-                                child: GestureDetector(
-                                    onTap: () {
-                                      widget.onDismissIconTap?.call();
-                                    },
-                                    child: widget.dismissIcon),
-                              ),
-                            )
-                        ],
-                      ),
-                    ),
+                        )),
                   ),
                 ),
               ),
             ),
           ),
         ),
+        if (widget.dismissIcon != null && _measureOverlaySize != null)
+          Positioned(
+            left: _getTooltipLeft() + _measureOverlaySize!.width,
+            top: isArrowUp ? contentY : contentY - _measureOverlaySize!.height,
+            child: Padding(
+              padding: isArrowUp
+                  ? EdgeInsets.only(top: tooltipPadding)
+                  : EdgeInsets.only(bottom: tooltipPadding),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: isArrowUp ? arrowHeight - 1 : 0,
+                  bottom: isArrowUp ? 0 : arrowHeight - 1,
+                ),
+                child: FractionalTranslation(
+                  translation: Offset(-0.5, -0.4),
+                  child: GestureDetector(
+                      onTap: () {
+                        widget.onDismissIconTap?.call();
+                      },
+                      child: widget.dismissIcon),
+                ),
+              ),
+            ),
+          )
       ],
     );
   }

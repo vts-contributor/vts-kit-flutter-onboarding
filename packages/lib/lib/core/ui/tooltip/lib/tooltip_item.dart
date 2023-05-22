@@ -224,7 +224,9 @@ class TooltipItem extends StatefulWidget {
 
   /// If [enableAutoScroll] is sets to `true`, this widget will be shown above
   /// the overlay until the target widget is visible in the viewport.
-  final Widget scrollLoadingWidget;
+  final Widget? scrollLoadingWidget;
+
+  final double scrollAlign;
 
   //#endregion
 
@@ -363,10 +365,9 @@ class TooltipItem extends StatefulWidget {
     this.scaleAnimationCurve = Curves.easeIn,
     this.scaleAnimationAlignment,
     this.disableDefaultTargetGestures = false,
-    this.scrollLoadingWidget = const CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Colors.white),
-    ),
-    this.targetPadding = const EdgeInsets.all(5.0),
+    this.scrollLoadingWidget,
+    this.scrollAlign = 0.5,
+    this.targetPadding = const EdgeInsets.all(0.0),
     this.targetBorderRadius = const Radius.circular(5.0),
     this.isCircle = false,
     this.outlinePadding = const EdgeInsets.all(5.0),
@@ -387,8 +388,6 @@ class TooltipItem extends StatefulWidget {
             "prevText or prevTextFn is required"),
         assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
             "overlay opacity must be between 0 and 1."),
-        assert(onTargetClick == null || disposeOnTap != null,
-            "disposeOnTap is required if you're using onTargetClick"),
         assert(disposeOnTap == null || onTargetClick != null,
             "onTargetClick is required if you're using disposeOnTap");
 
@@ -451,9 +450,12 @@ class _TooltipItemState extends State<TooltipItem> {
       await Scrollable.ensureVisible(
         widget.key.currentContext!,
         duration: state.scrollDuration,
-        alignment: 0.5,
+        curve: Curves.bounceIn,
+        alignment: widget.scrollAlign,
       );
-      setState(() => _isScrollRunning = false);
+      Timer(Duration(milliseconds: 200), () {
+        setState(() => _isScrollRunning = false);
+      });
     });
   }
 
@@ -495,6 +497,7 @@ class _TooltipItemState extends State<TooltipItem> {
     // } else {
     //   (widget.onTargetClick ?? _nextIfAny).call();
     // }
+    widget.onTargetClick?.call();
   }
 
   Future<void> _getOnTooltipTap() async {
@@ -502,7 +505,7 @@ class _TooltipItemState extends State<TooltipItem> {
     //   await _reverseAnimateTooltip();
     //   state.dismiss();
     // }
-    // widget.onToolTipClick?.call();
+    widget.onToolTipClick?.call();
   }
 
   /// Reverse animates the provided tooltip or
@@ -546,8 +549,6 @@ class _TooltipItemState extends State<TooltipItem> {
                 radius: _isScrollRunning
                     ? BorderRadius.zero
                     : BorderRadius.all(widget.targetBorderRadius),
-                // overlayPadding:
-                //     _isScrollRunning ? EdgeInsets.zero : widget.targetPadding,
                 overlayPadding: EdgeInsets.zero),
             child: blur != 0
                 ? BackdropFilter(
@@ -571,7 +572,10 @@ class _TooltipItemState extends State<TooltipItem> {
                   ),
           ),
         ),
-        if (_isScrollRunning) Center(child: widget.scrollLoadingWidget),
+        if (_isScrollRunning)
+          widget.scrollLoadingWidget != null
+              ? Center(child: widget.scrollLoadingWidget)
+              : SizedBox(),
         if (!_isScrollRunning) ...[
           _TargetWidget(
             offset: offset,

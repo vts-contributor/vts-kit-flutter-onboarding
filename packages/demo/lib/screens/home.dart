@@ -318,6 +318,7 @@ class _HomePageState extends State<HomePage> {
         return TooltipItem(
             key: _one,
             width: 250,
+            scrollAlign: 0.3,
             title: 'Hướng dẫn sử dụng:',
             description:
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
@@ -336,6 +337,7 @@ class _HomePageState extends State<HomePage> {
             key: _three,
             width: 250,
             allowBack: true,
+            scrollAlign: 0.4,
             nextText: 'OK la',
             widget: Column(
               mainAxisAlignment: MainAxisAlignment.start,
