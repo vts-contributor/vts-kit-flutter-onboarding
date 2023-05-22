@@ -50,43 +50,43 @@ class EventService {
   }
 
   void _doPush() async {
-    // Lock while pushing
-    if (_isPushing) return;
-    _isPushing = true;
+    // // Lock while pushing
+    // if (_isPushing) return;
+    // _isPushing = true;
 
-    final List<Event> toPush = [];
-    _queue.forEach((event) {
-      // Mark for pushing
-      event.status = PUSHING_STATE;
-      toPush.add(event);
-    });
+    // final List<Event> toPush = [];
+    // _queue.forEach((event) {
+    //   // Mark for pushing
+    //   event.status = PUSHING_STATE;
+    //   toPush.add(event);
+    // });
 
-    // Release lock and do nothing
-    if (toPush.isEmpty) {
-      _isPushing = false;
-      return;
-    }
+    // // Release lock and do nothing
+    // if (toPush.isEmpty) {
+    //   _isPushing = false;
+    //   return;
+    // }
 
-    // Start pushing
-    if (OnboardingClient.options.debug) {
-      Logger.log('PUSHING ${toPush.length} events');
-    }
-    try {
-      await OnboardingClient.context.apiClient!.pushLog(toPush);
-      _queue.removeWhere((event) => event.status == PUSHING_STATE);
-      _saveCache();
-    } catch (e, s) {
-      if (OnboardingClient.options.debug) {
-        Logger.logError('PUSHING ERROR ${e.toString()}');
-        print(s);
-      }
-      // Rollback
-      _queue.forEach((event) {
-        event.status = '';
-      });
-    } finally {
-      _isPushing = false;
-    }
+    // // Start pushing
+    // if (OnboardingClient.options.debug) {
+    //   Logger.log('PUSHING ${toPush.length} events');
+    // }
+    // try {
+    //   await OnboardingClient.context.apiClient!.pushLog(toPush);
+    //   _queue.removeWhere((event) => event.status == PUSHING_STATE);
+    //   _saveCache();
+    // } catch (e, s) {
+    //   if (OnboardingClient.options.debug) {
+    //     Logger.logError('PUSHING ERROR ${e.toString()}');
+    //     print(s);
+    //   }
+    //   // Rollback
+    //   _queue.forEach((event) {
+    //     event.status = '';
+    //   });
+    // } finally {
+    //   _isPushing = false;
+    // }
   }
 
   void createInterval() {
