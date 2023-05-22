@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vts_component/vts_component.dart';
 import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
@@ -41,6 +44,10 @@ class _HomePageState extends State<HomePage> {
   final _three = GlobalKey();
   final _four = GlobalKey();
   final _five = GlobalKey();
+  final _seven = GlobalKey();
+
+  final PageController _pageController = PageController();
+
 
   @override
   void initState() {
@@ -244,6 +251,16 @@ class _HomePageState extends State<HomePage> {
       'title': 'LineChartStyle2',
       'route': LineChartStyle2()
     },
+    {
+      'icon': const IconData(
+        0xe412,
+        fontFamily: 'MaterialIcons',
+      ),
+      'title': 'LineChartStyle2',
+      'route': LineChartStyle2()
+    },
+
+
   ];
 
   @override
@@ -272,11 +289,72 @@ class _HomePageState extends State<HomePage> {
                           child: buildSquareTile(
                               gfComponents[index]['title'],
                               gfComponents[index]['icon'],
-                              gfComponents[index]['route']))),
+                              gfComponents[index]['route'])
+                      )),
             ),
           ],
         ),
       );
+
+  Widget buildCarousel(){
+    return  Expanded(child: CarouselItem(
+      key: _seven,
+      pageController: _pageController,
+      onSkip: () {
+        // print('12312');
+      },
+      action: (){
+        print('123123123123');
+      },
+      carouselData: carouselData,
+      titleStyles: const TextStyle(
+        color: Colors.redAccent,
+        fontSize: 18,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 0.15,
+      ),
+      descriptionStyles: TextStyle(
+        fontSize: 16,
+        color: Colors.brown.shade300,
+      ),
+      pageIndicatorStyle: const PageIndicatorStyle(
+        width: 100,
+        inactiveColor: Colors.grey,
+        activeColor: Colors.red,
+        inactiveSize: Size(8, 8),
+        activeSize: Size(12, 12),
+      ),
+      // okWidget: BtnWidget(onClick: (){
+      //
+      // },
+      // ),
+      // cancelWidget: BtnWidget(onClick: (){
+      //
+      // },
+      // ),
+    )
+    ) ;
+  }
+
+  final List<CarouselModel> carouselData = [
+    const CarouselModel(
+      title: "Chào mừng bạn đến với Viettel-S",
+      description: "Hệ thống tiếp nhận giải quyết góp ý, phản ánh hiện trường Viettel Solution.",
+      imgUrl: "images/anh1.png",
+    ),
+    const CarouselModel(
+      title: "Gửi phản ánh nhanh chóng",
+      description:
+      "Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý",
+      imgUrl: 'images/anh2.png',
+    ),
+    const CarouselModel(
+      title: "Thông tin truyền thông",
+      description:
+      "Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT",
+      imgUrl: 'images/anh3.png',
+    ),
+  ];
 
   Widget buildSquareTile(String title, IconData? icon, Widget? route) {
     final childContent = InkWell(
