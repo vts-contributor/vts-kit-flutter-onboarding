@@ -78,43 +78,62 @@ class ActionQueue {
       _queue.removeAt(0);
     }
 
+    // If guide is not valid
+    // Play the next one
     if (isPlaying == null) {
       // Pop current item and process the next one with no waiting
       _playAction();
     } else {
-      // Play
-      final completer = CancelableCompleter();
-      isPlaying!.completer = completer;
-      Future.value(true).then((_) {
-        // Create shorthand logger
-        isPlaying!.logEvent = (({required actionType, payload}) =>
-            OnboardingClient.context.eventService!.logEvent(
-                guideCode: isPlaying!.guideCode,
-                actionType: actionType,
-                guideType: isPlaying!.ui.getName(),
-                payload: payload));
-
-        // Push start event
-        OnboardingClient.context.eventService!.logStartEvent(
-            guideCode: isPlaying!.guideCode,
-            guideType: isPlaying!.ui.getName());
-
-        // Start guide
-        completer.complete(isPlaying!.ui.show(isPlaying!));
-        return completer.operation.value;
-      }).then((_) async {
-        // Successfully played
-        // Push end event
-        OnboardingClient.context.eventService!.logEndEvent(
-            guideCode: isPlaying!.guideCode,
-            guideType: isPlaying!.ui.getName());
-        // Clean
-        await isPlaying!.ui.destroy(isPlaying!);
-        isPlaying = null;
-        // Instantly play next action if current one ended successfully
-        _playAction();
-      });
+      // Ready to play
+      if (isPlaying!.delayBeforePlay != null) {
+        final duration = isPlaying!.delayBeforePlay!;
+        Timer(duration, () {
+          _startAndWaitUntilSuccess();
+        });
+      } else
+        _startAndWaitUntilSuccess();
     }
+  }
+
+  void _startAndWaitUntilSuccess() {
+    final completer = CancelableCompleter();
+    isPlaying!.completer = completer;
+    Future.value(true).then((_) {
+      // Create shorthand logger
+      isPlaying!.logEvent = (({required actionType, payload}) =>
+          OnboardingClient.context.eventService!.logEvent(
+              guideCode: isPlaying!.guideCode,
+              actionType: actionType,
+              guideType: isPlaying!.ui.getName(),
+              payload: payload));
+
+      // Push start event
+      OnboardingClient.context.eventService!.logStartEvent(
+          guideCode: isPlaying!.guideCode, guideType: isPlaying!.ui.getName());
+
+      // Start guide
+      completer.complete(isPlaying!.ui.show(isPlaying!));
+      return completer.operation.value;
+    }).then((_) async {
+      // Successfully played
+      // Push end event
+      OnboardingClient.context.eventService!.logEndEvent(
+          guideCode: isPlaying!.guideCode, guideType: isPlaying!.ui.getName());
+      // Clean
+      await isPlaying!.ui.destroy(isPlaying!);
+
+      // Make a delay and start next action
+      _delayUntilNextAction();
+    });
+  }
+
+  void _delayUntilNextAction() {
+    Duration delayUntilNext = isPlaying?.delayUntilNext ??
+        OnboardingClient.options.actionDelayBetween;
+    Timer(delayUntilNext, () {
+      isPlaying = null;
+      _playAction();
+    });
   }
   //#endregion
 
@@ -123,9 +142,16 @@ class ActionQueue {
       {required String guideCode,
       required UIAbstract ui,
       required dynamic payload,
-      required BuildContext context}) {
+      required BuildContext context,
+      Duration? delayBeforePlay,
+      Duration? delayUntilNext}) {
     _queue.add(Type.Action(
-        guideCode: guideCode, ui: ui, payload: payload, context: context));
+        guideCode: guideCode,
+        ui: ui,
+        payload: payload,
+        context: context,
+        delayBeforePlay: delayBeforePlay,
+        delayUntilNext: delayUntilNext));
   }
 
   void dismiss() async {
@@ -145,9 +171,8 @@ class ActionQueue {
       }).then((_) async {
         // Clean
         await isPlaying!.ui.destroy(isPlaying!);
-        isPlaying = null;
-        // Instantly play next action if current one ended successfully
-        _playAction();
+        // Make a delay and start next action
+        _delayUntilNextAction();
       });
     }
   }

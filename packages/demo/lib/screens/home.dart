@@ -314,10 +314,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget addOnboardingUI(String title, Widget child) {
     switch (title) {
-      case 'Button':
+      case 'Toggle':
         return TooltipItem(
             key: _one,
             width: 250,
+            scrollAlign: 0.3,
+            title: 'Hướng dẫn sử dụng:',
             description:
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
             child: child);
@@ -326,17 +328,37 @@ class _HomePageState extends State<HomePage> {
             key: _two,
             width: 300,
             allowBack: true,
+            title: "Không biết:",
             description:
                 "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
             child: child);
       case 'Badge':
         return TooltipItem(
             key: _three,
-            width: 200,
+            width: 250,
             allowBack: true,
+            scrollAlign: 0.4,
             nextText: 'OK la',
-            description:
-                "Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet.",
+            widget: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const VTSImage(
+                  height: 100,
+                  boxFit: BoxFit.fitWidth,
+                  imageProvider: AssetImage('lib/assets/images/giphy.gif'),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(fontSize: 16.0)),
+                ),
+              ],
+            ),
             child: child);
       case 'Cards':
         return TooltipItem(
@@ -346,7 +368,7 @@ class _HomePageState extends State<HomePage> {
             description:
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
             child: child);
-      case 'Carousel':
+      case 'CheckBox':
         return TooltipItem(
             key: _five,
             width: 300,

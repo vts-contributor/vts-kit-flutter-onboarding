@@ -7,6 +7,8 @@ class Action {
   final UIAbstract ui;
   final dynamic payload;
   final BuildContext context;
+  final Duration? delayBeforePlay;
+  final Duration? delayUntilNext;
   late CancelableCompleter? completer;
   late Function({required String actionType, String? payload}) logEvent =
       ({required actionType, payload}) => {};
@@ -15,5 +17,7 @@ class Action {
       {required this.guideCode,
       required this.ui,
       required this.payload,
-      required this.context});
+      required this.context,
+      this.delayBeforePlay,
+      this.delayUntilNext});
 }
