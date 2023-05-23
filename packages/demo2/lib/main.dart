@@ -25,7 +25,8 @@ class _MyAppState extends State<MyApp> {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
         applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
-        debug: true);
+        debug: true,
+        offline: false);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
     super.initState();
@@ -73,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _seven = GlobalKey();
   final PageController _pageController = PageController();
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
           guideCode: "SHOW_2",
           guideType: UIName.CAROUSEL,
           context: context,
-          payload: [_five]);
+          payload: _five);
 
       // OnboardingClient.start(
       //     guideCode: "SHOW_1",
@@ -102,11 +102,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //     context: context,
       //     payload: [_six]);
     });
-
   }
 
   int _counter = 0;
-
 
   @override
   Widget build(BuildContext context) {
@@ -154,13 +152,14 @@ class _MyHomePageState extends State<MyHomePage> {
             //     child: const Text(
             //       'Ban nang 55 can:',
             //     )),
-            Expanded(child: CarouselItem(
+            Expanded(
+                child: CarouselItem(
               key: _five,
               pageController: _pageController,
               onSkip: () {
                 // print('12312');
               },
-              action: (){
+              action: () {
                 print('123123123123');
               },
               carouselData: carouselData,
@@ -189,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
               //
               // },
               // ),
-            )) ,
+            )),
 
             // PopupItem(
             //   key: _three,
@@ -278,23 +277,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 final List<CarouselModel> carouselData = [
   const CarouselModel(
     title: "Chào mừng bạn đến với Viettel-S",
-    description: "Hệ thống tiếp nhận giải quyết góp ý, phản ánh hiện trường Viettel Solution.",
+    description:
+        "Hệ thống tiếp nhận giải quyết góp ý, phản ánh hiện trường Viettel Solution.",
     imgUrl: "images/anh1.png",
   ),
   const CarouselModel(
     title: "Gửi phản ánh nhanh chóng",
     description:
-    "Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý",
+        "Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý",
     imgUrl: 'images/anh2.png',
   ),
   const CarouselModel(
     title: "Thông tin truyền thông",
     description:
-    "Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT",
+        "Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT",
     imgUrl: 'images/anh3.png',
   ),
 ];

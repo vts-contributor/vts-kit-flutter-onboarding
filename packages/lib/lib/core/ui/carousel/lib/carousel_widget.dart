@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-
 import 'btn_widget.dart';
 import 'carousel_model.dart';
 import 'constants.dart';
 import 'page_indicator.dart';
 import 'page_indicator_style_model.dart';
-import 'providers.dart';
 
-
-class CarouselWidget extends HookConsumerWidget {
+class CarouselWidget extends StatelessWidget {
   /// Data for Carousel [List<CarouselModel>]
   /// @Required
   final List<CarouselModel> carouselData;
@@ -56,54 +52,56 @@ class CarouselWidget extends HookConsumerWidget {
 
   final VoidCallback action;
 
+  final Function(int, int, bool)? onPageChanged;
 
-  const CarouselWidget({
-    Key? key,
-    required this.carouselData,
-    required this.action,
-    this.onSkip,
-    required this.pageController,
-    this.titleStyles,
-    this.descriptionStyles,
-    this.imageWidth,
-    this.imageHeight,
-    this.skipButton,
-    this.okWidget,
-    this.cancelWidget,
-    this.duration = const Duration(milliseconds: 250),
-    this.curve = Curves.easeInOut,
-    this.pageIndicatorStyle = const PageIndicatorStyle(
-        width: 150,
-        activeColor: Colors.blue,
-        inactiveColor: Colors.blueAccent,
-        activeSize: Size(12, 12),
-        inactiveSize: Size(8, 8)),
-  }) : super(key: key);
+  const CarouselWidget(
+      {Key? key,
+      required this.carouselData,
+      required this.action,
+      this.onSkip,
+      required this.pageController,
+      this.titleStyles,
+      this.descriptionStyles,
+      this.imageWidth,
+      this.imageHeight,
+      this.skipButton,
+      this.okWidget,
+      this.cancelWidget,
+      this.duration = const Duration(milliseconds: 250),
+      this.curve = Curves.easeInOut,
+      this.pageIndicatorStyle = const PageIndicatorStyle(
+          width: 150,
+          activeColor: Colors.blue,
+          inactiveColor: Colors.blueAccent,
+          activeSize: Size(12, 12),
+          inactiveSize: Size(8, 8)),
+      this.onPageChanged})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return ProviderScope(
       child: _Carousel(
-        action: action,
-        carouselData: carouselData,
-        pageController: pageController,
-        onSkip: onSkip,
-        titleStyles: titleStyles,
-        descriptionStyles: descriptionStyles,
-        imageWidth: imageWidth,
-        imageHeight: imageHeight,
-        skipButton: skipButton,
-        okWidget: okWidget,
-        cancelWidget: cancelWidget,
-        duration: duration,
-        curve: curve,
-        pageIndicatorStyle: pageIndicatorStyle,
-      ),
+          action: action,
+          carouselData: carouselData,
+          pageController: pageController,
+          onSkip: onSkip,
+          titleStyles: titleStyles,
+          descriptionStyles: descriptionStyles,
+          imageWidth: imageWidth,
+          imageHeight: imageHeight,
+          skipButton: skipButton,
+          okWidget: okWidget,
+          cancelWidget: cancelWidget,
+          duration: duration,
+          curve: curve,
+          pageIndicatorStyle: pageIndicatorStyle,
+          onPageChanged: onPageChanged),
     );
   }
 }
 
-class _Carousel extends HookConsumerWidget {
+class _Carousel extends StatefulWidget {
   /// Data for Carousel [List<CarouselModel>]
   /// @Required
   final List<CarouselModel> carouselData;
@@ -149,35 +147,60 @@ class _Carousel extends HookConsumerWidget {
 
   final VoidCallback action;
 
+  final Function(int, int, bool)? onPageChanged;
 
-  const _Carousel({
-    Key? key,
-    required this.carouselData,
-    required this.action,
-    this.onSkip,
-    required this.pageController,
-    this.titleStyles,
-    this.descriptionStyles,
-    this.imageWidth,
-    this.imageHeight,
-    this.skipButton,
-    this.okWidget,
-    this.cancelWidget,
-    this.duration = const Duration(milliseconds: 250),
-    this.curve = Curves.easeInOut,
-    this.pageIndicatorStyle = const PageIndicatorStyle(
-        width: 150,
-        activeColor: Colors.blue,
-        inactiveColor: Colors.blueAccent,
-        activeSize: Size(12, 12),
-        inactiveSize: Size(8, 8)),
-  }) : super(key: key);
+  const _Carousel(
+      {Key? key,
+      required this.carouselData,
+      required this.action,
+      this.onSkip,
+      required this.pageController,
+      this.titleStyles,
+      this.descriptionStyles,
+      this.imageWidth,
+      this.imageHeight,
+      this.skipButton,
+      this.okWidget,
+      this.cancelWidget,
+      this.duration = const Duration(milliseconds: 250),
+      this.curve = Curves.easeInOut,
+      this.pageIndicatorStyle = const PageIndicatorStyle(
+          width: 150,
+          activeColor: Colors.blue,
+          inactiveColor: Colors.blueAccent,
+          activeSize: Size(12, 12),
+          inactiveSize: Size(8, 8)),
+      this.onPageChanged})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final carouselState = ref.watch(carouselStateProvider);
-    final carouselStateNotifier = ref.watch(carouselStateProvider.notifier);
+  State<_Carousel> createState() => _CarouselState();
+}
 
+class _CarouselState extends State<_Carousel> {
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Emit index 0 page changed
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onPageChanged(0));
+  }
+
+  _onPageChanged(int page) {
+    final forward = page > _page;
+    setState(() {
+      _page = page;
+    });
+    widget.onPageChanged?.call(page, widget.carouselData.length, forward);
+  }
+
+  _onSkip() {
+    widget.onSkip?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double pageViewHeight = screenSize.height -
         skipContainerHeight -
@@ -190,9 +213,9 @@ class _Carousel extends HookConsumerWidget {
           Container(
             height: skipContainerHeight,
             alignment: Alignment.centerRight,
-            child: skipButton ??
+            child: widget.skipButton ??
                 TextButton(
-                  onPressed: () => _onSkipPressed(onSkip),
+                  onPressed: _onSkip,
                   child: const Icon(
                     Icons.close,
                     color: Colors.grey,
@@ -203,32 +226,27 @@ class _Carousel extends HookConsumerWidget {
             child: SizedBox(
                 height: pageViewHeight,
                 child: PageView.builder(
-                  controller: pageController,
-                  onPageChanged: (page) => {
-
-                    _onSwipe(action),
-                    carouselStateNotifier.onPageChanged(
-                        page, carouselData.length)
-                  } ,
-                  itemCount: carouselData.length,
+                  controller: widget.pageController,
+                  onPageChanged: _onPageChanged,
+                  itemCount: widget.carouselData.length,
                   itemBuilder: (BuildContext context, int index) {
                     return SizedBox(
                       child: Column(
                         children: <Widget>[
                           Expanded(
                             child: Image.asset(
-                              carouselData[index].imgUrl,
-                              width: imageWidth,
-                              height: imageHeight,
+                              widget.carouselData[index].imgUrl,
+                              width: widget.imageWidth,
+                              height: widget.imageHeight,
                               fit: BoxFit.contain,
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
-                              carouselData[index].title,
+                              widget.carouselData[index].title,
                               textAlign: TextAlign.center,
-                              style: titleStyles ??
+                              style: widget.titleStyles ??
                                   const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -239,9 +257,9 @@ class _Carousel extends HookConsumerWidget {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             margin: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
-                              carouselData[index].description,
+                              widget.carouselData[index].description,
                               textAlign: TextAlign.center,
-                              style: descriptionStyles ??
+                              style: widget.descriptionStyles ??
                                   const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black54,
@@ -257,52 +275,39 @@ class _Carousel extends HookConsumerWidget {
           SizedBox(
             height: pageIndicatorHeight,
             child: PageIndicator(
-              count: carouselData.length,
-              activePage: carouselState.page,
-              pageIndicatorStyle: pageIndicatorStyle,
+              count: widget.carouselData.length,
+              activePage: _page,
+              pageIndicatorStyle: widget.pageIndicatorStyle,
             ),
           ),
           const SizedBox(height: 10),
-          okWidget ??  BtnWidget(
-            text: "Đăng nhập",
-              onClick: (){
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Center(child: Text("Đăng nhập"))  ,
-                  backgroundColor: Colors.red));
-          }),
-          const SizedBox(height: 10,),
-          cancelWidget ?? BtnWidget(
-            text: "Đăng ký",
-            onClick: (){
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Center(child: Text("Đăng ký"))  ,
-                  backgroundColor: Colors.red));
-            },
-            colorBgBtn : Colors.transparent,
-            colorText: Colors.red,
+          widget.okWidget ??
+              BtnWidget(
+                  text: "Đăng nhập",
+                  onClick: () {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Center(child: Text("Đăng nhập")),
+                        backgroundColor: Colors.red));
+                  }),
+          const SizedBox(
+            height: 10,
           ),
+          widget.cancelWidget ??
+              BtnWidget(
+                text: "Đăng ký",
+                onClick: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Center(child: Text("Đăng ký")),
+                      backgroundColor: Colors.red));
+                },
+                colorBgBtn: Colors.transparent,
+                colorText: Colors.red,
+              ),
           const SizedBox(
             height: marginBottom,
           )
         ],
       ),
     );
-  }
-
-
-  void _onSkipPressed(VoidCallback? onSkip) {
-    if (onSkip == null) {
-      throw Exception(
-          'Either provide "onSkip" callback or add "skipButton" Widget to "Carousel" Widget to handle skip state');
-    } else {
-      onSkip();
-    }
-  }
-
-  void _onSwipe(VoidCallback? onSkip) {
-    if (onSkip == null) {
-      throw Exception(
-          'Either provide "onSkip" callback or add "skipButton" Widget to "Carousel" Widget to handle skip state');
-    } else {
-      onSkip();
-    }
   }
 }

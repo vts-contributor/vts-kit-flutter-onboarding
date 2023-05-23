@@ -8,8 +8,9 @@ import 'carousel_model.dart';
 import 'carousel_widget.dart';
 import 'page_indicator_style_model.dart';
 
-class CarouselItem extends StatefulWidget{
+class CarouselItem extends StatefulWidget {
   final GlobalKey key;
+
   /// Data for Carousel [List<CarouselModel>]
   /// @Required
   final List<CarouselModel> carouselData;
@@ -57,8 +58,6 @@ class CarouselItem extends StatefulWidget{
 
   final VoidCallback? onActionSwipe;
 
-
-
   CarouselItem({
     required this.key,
     this.onActionSwipe,
@@ -85,43 +84,14 @@ class CarouselItem extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() => _CarouselItemState();
-
 }
 
-class _CarouselItemState extends State<CarouselItem>{
+class _CarouselItemState extends State<CarouselItem> {
   CarouselContext get state => context.read<CarouselContext>();
   bool _showItem = false;
-  Timer? timer;
-
-
-
-  Future<void> _nextIfAny() async {
-    if (timer != null && timer!.isActive) {
-      if (state.enableAutoPlayLock) {
-        return;
-      }
-      timer!.cancel();
-    } else if (timer != null && !timer!.isActive) {
-      timer = null;
-    }
-    state.completed(widget.key);
-  }
-
-  _onPrevSwipe() {
-    state.previous();
-    widget.onActionSwipe?.call();
-  }
-
-
-
-  _onNextSwipe() {
-    state.next(1);
-    widget.onActionSwipe?.call();
-  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<CarouselContext>().addListener(() {
       showCarousel();
@@ -135,43 +105,35 @@ class _CarouselItemState extends State<CarouselItem>{
   }
 
   void showCarousel() {
-    final activeStep = state.getActiveWidgetKey();
+    final activeWidgetKey = state.activeWidgetKey;
     setState(() {
-      _showItem = activeStep == widget.key;
+      _showItem = activeWidgetKey == widget.key;
     });
-
-    if (activeStep == widget.key) {
-      if (state.autoPlay) {
-        timer =
-            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
-      }
-    }
   }
 
-
+  _onPageChanged(int page, int pageLength, bool forward) {
+    state.next(page, pageLength, forward);
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(_showItem)
-    return CarouselWidget(
-      carouselData: widget.carouselData,
-      pageController: widget.pageController,
-      onSkip : widget.onSkip,
-      titleStyles : widget.titleStyles,
-      descriptionStyles : widget.descriptionStyles,
-      imageWidth : widget.imageWidth,
-      imageHeight : widget.imageHeight,
-      skipButton : widget.skipButton,
-      okWidget : widget.okWidget,
-      cancelWidget : widget.cancelWidget,
-      duration : widget.duration,
-      curve : widget.curve,
-      pageIndicatorStyle : widget.pageIndicatorStyle,
-      action: (){
-            _onNextSwipe();
-      }
-    );
-    return SizedBox(height: 0,);
+    return _showItem
+        ? CarouselWidget(
+            carouselData: widget.carouselData,
+            pageController: widget.pageController,
+            onSkip: widget.onSkip,
+            titleStyles: widget.titleStyles,
+            descriptionStyles: widget.descriptionStyles,
+            imageWidth: widget.imageWidth,
+            imageHeight: widget.imageHeight,
+            skipButton: widget.skipButton,
+            okWidget: widget.okWidget,
+            cancelWidget: widget.cancelWidget,
+            duration: widget.duration,
+            curve: widget.curve,
+            pageIndicatorStyle: widget.pageIndicatorStyle,
+            onPageChanged: _onPageChanged,
+            action: () {})
+        : SizedBox();
   }
-
 }
