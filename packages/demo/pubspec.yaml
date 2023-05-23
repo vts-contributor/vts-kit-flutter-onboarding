@@ -19,6 +19,7 @@ dependencies:
       ref: development
   flutter_svg: ^2.0.5
   font_awesome_flutter: ^10.4.0
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:

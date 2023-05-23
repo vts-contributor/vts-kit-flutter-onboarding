@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vts_component/vts_component.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
 import 'package:vts_kit_flutter_onboarding_demo/routes.dart';
 

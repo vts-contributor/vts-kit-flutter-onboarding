@@ -29,7 +29,6 @@ import 'package:provider/provider.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/dotted_border.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
-import 'package:vts_kit_flutter_onboarding/index.dart';
 
 import 'enum.dart';
 import 'extension.dart';
@@ -53,10 +52,10 @@ class TooltipItem extends StatefulWidget {
   //#region Rendering
 
   /// Height of [container]
-  final double height;
+  final double? height;
 
   /// Width of [container]
-  final double width;
+  final double? width;
 
   //#endregion
 
@@ -74,7 +73,7 @@ class TooltipItem extends StatefulWidget {
   /// Title alignment with in tooltip widget
   ///
   /// Defaults to [TextAlign.start]
-  final TextAlign titleAlignment;
+  final TextAlign? titleAlignment;
 
   /// Provides text direction of tooltip title.
   final TextDirection? titleTextDirection;
@@ -91,7 +90,7 @@ class TooltipItem extends StatefulWidget {
   /// Description alignment with in tooltip widget
   ///
   /// Defaults to [TextAlign.start]
-  final TextAlign descAlignment;
+  final TextAlign? descAlignment;
 
   /// Provides text direction of tooltip description.
   final TextDirection? descTextDirection;
@@ -110,7 +109,7 @@ class TooltipItem extends StatefulWidget {
   /// Whether the default tooltip will have arrow to point out the target widget.
   ///
   /// Default to `true`
-  final bool showArrow;
+  final bool? showArrow;
 
   /// Empty space around tooltip content.
   ///
@@ -118,17 +117,17 @@ class TooltipItem extends StatefulWidget {
   /// ```dart
   /// EdgeInsets.symmetric(vertical: 8, horizontal: 8)
   /// ```
-  final EdgeInsets tooltipPadding;
+  final EdgeInsets? tooltipPadding;
 
   /// Defines background color for tooltip widget.
   ///
   /// Default to [Colors.white]
-  final Color tooltipBackgroundColor;
+  final Color? tooltipBackgroundColor;
 
   /// Border Radius of default tooltip
   ///
   /// Default to [BorderRadius.circular(8)]
-  final Radius tooltipBorderRadius;
+  final Radius? tooltipBorderRadius;
 
   /// Defines vertical position of tooltip respective to Target widget
   ///
@@ -136,30 +135,30 @@ class TooltipItem extends StatefulWidget {
   final TooltipPosition? tooltipPosition;
 
   /// Background color of overlay.
-  final Color overlayColor;
+  final Color? overlayColor;
 
   /// Opacity apply on [overlayColor] (which ranges from 0.0 to 1.0)
   ///
   /// Default to 0.75
-  final double overlayOpacity;
+  final double? overlayOpacity;
 
-  final bool showFooter;
+  final bool? showFooter;
   final String? nextText;
   final String? prevText;
   final String Function(int current, int total)? nextTextFn;
   final String Function(int current, int total)? prevTextFn;
   final ButtonStyle? nextBtnStyle;
   final ButtonStyle? prevBtnStyle;
-  final bool showCurrent;
+  final bool? showCurrent;
   final TextStyle? currentTextStyle;
   final TextStyle? totalTextStyle;
-  final bool allowBack;
+  final bool? allowBack;
   final VoidCallback? onNextClick;
   final VoidCallback? onPrevClick;
   final Widget? footer;
-  final EdgeInsets footerPadding;
+  final EdgeInsets? footerPadding;
 
-  final bool showDismissIcon;
+  final bool? showDismissIcon;
   final Widget? dismissIcon;
 
   //#endregion
@@ -175,7 +174,7 @@ class TooltipItem extends StatefulWidget {
   /// The duration of time the bouncing animation of tooltip should last.
   ///
   /// Default to [Duration(milliseconds: 2000)]
-  final Duration movingAnimationDuration;
+  final Duration? movingAnimationDuration;
 
   /// Whether disabling initial scale animation for default tooltip when
   /// highlighted is started and completed
@@ -183,22 +182,16 @@ class TooltipItem extends StatefulWidget {
   /// Default to `false`
   final bool? disableScaleAnimation;
 
-  /// Will dispose all highlighted if tapped on target widget or tooltip
-  ///
-  /// Note: [onTargetClick] is required if you're using [disposeOnTap]
-  /// otherwise throws error
-  final bool? disposeOnTap;
-
   /// A duration for animation which is going to played when
   /// tooltip comes first time in the view.
   ///
   /// Defaults to 300 ms.
-  final Duration scaleAnimationDuration;
+  final Duration? scaleAnimationDuration;
 
   /// The curve to be used for initial animation of tooltip.
   ///
   /// Defaults to Curves.easeIn
-  final Curve scaleAnimationCurve;
+  final Curve? scaleAnimationCurve;
 
   /// An alignment to origin of initial tooltip animation.
   ///
@@ -212,21 +205,22 @@ class TooltipItem extends StatefulWidget {
   /// ```
   final Alignment? scaleAnimationAlignment;
 
-  /// if `disableDefaultTargetGestures` parameter is true
-  /// onTargetClick, onTargetDoubleTap, onTargetLongPress and
-  /// disposeOnTap parameter will not work
-  ///
-  /// Note: If `disableDefaultTargetGestures` is true then make sure to
-  /// dismiss current item with `UITooltip.of(context).dismiss()`
-  /// if you are navigating to other screen. This will be handled by default
-  /// if `disableDefaultTargetGestures` is set to false.
-  final bool disableDefaultTargetGestures;
+  /// While target widget is out viewport then
+  /// whether enabling auto scroll so as to make the target widget visible.
+  final bool? autoScroll;
 
-  /// If [enableAutoScroll] is sets to `true`, this widget will be shown above
+  /// Provides time duration for auto scrolling when [autoScroll] is true
+  final Duration? scrollDuration;
+
+  /// If [autoScroll] is sets to `true`, this widget will be shown above
   /// the overlay until the target widget is visible in the viewport.
   final Widget? scrollLoadingWidget;
 
-  final double scrollAlign;
+  /// Scroll alignment relative to screen view
+  final double? scrollAlign;
+
+  /// This will blur the background while displaying item.
+  final double? blurValue;
 
   //#endregion
 
@@ -235,18 +229,18 @@ class TooltipItem extends StatefulWidget {
   /// Padding around target widget
   ///
   /// Default to [EdgeInsets.zero]
-  final EdgeInsets targetPadding;
+  final EdgeInsets? targetPadding;
 
   /// Radius of rectangle box while target widget is being highlighted.
-  final Radius targetBorderRadius;
+  final Radius? targetBorderRadius;
 
   // Whether object shape is circle
-  final bool isCircle;
+  final bool? isCircle;
 
-  final EdgeInsets outlinePadding;
-  final List<double> outlinePattern;
-  final double outlineWidth;
-  final Color outlineColor;
+  final EdgeInsets? outlinePadding;
+  final List<double>? outlinePattern;
+  final double? outlineWidth;
+  final Color? outlineColor;
 
   //#endregion
 
@@ -277,119 +271,71 @@ class TooltipItem extends StatefulWidget {
 
   //#endregion
 
-  //#region Others
-
-  /// Defines blur value.
-  /// This will blur the background while displaying item.
-  ///
-  /// If null value is provided,
-  /// [UITooltip.blurValue] will be considered.
-  ///
-  final double? blurValue;
-
-  //#endregion
-
   const TooltipItem({
     required this.key,
     required this.child,
-    this.width = 200.0,
-    this.height = 120.0,
+    this.width,
+    this.height,
     this.title,
-    this.titlePadding = const EdgeInsets.only(bottom: 8.0),
-    this.titleTextStyle = const TextStyle(
-        color: Colors.black87, fontSize: 16.0, fontWeight: FontWeight.bold),
-    this.titleAlignment = TextAlign.start,
+    this.titlePadding,
+    this.titleTextStyle,
+    this.titleAlignment,
     this.titleTextDirection,
     this.description,
     this.descPadding,
-    this.descTextStyle =
-        const TextStyle(color: Colors.black87, fontSize: 16.0, height: 1.4),
-    this.descAlignment = TextAlign.start,
+    this.descTextStyle,
+    this.descAlignment,
     this.descTextDirection,
     this.widget,
-    this.showArrow = true,
-    this.tooltipPadding =
-        const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
-    this.tooltipBackgroundColor = Colors.white,
-    this.tooltipBorderRadius = const Radius.circular(5.0),
+    this.showArrow,
+    this.tooltipPadding,
+    this.tooltipBackgroundColor,
+    this.tooltipBorderRadius,
     this.tooltipPosition,
-    this.overlayColor = const Color.fromARGB(255, 0, 0, 0),
-    this.overlayOpacity = 0.75,
-    this.showFooter = true,
-    this.nextText = 'Next',
-    this.prevText = 'Prev',
+    this.overlayColor,
+    this.overlayOpacity,
+    this.showFooter,
+    this.nextText,
+    this.prevText,
     this.nextTextFn,
     this.prevTextFn,
-    this.nextBtnStyle = const ButtonStyle(
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: MaterialStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0)),
-        minimumSize: MaterialStatePropertyAll(Size.zero),
-        textStyle:
-            MaterialStatePropertyAll(TextStyle(fontSize: 14.0, height: 1.5)),
-        backgroundColor:
-            MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
-        shadowColor: MaterialStatePropertyAll(Colors.transparent)),
-    this.prevBtnStyle = const ButtonStyle(
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: MaterialStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0)),
-      minimumSize: MaterialStatePropertyAll(Size.zero),
-      textStyle:
-          MaterialStatePropertyAll(TextStyle(fontSize: 14.0, height: 1.5)),
-      foregroundColor:
-          MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
-      side: MaterialStatePropertyAll(BorderSide(
-          color: Color.fromARGB(255, 248, 69, 91),
-          width: 1.0,
-          style: BorderStyle.solid)),
-      backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
-      shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
-    ),
-    this.showCurrent = true,
-    this.currentTextStyle = const TextStyle(
-        fontSize: 16.0, fontWeight: FontWeight.bold, height: 1.5),
-    this.totalTextStyle = const TextStyle(fontSize: 14.0, height: 1.5),
-    this.allowBack = false,
+    this.nextBtnStyle,
+    this.prevBtnStyle,
+    this.showCurrent,
+    this.currentTextStyle,
+    this.totalTextStyle,
+    this.allowBack,
     this.onNextClick,
     this.onPrevClick,
     this.footer,
-    this.footerPadding = const EdgeInsets.only(top: 8),
-    this.showDismissIcon = true,
+    this.footerPadding,
+    this.showDismissIcon,
     this.dismissIcon,
     this.disableMovingAnimation,
-    this.movingAnimationDuration = const Duration(milliseconds: 2000),
-    this.disableScaleAnimation = true,
-    this.disposeOnTap,
-    this.scaleAnimationDuration = const Duration(milliseconds: 300),
-    this.scaleAnimationCurve = Curves.easeIn,
+    this.movingAnimationDuration,
+    this.disableScaleAnimation,
+    this.scaleAnimationDuration,
+    this.scaleAnimationCurve,
     this.scaleAnimationAlignment,
-    this.disableDefaultTargetGestures = false,
+    this.autoScroll,
+    this.scrollDuration,
     this.scrollLoadingWidget,
-    this.scrollAlign = 0.5,
-    this.targetPadding = const EdgeInsets.all(0.0),
-    this.targetBorderRadius = const Radius.circular(5.0),
-    this.isCircle = false,
-    this.outlinePadding = const EdgeInsets.all(5.0),
-    this.outlinePattern = const [8, 8],
-    this.outlineWidth = 2.0,
-    this.outlineColor = const Color.fromARGB(255, 248, 69, 91),
+    this.scrollAlign,
+    this.blurValue,
+    this.targetPadding,
+    this.targetBorderRadius,
+    this.isCircle,
+    this.outlinePadding,
+    this.outlinePattern,
+    this.outlineWidth,
+    this.outlineColor,
     this.onTargetClick,
     this.onToolTipClick,
     this.onTargetLongPress,
     this.onTargetDoubleTap,
     this.onBarrierClick,
-    this.blurValue,
-  })  : assert(widget != null || description != null,
-            "widget or description is required"),
-        assert(nextText != null || nextTextFn != null,
-            "nextText or nextTextFn is required"),
-        assert(prevText != null || prevTextFn != null,
-            "prevText or prevTextFn is required"),
-        assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
-            "overlay opacity must be between 0 and 1."),
-        assert(disposeOnTap == null || onTargetClick != null,
-            "onTargetClick is required if you're using disposeOnTap");
+  }) : assert(widget != null || description != null,
+            "widget or description is required");
 
   @override
   State<TooltipItem> createState() => _TooltipItemState();
@@ -418,7 +364,7 @@ class _TooltipItemState extends State<TooltipItem> {
 
     position ??= GetPosition(
       key: widget.key,
-      padding: widget.targetPadding,
+      padding: widget.targetPadding ?? state.targetPadding,
       screenWidth: MediaQuery.of(context).size.width,
       screenHeight: MediaQuery.of(context).size.height,
     );
@@ -433,13 +379,9 @@ class _TooltipItemState extends State<TooltipItem> {
     });
 
     if (activeStep == widget.key) {
-      if (state.enableAutoScroll) {
+      if ((widget.autoScroll == null && state.autoScroll) ||
+          (widget.autoScroll == true)) {
         _scrollIntoView();
-      }
-
-      if (state.autoPlay) {
-        timer =
-            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
       }
     }
   }
@@ -449,9 +391,9 @@ class _TooltipItemState extends State<TooltipItem> {
       setState(() => _isScrollRunning = true);
       await Scrollable.ensureVisible(
         widget.key.currentContext!,
-        duration: state.scrollDuration,
+        duration: widget.scrollDuration ?? state.scrollDuration,
         curve: Curves.bounceIn,
-        alignment: widget.scrollAlign,
+        alignment: widget.scrollAlign ?? state.scrollAlign,
       );
       Timer(Duration(milliseconds: 200), () {
         setState(() => _isScrollRunning = false);
@@ -466,7 +408,7 @@ class _TooltipItemState extends State<TooltipItem> {
           final size = MediaQuery.of(context).size;
           position = GetPosition(
             key: widget.key,
-            padding: widget.targetPadding,
+            padding: widget.targetPadding ?? state.targetPadding,
             screenWidth: size.width,
             screenHeight: size.height,
           );
@@ -478,9 +420,6 @@ class _TooltipItemState extends State<TooltipItem> {
 
   Future<void> _nextIfAny() async {
     if (timer != null && timer!.isActive) {
-      if (state.enableAutoPlayLock) {
-        return;
-      }
       timer!.cancel();
     } else if (timer != null && !timer!.isActive) {
       timer = null;
@@ -490,21 +429,10 @@ class _TooltipItemState extends State<TooltipItem> {
   }
 
   Future<void> _getOnTargetTap() async {
-    // if (widget.disposeOnTap == true) {
-    //   await _reverseAnimateTooltip();
-    //   state.dismiss();
-    //   widget.onTargetClick!();
-    // } else {
-    //   (widget.onTargetClick ?? _nextIfAny).call();
-    // }
     widget.onTargetClick?.call();
   }
 
   Future<void> _getOnTooltipTap() async {
-    // if (widget.disposeOnTap == true) {
-    //   await _reverseAnimateTooltip();
-    //   state.dismiss();
-    // }
     widget.onToolTipClick?.call();
   }
 
@@ -512,7 +440,8 @@ class _TooltipItemState extends State<TooltipItem> {
   /// the custom container widget.
   Future<void> _reverseAnimateTooltip() async {
     setState(() => _isTooltipDismissed = true);
-    await Future<dynamic>.delayed(widget.scaleAnimationDuration);
+    await Future<dynamic>.delayed(
+        widget.scaleAnimationDuration ?? state.scaleAnimationDuration);
     _isTooltipDismissed = false;
   }
 
@@ -537,18 +466,17 @@ class _TooltipItemState extends State<TooltipItem> {
       children: [
         GestureDetector(
           onTap: () {
-            if (!state.disableBarrierInteraction) {
-              _nextIfAny();
-            }
             widget.onBarrierClick?.call();
           },
           child: ClipPath(
             clipper: RRectClipper(
                 area: _isScrollRunning ? Rect.zero : rectBound,
-                isCircle: widget.isCircle,
+                isCircle: (widget.isCircle == true) ||
+                    (widget.isCircle == null && state.isCircle),
                 radius: _isScrollRunning
                     ? BorderRadius.zero
-                    : BorderRadius.all(widget.targetBorderRadius),
+                    : BorderRadius.all(
+                        widget.targetBorderRadius ?? state.targetBorderRadius),
                 overlayPadding: EdgeInsets.zero),
             child: blur != 0
                 ? BackdropFilter(
@@ -557,8 +485,11 @@ class _TooltipItemState extends State<TooltipItem> {
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                       decoration: BoxDecoration(
-                        color: widget.overlayColor
-                            .withOpacity(widget.overlayOpacity),
+                        color: widget.overlayColor?.withOpacity(
+                                widget.overlayOpacity ??
+                                    state.overlayOpacity) ??
+                            state.overlayColor.withOpacity(
+                                widget.overlayOpacity ?? state.overlayOpacity),
                       ),
                     ),
                   )
@@ -566,28 +497,34 @@ class _TooltipItemState extends State<TooltipItem> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
                     decoration: BoxDecoration(
-                      color: widget.overlayColor
-                          .withOpacity(widget.overlayOpacity),
+                      color: widget.overlayColor?.withOpacity(
+                              widget.overlayOpacity ?? state.overlayOpacity) ??
+                          state.overlayColor.withOpacity(
+                              widget.overlayOpacity ?? state.overlayOpacity),
                     ),
                   ),
           ),
         ),
         if (_isScrollRunning)
-          widget.scrollLoadingWidget != null
-              ? Center(child: widget.scrollLoadingWidget)
+          widget.scrollLoadingWidget != null ||
+                  state.scrollLoadingWidget != null
+              ? Center(
+                  child:
+                      widget.scrollLoadingWidget ?? state.scrollLoadingWidget)
               : SizedBox(),
         if (!_isScrollRunning) ...[
           _TargetWidget(
             offset: offset,
             size: size,
-            targetPadding: widget.targetPadding,
+            targetPadding: widget.targetPadding ?? state.targetPadding,
             onTap: _getOnTargetTap,
-            isCircle: widget.isCircle,
-            radius: widget.targetBorderRadius,
-            outlinePadding: widget.outlinePadding,
-            outlinePattern: widget.outlinePattern,
-            outlineWidth: widget.outlineWidth,
-            outlineColor: widget.outlineColor,
+            isCircle: (widget.isCircle == true) ||
+                (widget.isCircle == null && state.isCircle),
+            radius: widget.targetBorderRadius ?? state.targetBorderRadius,
+            outlinePadding: widget.outlinePadding ?? state.outlinePadding,
+            outlinePattern: widget.outlinePattern ?? state.outlinePattern,
+            outlineWidth: widget.outlineWidth ?? state.outlineWidth,
+            outlineColor: widget.outlineColor ?? state.outlineColor,
             onDoubleTap: widget.onTargetDoubleTap,
             onLongPress: widget.onTargetLongPress,
             child: widget.child,
@@ -596,49 +533,66 @@ class _TooltipItemState extends State<TooltipItem> {
               position: position,
               offset: offset,
               screenSize: screenSize,
-              title: widget.title,
-              titleAlignment: widget.titleAlignment,
-              description: widget.description,
-              descAlignment: widget.descAlignment,
-              titleTextStyle: widget.titleTextStyle,
-              descTextStyle: widget.descTextStyle,
               widget: widget.widget,
-              tooltipBackgroundColor: widget.tooltipBackgroundColor,
-              showArrow: widget.showArrow,
-              height: widget.height,
-              width: widget.width,
+              tooltipBackgroundColor:
+                  widget.tooltipBackgroundColor ?? state.tooltipBackgroundColor,
+              showArrow: (widget.showArrow == true) ||
+                  (widget.showArrow == null && state.showArrow),
+              height: widget.height ?? state.height,
+              width: widget.width ?? state.width,
               onTooltipTap: _getOnTooltipTap,
-              tooltipPadding: widget.tooltipPadding,
-              disableMovingAnimation:
-                  widget.disableMovingAnimation ?? state.disableMovingAnimation,
-              disableScaleAnimation:
-                  widget.disableScaleAnimation ?? state.disableScaleAnimation,
-              movingAnimationDuration: widget.movingAnimationDuration,
-              tooltipBorderRadius: widget.tooltipBorderRadius,
-              scaleAnimationDuration: widget.scaleAnimationDuration,
-              scaleAnimationCurve: widget.scaleAnimationCurve,
-              scaleAnimationAlignment: widget.scaleAnimationAlignment,
+              disableMovingAnimation: (widget.disableMovingAnimation == true) ||
+                  (widget.disableMovingAnimation == null &&
+                      state.disableMovingAnimation),
+              disableScaleAnimation: (widget.disableScaleAnimation == true) ||
+                  (widget.disableScaleAnimation == null &&
+                      state.showDismissIcon),
+              movingAnimationDuration: widget.movingAnimationDuration ??
+                  state.movingAnimationDuration,
+              tooltipBorderRadius:
+                  widget.tooltipBorderRadius ?? state.tooltipBorderRadius,
+              scaleAnimationDuration:
+                  widget.scaleAnimationDuration ?? state.scaleAnimationDuration,
+              scaleAnimationCurve:
+                  widget.scaleAnimationCurve ?? state.scaleAnimationCurve,
+              scaleAnimationAlignment: widget.scaleAnimationAlignment ??
+                  state.scaleAnimationAlignment,
               isTooltipDismissed: _isTooltipDismissed,
-              tooltipPosition: widget.tooltipPosition,
-              titlePadding: widget.titlePadding,
-              descPadding: widget.descPadding,
-              titleTextDirection: widget.titleTextDirection,
-              descTextDirection: widget.descTextDirection,
+              tooltipPosition: widget.tooltipPosition ?? state.tooltipPosition,
+              tooltipPadding: widget.tooltipPadding ?? state.tooltipPadding,
+              title: widget.title,
+              titleTextStyle: widget.titleTextStyle ?? state.titleTextStyle,
+              titlePadding: widget.titlePadding ?? state.titlePadding,
+              titleTextDirection:
+                  widget.titleTextDirection ?? state.titleTextDirection,
+              titleAlignment: widget.titleAlignment ?? state.titleAlignment,
+              description: widget.description,
+              descAlignment: widget.descAlignment ?? state.descAlignment,
+              descTextStyle: widget.descTextStyle ?? state.descTextStyle,
+              descPadding: widget.descPadding ?? state.descPadding,
+              descTextDirection:
+                  widget.descTextDirection ?? state.descTextDirection,
               footerPadding: widget.footerPadding,
-              footer: widget.showFooter
+              footer: (widget.showFooter == true) ||
+                      (widget.showFooter == null && state.showFooter)
                   ? widget.footer ??
+                      state.footer ??
                       _DefaultFooter(
                         state: state,
-                        showCurrent: widget.showCurrent,
-                        currentTextStyle: widget.currentTextStyle,
-                        totalTextStyle: widget.totalTextStyle,
-                        allowBack: widget.allowBack,
-                        nextText: widget.nextText,
-                        prevText: widget.prevText,
-                        nextTextFn: widget.nextTextFn,
-                        prevTextFn: widget.prevTextFn,
-                        nextBtnStyle: widget.nextBtnStyle,
-                        prevBtnStyle: widget.prevBtnStyle,
+                        showCurrent: (widget.showCurrent == true) ||
+                            (widget.showCurrent == null && state.showCurrent),
+                        currentTextStyle:
+                            widget.currentTextStyle ?? state.currentTextStyle,
+                        totalTextStyle:
+                            widget.totalTextStyle ?? state.totalTextStyle,
+                        allowBack: (widget.allowBack == true) ||
+                            (widget.allowBack == null && state.allowBack),
+                        nextText: widget.nextText ?? state.nextText,
+                        prevText: widget.prevText ?? state.prevText,
+                        nextTextFn: widget.nextTextFn ?? state.nextTextFn,
+                        prevTextFn: widget.prevTextFn ?? state.prevTextFn,
+                        nextBtnStyle: widget.nextBtnStyle ?? state.nextBtnStyle,
+                        prevBtnStyle: widget.prevBtnStyle ?? state.prevBtnStyle,
                         onNextClick: widget.onNextClick,
                         onPrevClick: widget.onPrevClick,
                       )
@@ -646,8 +600,11 @@ class _TooltipItemState extends State<TooltipItem> {
               onDismissIconTap: () {
                 state.dismiss(manual: true);
               },
-              dismissIcon: widget.showDismissIcon
-                  ? widget.dismissIcon ?? _DefaultDismissIcon()
+              dismissIcon: (widget.showDismissIcon == true) ||
+                      (widget.showDismissIcon == null && state.showDismissIcon)
+                  ? widget.dismissIcon ??
+                      state.dismissIcon ??
+                      _DefaultDismissIcon()
                   : null),
         ],
       ],
