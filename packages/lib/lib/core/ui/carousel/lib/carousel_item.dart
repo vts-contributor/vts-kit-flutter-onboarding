@@ -90,16 +90,6 @@ class _CarouselItemState extends State<CarouselItem> {
   CarouselContext get state => context.read<CarouselContext>();
   bool _showItem = false;
 
-  _onPrevSwipe() {
-    state.previous();
-    widget.onActionSwipe?.call();
-  }
-
-  _onNextSwipe() {
-    print('haha');
-    widget.onActionSwipe?.call();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -115,10 +105,14 @@ class _CarouselItemState extends State<CarouselItem> {
   }
 
   void showCarousel() {
-    final activeWidgetKey = state.widgetKey;
+    final activeWidgetKey = state.activeWidgetKey;
     setState(() {
       _showItem = activeWidgetKey == widget.key;
     });
+  }
+
+  _onPageChanged(int page, int pageLength, bool forward) {
+    state.next(page, pageLength, forward);
   }
 
   @override
@@ -138,6 +132,7 @@ class _CarouselItemState extends State<CarouselItem> {
             duration: widget.duration,
             curve: widget.curve,
             pageIndicatorStyle: widget.pageIndicatorStyle,
+            onPageChanged: _onPageChanged,
             action: () {})
         : SizedBox();
   }

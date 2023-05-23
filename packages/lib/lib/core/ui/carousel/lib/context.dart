@@ -26,16 +26,17 @@ class CarouselContext extends ChangeNotifier {
       required this.context});
 
   // State
-  GlobalKey? widgetKey;
+  GlobalKey? activeWidgetKey;
   bool manualDismiss = false;
   int page = -1;
   int pageLength = -1;
+  bool forward = false;
 
   List<VoidCallback> _onFinishCb = [];
-  List<Function(int page, int pageLength)> _onStepChangeCb = [];
+  List<Function(int page, int pageLength, bool forward)> _onStepChangeCb = [];
 
   void start(GlobalKey widgetKey) {
-    widgetKey = widgetKey;
+    activeWidgetKey = widgetKey;
     manualDismiss = false;
     notifyListeners();
   }
@@ -43,14 +44,15 @@ class CarouselContext extends ChangeNotifier {
   /// Completes item of given key and starts next one
   /// otherwise will finish the entire item view
   void completed() {
-    widgetKey = null;
+    activeWidgetKey = null;
     _onFinish();
     notifyListeners();
   }
 
-  void next(int page, int pageLength) {
-    page = page;
-    pageLength = pageLength;
+  void next(int page, int pageLength, bool forward) {
+    this.page = page;
+    this.pageLength = pageLength;
+    this.forward = forward;
     _onStepChange();
     notifyListeners();
   }
@@ -65,7 +67,7 @@ class CarouselContext extends ChangeNotifier {
       // Do nothing
       return;
     }
-    widgetKey = null;
+    activeWidgetKey = null;
     manualDismiss = false;
     if (manual) {
       manualDismiss = true;
@@ -75,7 +77,7 @@ class CarouselContext extends ChangeNotifier {
 
   void _onStepChange() {
     _onStepChangeCb.forEach((func) {
-      func.call(page, pageLength);
+      func.call(this.page, this.pageLength, this.forward);
     });
   }
 
@@ -85,7 +87,7 @@ class CarouselContext extends ChangeNotifier {
     });
   }
 
-  void onStepChange(Function(int, int) func) {
+  void onStepChange(Function(int, int, bool) func) {
     this._onStepChangeCb.add(func);
   }
 
@@ -93,7 +95,7 @@ class CarouselContext extends ChangeNotifier {
     this._onFinishCb.add(func);
   }
 
-  void offStepChange(Function(int, int) func) {
+  void offStepChange(Function(int, int, bool) func) {
     this._onStepChangeCb.removeWhere((element) => element == func);
   }
 

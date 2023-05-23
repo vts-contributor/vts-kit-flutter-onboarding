@@ -25,7 +25,8 @@ class _MyAppState extends State<MyApp> {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
         applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
-        debug: true);
+        debug: true,
+        offline: false);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
     super.initState();

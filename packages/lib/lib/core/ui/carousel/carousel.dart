@@ -12,7 +12,9 @@ import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
 import 'package:flutter/material.dart';
 
 class UICarousel implements UIAbstract {
-  late Function(int, int) _stepChangeCb;
+  late int prevStep = -1;
+  late int currentStep = -1;
+  late Function(int, int, bool) _stepChangeCb;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -23,15 +25,32 @@ class UICarousel implements UIAbstract {
     return Future.value(payload is GlobalKey);
   }
 
+  List<Map<String, dynamic>> _buildTrackEvents(Type.Action action, int idx) {
+    // Store current data
+    this.prevStep = this.currentStep;
+    this.currentStep = idx;
+
+    List<Map<String, dynamic>> events = [];
+    Map<String, dynamic> currentEvent = {};
+    currentEvent['current'] = this.currentStep;
+    currentEvent['from'] = this.prevStep;
+    events.add(currentEvent);
+    return events;
+  }
+
   @override
   Future<bool> initialize(Type.Action action) {
     if (OnboardingClient.options.debug)
       Logger.logWarning('INITIALIZE ${getName()} for ${action.guideCode}');
 
     final context = action.context;
-    _stepChangeCb = (page, pageLength) {
-      action.logEvent(
-          actionType: Events.CAROUSEL_STEP_CHANGE, payload: page.toString());
+    _stepChangeCb = (page, pageLength, forward) {
+      final _events = _buildTrackEvents(action, page);
+      _events.forEach((element) {
+        action.logEvent(
+            actionType: Events.TOOLTIP_STEP_CHANGE,
+            payload: JsonEncoder().convert(element));
+      });
     };
     context.read<CarouselContext>().onStepChange(_stepChangeCb);
     return Future.value(true);
@@ -53,11 +72,9 @@ class UICarousel implements UIAbstract {
     final context = action.context;
     final payload = action.payload;
     context.read<CarouselContext>().start(payload);
-    return Task.waitUtil(() {
-      print(context.read<CarouselContext>().widgetKey);
-      final a = context.read<CarouselContext>();
-      return context.read<CarouselContext>().widgetKey == null;
-    }).then((_) {
+    return Task.waitUtil(
+            () => context.read<CarouselContext>().activeWidgetKey == null)
+        .then((_) {
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
     });

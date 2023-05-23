@@ -52,7 +52,7 @@ class CarouselWidget extends StatelessWidget {
 
   final VoidCallback action;
 
-  final Function(int, int)? onPageChanged;
+  final Function(int, int, bool)? onPageChanged;
 
   const CarouselWidget(
       {Key? key,
@@ -147,7 +147,7 @@ class _Carousel extends StatefulWidget {
 
   final VoidCallback action;
 
-  final Function(int, int)? onPageChanged;
+  final Function(int, int, bool)? onPageChanged;
 
   const _Carousel(
       {Key? key,
@@ -181,23 +181,31 @@ class _CarouselState extends State<_Carousel> {
   int _page = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // Emit index 0 page changed
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onPageChanged(0));
+  }
+
+  _onPageChanged(int page) {
+    final forward = page > _page;
+    setState(() {
+      _page = page;
+    });
+    widget.onPageChanged?.call(page, widget.carouselData.length, forward);
+  }
+
+  _onSkip() {
+    widget.onSkip?.call();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double pageViewHeight = screenSize.height -
         skipContainerHeight -
         footerContentHeight -
         pageIndicatorHeight;
-
-    _onPageChanged(int page) {
-      setState(() {
-        _page = page;
-      });
-      widget.onPageChanged?.call(page, widget.carouselData.length);
-    }
-
-    _onSkip() {
-      widget.onSkip?.call();
-    }
 
     return SafeArea(
       child: Column(
