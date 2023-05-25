@@ -1,0 +1,14 @@
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart'
+    show CarouselModel;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_state_model.dart'
+    show CarouselState;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart'
+    show PageIndicatorStyle;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/providers.dart'
+    show carouselStateProvider;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_widget.dart'
+    show CarouselWidget;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_consumer.dart'
+    show CarouselConsumer;
+export 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/btn_widget.dart'
+    show BtnWidget;
