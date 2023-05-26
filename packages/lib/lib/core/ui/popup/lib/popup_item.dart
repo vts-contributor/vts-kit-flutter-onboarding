@@ -43,16 +43,10 @@ class _PopupState extends State<PopupItem> {
   static const TextStyle titleStyle =
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   PopupContext get state => context.read<PopupContext>();
-  bool _showItem = false;
-  Timer? timer;
 
-  // ///[bcgColor] background default value
-  // static const Color bcgColor = const Color(0xfffefefe);
-  //
-  // ///[holder] holder for the custom view
-  // static const Widget holder = const SizedBox(
-  //   height: 0,
-  // );
+  bool _showItem = false;
+  OverlayEntry? overlayEntryy;
+  bool _isOverlayVisible = false;
 
   /// [dialogShape] dialog outer shape
   static const ShapeBorder dialogShape = const RoundedRectangleBorder(
@@ -61,16 +55,11 @@ class _PopupState extends State<PopupItem> {
   static const CustomViewPosition customViewPosition =
       CustomViewPosition.BEFORE_TITLE;
 
-  Future<void> _nextIfAny() async {
-    if (timer != null && timer!.isActive) {
-      if (state.enableAutoPlayLock) {
-        return;
-      }
-      timer!.cancel();
-    } else if (timer != null && !timer!.isActive) {
-      timer = null;
-    }
-    state.completed(widget.key);
+  Future<void> _nextIfAny(OverlayEntry? overlayEntry) async {
+    final activeStep = state.getActiveWidgetKey();
+    print(activeStep);
+    print(widget.key);
+    state.completed(widget.key,overlayEntry);
   }
 
   @override
@@ -80,6 +69,8 @@ class _PopupState extends State<PopupItem> {
     context.read<PopupContext>().addListener(() {
       showPopup();
     });
+
+
   }
 
   @override
@@ -93,60 +84,80 @@ class _PopupState extends State<PopupItem> {
     setState(() {
       _showItem = activeStep == widget.key;
     });
+  }
 
-    if (activeStep == widget.key) {
-      if (state.autoPlay) {
-        timer =
-            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
-      }
-    }
+
+  OverlayEntry showDialogOverlay(BuildContext context) {
+    OverlayEntry overlayEntry  = OverlayEntry(
+      builder: (BuildContext context) => Positioned.fill(
+        child: GestureDetector(
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Dialog(
+                      insetPadding: EdgeInsets.zero,
+                    backgroundColor: Colors.white,
+                    shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
+                    child: PopupWidget(
+                      title: widget.title,
+                      msg: widget.msg,
+                      image: widget.image,
+                      popupWidth: widget.popupWidth,
+                      actions: [
+                        IconsButton(
+                          onPressed: () {
+                            _nextIfAny(overlayEntryy);
+                          },
+                          text: 'Bỏ qua',
+                          color: Colors.white,
+                          textStyle: const TextStyle(color: Colors.black),
+                          iconColor: Colors.white,
+                        ),
+                        IconsButton(
+                          onPressed: () {
+                            _nextIfAny(overlayEntryy);
+                          },
+                          text: 'Đăng ký',
+                          color: Colors.black,
+                          textStyle: const TextStyle(color: Colors.white),
+                          iconColor: Colors.white,
+                        ),
+                      ],
+                      customViewPosition: widget.customViewPosition == null
+                          ? customViewPosition
+                          : widget.customViewPosition!,
+                      titleStyle: titleStyle,
+                      color: Colors.red,
+                    ))
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // overlayState.insert(overlayEntry!);
+    return overlayEntry!;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_showItem)
-      return Dialog(
-          backgroundColor: Colors.white,
-          shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
-          child: PopupWidget(
-            title: widget.title,
-            msg: widget.msg,
-            image: widget.image,
-            popupWidth: widget.popupWidth,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  if (!state.disableBarrierInteraction) {
-                    _nextIfAny();
-                  }
-                  widget.onActionClick?.call();
-                },
-                text: 'Bỏ qua',
-                color: Colors.white,
-                textStyle: const TextStyle(color: Colors.black),
-                iconColor: Colors.white,
-              ),
-              IconsButton(
-                onPressed: () {
-                  if (!state.disableBarrierInteraction) {
-                    _nextIfAny();
-                  }
-                  widget.onActionClick?.call();
-                },
-                text: 'Đăng ký',
-                color: Colors.black,
-                textStyle: const TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ],
-            customViewPosition: widget.customViewPosition == null
-                ? customViewPosition
-                : widget.customViewPosition!,
-            titleStyle: titleStyle,
-            color: Colors.red,
-          ));
-    return SizedBox(
-      height: 0,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_showItem && !_isOverlayVisible) {
+        overlayEntryy = showDialogOverlay(context);
+        Overlay.of(context).insert(overlayEntryy!);
+        setState(() {
+          _isOverlayVisible = true;
+        });
+      }
+    });
+
+    return SizedBox.shrink();
   }
 }

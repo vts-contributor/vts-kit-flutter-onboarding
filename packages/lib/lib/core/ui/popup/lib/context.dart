@@ -83,15 +83,16 @@ class PopupContext extends ChangeNotifier {
 
   /// Completes item of given key and starts next one
   /// otherwise will finish the entire item view
-  void completed(GlobalKey? key) {
-    if (ids != null && ids![activeWidgetId!] == key) {
+  void completed(GlobalKey? key,OverlayEntry? overlayEntry) {
+    if (ids != null) {
       _onComplete();
-      activeWidgetId = activeWidgetId! + 1;
       _onStart();
 
-      if (activeWidgetId! >= ids!.length) {
+      if ( overlayEntry != null) {
         dismiss();
         _onFinish();
+        overlayEntry.remove();
+        overlayEntry = null;
       }
     }
     notifyListeners();

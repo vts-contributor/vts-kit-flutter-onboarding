@@ -175,7 +175,7 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
                     bottom: widget.direction == SheetDirection.bottom ? 0 : null,
                     child:
                         Align(
-                            alignment: widget.alignSheet ?? Alignment.center,
+                            alignment: widget.alignSheet ?? Alignment.bottomCenter,
                             child: Stack(
                               children: [
                                 SlideTransition(

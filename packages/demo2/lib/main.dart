@@ -4,6 +4,9 @@ import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_item.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/sheet_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 
 import 'package:vts_kit_flutter_onboarding/index.dart';
@@ -80,15 +83,20 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // OnboardingClient.start(
+      //     guideCode: "SHOW_3",
+      //     guideType: UIName.Sheet,
+      //     context: context,
+      //     payload: [_three]);
+      // OnboardingClient.start(
       //     guideCode: "SHOW_1",
       //     guideType: UIName.Tooltip,
       //     context: context,
       //     payload: [_three]);
-      OnboardingClient.start(
-          guideCode: "SHOW_2",
-          guideType: UIName.CAROUSEL,
-          context: context,
-          payload: _five);
+      // OnboardingClient.start(
+      //     guideCode: "SHOW_2",
+      //     guideType: UIName.Sheet,
+      //     context: context,
+      //     payload: [_five]);
 
       // OnboardingClient.start(
       //     guideCode: "SHOW_1",
@@ -96,15 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //     context: context,
       //     payload: [_seven]);
 
-      // OnboardingClient.start(
-      //     guideCode: "SHOW_1",
-      //     guideType: UIName.Tooltip,
-      //     context: context,
-      //     payload: [_six]);
     });
   }
-
-  int _counter = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -114,15 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+    return MaterialApp(
+      home: Scaffold(
+      // appBar: AppBar(
+      //   // Here we take the value from the MyHomePage object that was created by
+      //   // the App.build method, and use it to set our appbar title.
+      //   title: Text(widget.title),
+      // ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
@@ -139,115 +139,89 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            // TooltipItem(
-            //     key: _three,
-            //     description: "hehe",
-            //     child: const Text(
-            //       'Ban nang 55 can:',
-            //     )),
-            // TooltipItem(
-            //     key: _four,
-            //     description: "hehe",
-            //     child: const Text(
-            //       'Ban nang 55 can:',
-            //     )),
-            Expanded(
-                child: CarouselItem(
-              key: _five,
-              pageController: _pageController,
-              onSkip: () {
-                // print('12312');
-              },
-              action: () {
-                print('123123123123');
-              },
-              carouselData: carouselData,
-              titleStyles: const TextStyle(
-                color: Colors.redAccent,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.15,
-              ),
-              descriptionStyles: TextStyle(
-                fontSize: 16,
-                color: Colors.brown.shade300,
-              ),
-              pageIndicatorStyle: const PageIndicatorStyle(
-                width: 100,
-                inactiveColor: Colors.grey,
-                activeColor: Colors.red,
-                inactiveSize: Size(8, 8),
-                activeSize: Size(12, 12),
-              ),
-              // okWidget: BtnWidget(onClick: (){
-              //
-              // },
-              // ),
-              // cancelWidget: BtnWidget(onClick: (){
-              //
-              // },
-              // ),
-            )),
+            ElevatedButton(onPressed: (){
+              OnboardingClient.start(
+                  guideCode: "SHOW_1",
+                  guideType: UIName.Popup,
+                  context: context,
+                  payload: [_one]);
 
-            // PopupItem(
-            //   key: _three,
-            //   backgroundColor: Colors.white,
-            //   msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
-            //   title: 'Chào mừng bạn đến với Viettel-S',
-            //   image: "images/image.png",
-            //   popupWidth: kIsWeb ? 0.3 : null,
-            //   context: context,
-            //   actions: [
-            //     IconsButton(
-            //       onPressed: () {
-            //         Navigator.of(context).pop();
-            //       },
-            //       text: 'Bỏ qua',
-            //       color: Colors.white,
-            //       textStyle: const TextStyle(color: Colors.black),
-            //       iconColor: Colors.white,
-            //     ),
-            //     IconsButton(
-            //       onPressed: () {
-            //         Navigator.of(context).pop();
-            //       },
-            //       text: 'Đăng ký',
-            //       color: Colors.black,
-            //       textStyle: const TextStyle(color: Colors.white),
-            //       iconColor: Colors.white,
-            //     ),
-            //   ],
+            }, child: const Text('Popup')),
+            // ElevatedButton(onPressed: (){
+            //   OnboardingClient.start(
+            //       guideCode: "SHOW_2",
+            //       guideType: UIName.CAROUSEL,
+            //       context: context,
+            //       payload: _two);
+            //
+            // }, child: const Text('Carousel')),
+            //
+            // ElevatedButton(onPressed: (){
+            //   OnboardingClient.start(
+            //       guideCode: "SHOW_2",
+            //       guideType: UIName.Sheet,
+            //       context: context,
+            //       payload: [_three]);
+            //
+            // }, child: const Text('Sheet')),
+
+
+            // Expanded(
+            //   child: CarouselItem(
+            //     key: _two,
+            //     carouselData: const [CarouselModel(),
+            //                       CarouselModel(),
+            //                       CarouselModel()],
+            //     action: (){},
+            //     pageController: PageController()
+            //   )
             // ),
-            // PopupItem(
-            //   key: _four,
-            //   backgroundColor: Colors.white,
-            //   msg: 'Viettel Solutions',
-            //   title: 'Chào mừng bạn đến với Viettel-SS',
-            //   image: "images/image.png",
-            //   popupWidth: kIsWeb ? 0.3 : null,
-            //   context: context,
-            //   actions: [
-            //     IconsButton(
-            //       onPressed: () {
-            //         Navigator.of(context).pop();
-            //       },
-            //       text: 'Bỏ qua',
-            //       color: Colors.white,
-            //       textStyle: const TextStyle(color: Colors.black),
-            //       iconColor: Colors.white,
-            //     ),
-            //     IconsButton(
-            //       onPressed: () {
-            //         Navigator.of(context).pop();
-            //       },
-            //       text: 'Đăng ký',
-            //       color: Colors.black,
-            //       textStyle: const TextStyle(color: Colors.white),
-            //       iconColor: Colors.white,
-            //     ),
-            //   ],
-            // ),
+            TooltipItem(
+                key: _three,
+                description: "hehe",
+                child: const Text(
+                  'Ban nang 55 can:',
+                )
+            ),
+            TooltipItem(
+                key: _four,
+                description: "hehe",
+                child: const Text(
+                  'Ban nang 55 can:',
+                )),
+            //
+            // Expanded(child: SheetItem(key: _three, animationDuration: const Duration(seconds: 2)),),
+            PopupItem(
+              key: _one,
+              backgroundColor: Colors.white,
+              msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+              title: 'Chào mừng bạn đến với Viettel-S',
+              image: "images/image.png",
+              popupWidth: kIsWeb ? 0.3 : null,
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Bỏ qua',
+                  color: Colors.white,
+                  textStyle: const TextStyle(color: Colors.black),
+                  iconColor: Colors.white,
+                ),
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  text: 'Đăng ký',
+                  color: Colors.black,
+                  textStyle: const TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ],
+            ),
             // TooltipItem(
             //     key: _four,
             //     description: "haha",
@@ -261,39 +235,20 @@ class _MyHomePageState extends State<MyHomePage> {
             //       'Second:',
             //     )),
 
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            // Text(
+            //   '',
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
           ],
         ),
-      ),
+      )
       // floatingActionButton: FloatingActionButton(
       //   onPressed: _showDialog,
       //   tooltip: 'Increment',
       //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      // ),
+    // This trailing comma makes auto-formatting nicer for build methods.
+      )
     );
   }
 }
-
-final List<CarouselModel> carouselData = [
-  const CarouselModel(
-    title: "Chào mừng bạn đến với Viettel-S",
-    description:
-        "Hệ thống tiếp nhận giải quyết góp ý, phản ánh hiện trường Viettel Solution.",
-    imgUrl: "images/anh1.png",
-  ),
-  const CarouselModel(
-    title: "Gửi phản ánh nhanh chóng",
-    description:
-        "Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý",
-    imgUrl: 'images/anh2.png',
-  ),
-  const CarouselModel(
-    title: "Thông tin truyền thông",
-    description:
-        "Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT",
-    imgUrl: 'images/anh3.png',
-  ),
-];

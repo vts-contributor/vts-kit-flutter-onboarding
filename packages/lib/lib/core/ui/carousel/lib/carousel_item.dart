@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/context.dart';
 
 import 'package:flutter/services.dart';
-import 'carousel_model.dart';
 import 'carousel_widget.dart';
 import 'page_indicator_style_model.dart';
 
@@ -98,7 +97,8 @@ class CarouselItemState extends State<CarouselItem> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+
+
     context.read<CarouselContext>().addListener(() {
       showCarousel();
     });
@@ -132,120 +132,34 @@ class CarouselItemState extends State<CarouselItem> {
     }
     state.completed();
   }
-  //
-  //  static Future<void> carouselDialog({
-  //   required BuildContext context,
-  //    required GlobalKey key,
-  //   required List<CarouselModel> carouselData,
-  //   VoidCallback? onSkip,
-  //   required PageController pageController,
-  //   TextStyle? titleStyles,
-  //   TextStyle? descriptionStyles,
-  //   double? imageWidth,
-  //   double? imageHeight,
-  //   Widget? skipButton,
-  //   Widget? okWidget,
-  //   Widget? cancelWidget,
-  //   Duration duration = const Duration(milliseconds: 250),
-  //   Curve curve = Curves.easeInOut,
-  //   PageIndicatorStyle pageIndicatorStyle = const PageIndicatorStyle(
-  //       width: 150,
-  //       activeColor: Colors.blue,
-  //       inactiveColor: Colors.blueAccent,
-  //       activeSize: Size(12, 12),
-  //       inactiveSize: Size(8, 8)),
-  //   Function(int, int, bool)? onPageChanged
-  // }) async {
-  //   await showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return ChangeNotifierProvider<CarouselContext>(
-  //         create: (context) => CarouselContext(context: context),
-  //         child: MaterialApp(
-  //           home: Dialog(
-  //               insetPadding: EdgeInsets.zero,
-  //               backgroundColor: Colors.white,
-  //               child:CarouselWidget(
-  //                 carouselData: carouselData,
-  //                 pageController: pageController,
-  //                 onSkip: (){
-  //                   // _skip();
-  //                   // _skip();
-  //                 },
-  //                 titleStyles: titleStyles,
-  //                 descriptionStyles:descriptionStyles,
-  //                 imageWidth: imageWidth,
-  //                 imageHeight: imageHeight,
-  //                 skipButton: skipButton,
-  //                 okWidget: okWidget,
-  //                 cancelWidget: cancelWidget,
-  //                 duration: duration ,
-  //                 curve: curve,
-  //                 pageIndicatorStyle: pageIndicatorStyle,
-  //                 onPageChanged: _onPageChanged,
-  //               )
-  //           ),
-  //           // Rest of your app code...
-  //         ),
-  //       );
-  //       return  Dialog(
-  //           insetPadding: EdgeInsets.zero,
-  //           backgroundColor: Colors.white,
-  //           child:CarouselWidget(
-  //               carouselData: carouselData,
-  //               pageController: pageController,
-  //               onSkip: (){
-  //                 // _skip();
-  //                 // _skip();
-  //               },
-  //               titleStyles: titleStyles,
-  //               descriptionStyles:descriptionStyles,
-  //               imageWidth: imageWidth,
-  //               imageHeight: imageHeight,
-  //               skipButton: skipButton,
-  //               okWidget: okWidget,
-  //               cancelWidget: cancelWidget,
-  //               duration: duration ,
-  //               curve: curve,
-  //               pageIndicatorStyle: pageIndicatorStyle,
-  //               onPageChanged: _onPageChanged,
-  //               )
-  //       );
-  //     },
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
-
-      if(_showItem) {
+      if(_showItem ) {
         return Dialog(
-            insetPadding: EdgeInsets.zero,
-            backgroundColor: Colors.white,
-            child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: CarouselWidget(
-                  carouselData: widget.carouselData,
-                  pageController: widget.pageController,
-                  onSkip: () {
-                    _skip();
-                  },
-                  titleStyles: widget.titleStyles,
-                  descriptionStyles: widget.descriptionStyles,
-                  imageWidth: widget.imageWidth,
-                  imageHeight: widget.imageHeight,
-                  skipButton: widget.skipButton,
-                  okWidget: widget.okWidget,
-                  cancelWidget: widget.cancelWidget,
-                  duration: widget.duration,
-                  curve: widget.curve,
-                  pageIndicatorStyle: widget.pageIndicatorStyle,
-                  onPageChanged: _onPageChanged,
-                )
-            )
-        );
+                    insetPadding: EdgeInsets.zero,
+                    child: CarouselWidget(
+                      carouselData: widget.carouselData,
+                      pageController: widget.pageController,
+                      onSkip: () {
+                        _skip();
+                      },
+                      titleStyles: widget.titleStyles,
+                      descriptionStyles: widget.descriptionStyles,
+                      imageWidth: widget.imageWidth,
+                      imageHeight: widget.imageHeight,
+                      skipButton: widget.skipButton,
+                      okWidget: widget.okWidget,
+                      cancelWidget: widget.cancelWidget,
+                      duration: widget.duration,
+                      curve: widget.curve,
+                      pageIndicatorStyle: widget.pageIndicatorStyle,
+                      onPageChanged: _onPageChanged,
+                    )
+                );
       }
-    return  SizedBox.shrink();
+    return SizedBox.shrink();
   }
 }
+
+
