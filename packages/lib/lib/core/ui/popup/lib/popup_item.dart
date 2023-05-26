@@ -39,56 +39,58 @@ class PopupItem extends StatefulWidget {
 }
 
 class _PopupState extends State<PopupItem> {
-  ///[titleStyle] can be used to change the dialog title style
   static const TextStyle titleStyle =
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   PopupContext get state => context.read<PopupContext>();
+  OverlayEntry? _overlayEntry;
 
-  bool _showItem = false;
-  OverlayEntry? overlayEntryy;
-  bool _isOverlayVisible = false;
-
-  /// [dialogShape] dialog outer shape
   static const ShapeBorder dialogShape = const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(16)));
 
   static const CustomViewPosition customViewPosition =
       CustomViewPosition.BEFORE_TITLE;
 
-  Future<void> _nextIfAny(OverlayEntry? overlayEntry) async {
-    final activeStep = state.getActiveWidgetKey();
-    print(activeStep);
-    print(widget.key);
-    state.completed(widget.key,overlayEntry);
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<PopupContext>().addListener(() {
-      showPopup();
+      checkState();
     });
-
-
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    showPopup();
   }
 
-  void showPopup() {
-    final activeStep = state.getActiveWidgetKey();
-    setState(() {
-      _showItem = activeStep == widget.key;
-    });
+  void checkState() {
+    final showItem = state.activeWidgetId == widget.key;
+    if (showItem)
+      _show();
+    else
+      _hide();
   }
 
+  void _dismiss() {
+    state.dismiss(notify: true);
+  }
+
+  void _show() {
+    if (_overlayEntry == null) {
+      _overlayEntry = showDialogOverlay(context);
+      Overlay.of(context).insert(_overlayEntry!);
+    }
+  }
+
+  void _hide() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
 
   OverlayEntry showDialogOverlay(BuildContext context) {
-    OverlayEntry overlayEntry  = OverlayEntry(
+    OverlayEntry overlayEntry = OverlayEntry(
       builder: (BuildContext context) => Positioned.fill(
         child: GestureDetector(
           child: Container(
@@ -99,40 +101,45 @@ class _PopupState extends State<PopupItem> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Dialog(
-                      insetPadding: EdgeInsets.zero,
-                    backgroundColor: Colors.white,
-                    shape: widget.dialogShape == null ? dialogShape : widget.dialogShape,
-                    child: PopupWidget(
-                      title: widget.title,
-                      msg: widget.msg,
-                      image: widget.image,
-                      popupWidth: widget.popupWidth,
-                      actions: [
-                        IconsButton(
-                          onPressed: () {
-                            _nextIfAny(overlayEntryy);
-                          },
-                          text: 'Bỏ qua',
-                          color: Colors.white,
-                          textStyle: const TextStyle(color: Colors.black),
-                          iconColor: Colors.white,
-                        ),
-                        IconsButton(
-                          onPressed: () {
-                            _nextIfAny(overlayEntryy);
-                          },
-                          text: 'Đăng ký',
-                          color: Colors.black,
-                          textStyle: const TextStyle(color: Colors.white),
-                          iconColor: Colors.white,
-                        ),
-                      ],
-                      customViewPosition: widget.customViewPosition == null
-                          ? customViewPosition
-                          : widget.customViewPosition!,
-                      titleStyle: titleStyle,
-                      color: Colors.red,
-                    ))
+                        insetPadding: EdgeInsets.zero,
+                        backgroundColor: Colors.white,
+                        shape: widget.dialogShape == null
+                            ? dialogShape
+                            : widget.dialogShape,
+                        child: PopupWidget(
+                          title: widget.title,
+                          msg: widget.msg,
+                          image: widget.image,
+                          popupWidth: widget.popupWidth,
+                          actions: widget.actions ??
+                              [
+                                IconsButton(
+                                  onPressed: () {
+                                    _dismiss();
+                                  },
+                                  text: 'Bỏ qua',
+                                  color: Colors.white,
+                                  textStyle:
+                                      const TextStyle(color: Colors.black),
+                                  iconColor: Colors.white,
+                                ),
+                                IconsButton(
+                                  onPressed: () {
+                                    _dismiss();
+                                  },
+                                  text: 'Đăng ký',
+                                  color: Colors.black,
+                                  textStyle:
+                                      const TextStyle(color: Colors.white),
+                                  iconColor: Colors.white,
+                                ),
+                              ],
+                          customViewPosition: widget.customViewPosition == null
+                              ? customViewPosition
+                              : widget.customViewPosition!,
+                          titleStyle: titleStyle,
+                          color: Colors.red,
+                        ))
                   ],
                 ),
               ),
@@ -148,16 +155,6 @@ class _PopupState extends State<PopupItem> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_showItem && !_isOverlayVisible) {
-        overlayEntryy = showDialogOverlay(context);
-        Overlay.of(context).insert(overlayEntryy!);
-        setState(() {
-          _isOverlayVisible = true;
-        });
-      }
-    });
-
     return SizedBox.shrink();
   }
 }

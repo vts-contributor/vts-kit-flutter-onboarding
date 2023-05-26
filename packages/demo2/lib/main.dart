@@ -103,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
       //     guideType: UIName.CAROUSEL,
       //     context: context,
       //     payload: [_seven]);
-
     });
   }
 
@@ -116,139 +115,138 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return MaterialApp(
-      home: Scaffold(
-      // appBar: AppBar(
-      //   // Here we take the value from the MyHomePage object that was created by
-      //   // the App.build method, and use it to set our appbar title.
-      //   title: Text(widget.title),
-      // ),
-      body: Center(
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(onPressed: (){
-              OnboardingClient.start(
-                  guideCode: "SHOW_1",
-                  guideType: UIName.Popup,
-                  context: context,
-                  payload: [_one]);
-
-            }, child: const Text('Popup')),
-            // ElevatedButton(onPressed: (){
-            //   OnboardingClient.start(
-            //       guideCode: "SHOW_2",
-            //       guideType: UIName.CAROUSEL,
-            //       context: context,
-            //       payload: _two);
-            //
-            // }, child: const Text('Carousel')),
-            //
-            // ElevatedButton(onPressed: (){
-            //   OnboardingClient.start(
-            //       guideCode: "SHOW_2",
-            //       guideType: UIName.Sheet,
-            //       context: context,
-            //       payload: [_three]);
-            //
-            // }, child: const Text('Sheet')),
-
-
-            // Expanded(
-            //   child: CarouselItem(
-            //     key: _two,
-            //     carouselData: const [CarouselModel(),
-            //                       CarouselModel(),
-            //                       CarouselModel()],
-            //     action: (){},
-            //     pageController: PageController()
-            //   )
+        home: Scaffold(
+            // appBar: AppBar(
+            //   // Here we take the value from the MyHomePage object that was created by
+            //   // the App.build method, and use it to set our appbar title.
+            //   title: Text(widget.title),
             // ),
-            TooltipItem(
-                key: _three,
-                description: "hehe",
-                child: const Text(
-                  'Ban nang 55 can:',
-                )
-            ),
-            TooltipItem(
-                key: _four,
-                description: "hehe",
-                child: const Text(
-                  'Ban nang 55 can:',
-                )),
-            //
-            // Expanded(child: SheetItem(key: _three, animationDuration: const Duration(seconds: 2)),),
-            PopupItem(
-              key: _one,
-              backgroundColor: Colors.white,
-              msg: 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
-              title: 'Chào mừng bạn đến với Viettel-S',
-              image: "images/image.png",
-              popupWidth: kIsWeb ? 0.3 : null,
-              context: context,
-              actions: [
-                IconsButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  text: 'Bỏ qua',
-                  color: Colors.white,
-                  textStyle: const TextStyle(color: Colors.black),
-                  iconColor: Colors.white,
-                ),
-                IconsButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  text: 'Đăng ký',
-                  color: Colors.black,
-                  textStyle: const TextStyle(color: Colors.white),
-                  iconColor: Colors.white,
-                ),
-              ],
-            ),
-            // TooltipItem(
-            //     key: _four,
-            //     description: "haha",
-            //     child: const Text(
-            //       'Ban cao 1m8:',
-            //     )),
-            // TooltipItem(
-            //     key: _six,
-            //     description: "haha",
-            //     child: const Text(
-            //       'Second:',
-            //     )),
+            body: Center(
+      child: Column(
+        // Column is also a layout widget. It takes a list of children and
+        // arranges them vertically. By default, it sizes itself to fit its
+        // children horizontally, and tries to be as tall as its parent.
+        //
+        // Invoke "debug painting" (press "p" in the console, choose the
+        // "Toggle Debug Paint" action from the Flutter Inspector in Android
+        // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+        // to see the wireframe for each widget.
+        //
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+              onPressed: () {
+                OnboardingClient.start(
+                    guideCode: "SHOW_1",
+                    guideType: UIName.Popup,
+                    context: context,
+                    payload: _one);
+              },
+              child: const Text('Popup')),
+          // ElevatedButton(onPressed: (){
+          //   OnboardingClient.start(
+          //       guideCode: "SHOW_2",
+          //       guideType: UIName.CAROUSEL,
+          //       context: context,
+          //       payload: _two);
+          //
+          // }, child: const Text('Carousel')),
+          //
+          // ElevatedButton(onPressed: (){
+          //   OnboardingClient.start(
+          //       guideCode: "SHOW_2",
+          //       guideType: UIName.Sheet,
+          //       context: context,
+          //       payload: [_three]);
+          //
+          // }, child: const Text('Sheet')),
 
-            // Text(
-            //   '',
-            //   style: Theme.of(context).textTheme.headline4,
+          // Expanded(
+          //   child: CarouselItem(
+          //     key: _two,
+          //     carouselData: const [CarouselModel(),
+          //                       CarouselModel(),
+          //                       CarouselModel()],
+          //     action: (){},
+          //     pageController: PageController()
+          //   )
+          // ),
+          TooltipItem(
+              key: _three,
+              description: "hehe",
+              child: const Text(
+                'Ban nang 55 can:',
+              )),
+          TooltipItem(
+              key: _four,
+              description: "hehe",
+              child: const Text(
+                'Ban nang 55 can:',
+              )),
+          //
+          // Expanded(child: SheetItem(key: _three, animationDuration: const Duration(seconds: 2)),),
+          PopupItem(
+            key: _one,
+            backgroundColor: Colors.white,
+            msg:
+                'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
+            title: 'Chào mừng bạn đến với Viettel-S',
+            image: "images/image.png",
+            popupWidth: kIsWeb ? 0.3 : null,
+            context: context,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  OnboardingClient.dismiss();
+                },
+                text: 'Test Bỏ qua',
+                color: Colors.white,
+                textStyle: const TextStyle(color: Colors.black),
+                iconColor: Colors.white,
+              ),
+              IconsButton(
+                onPressed: () {
+                  OnboardingClient.dismiss();
+                },
+                text: 'Test Đăng ký',
+                color: Colors.black,
+                textStyle: const TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ],
+          ),
+          // TooltipItem(
+          //     key: _four,
+          //     description: "haha",
+          //     child: const Text(
+          //       'Ban cao 1m8:',
+          //     )),
+          // TooltipItem(
+          //     key: _six,
+          //     description: "haha",
+          //     child: const Text(
+          //       'Second:',
+          //     )),
+
+          // Text(
+          //   '',
+          //   style: Theme.of(context).textTheme.headline4,
+          // ),
+        ],
+      ),
+    )
+            // floatingActionButton: FloatingActionButton(
+            //   onPressed: _showDialog,
+            //   tooltip: 'Increment',
+            //   child: const Icon(Icons.add),
             // ),
-          ],
-        ),
-      )
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _showDialog,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ),
-    // This trailing comma makes auto-formatting nicer for build methods.
-      )
-    );
+            // This trailing comma makes auto-formatting nicer for build methods.
+            ));
   }
 }
