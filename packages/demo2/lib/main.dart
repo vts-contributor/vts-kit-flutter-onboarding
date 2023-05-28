@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_item.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/sheet_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 
 import 'package:vts_kit_flutter_onboarding/index.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
-        applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
+        applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
         debug: true,
         offline: false);
     OnboardingClient.initialize(options);
@@ -75,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _five = GlobalKey();
   final GlobalKey _six = GlobalKey();
   final GlobalKey _seven = GlobalKey();
-  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -149,48 +148,69 @@ class _MyHomePageState extends State<MyHomePage> {
                     payload: _one);
               },
               child: const Text('Popup')),
-          // ElevatedButton(onPressed: (){
-          //   OnboardingClient.start(
-          //       guideCode: "SHOW_2",
-          //       guideType: UIName.CAROUSEL,
-          //       context: context,
-          //       payload: _two);
-          //
-          // }, child: const Text('Carousel')),
-          //
-          // ElevatedButton(onPressed: (){
-          //   OnboardingClient.start(
-          //       guideCode: "SHOW_2",
-          //       guideType: UIName.Sheet,
-          //       context: context,
-          //       payload: [_three]);
-          //
-          // }, child: const Text('Sheet')),
+          ElevatedButton(
+              onPressed: () {
+                OnboardingClient.start(
+                    guideCode: "SHOW_2",
+                    guideType: UIName.CAROUSEL,
+                    context: context,
+                    payload: _two);
+              },
+              child: const Text('Carousel')),
 
-          // Expanded(
-          //   child: CarouselItem(
-          //     key: _two,
-          //     carouselData: const [CarouselModel(),
-          //                       CarouselModel(),
-          //                       CarouselModel()],
-          //     action: (){},
-          //     pageController: PageController()
-          //   )
-          // ),
-          TooltipItem(
-              key: _three,
-              description: "hehe",
-              child: const Text(
-                'Ban nang 55 can:',
+          ElevatedButton(onPressed: (){
+            OnboardingClient.start(
+                guideCode: "SHOW_2",
+                guideType: UIName.Sheet,
+                context: context,
+                payload: _three);
+
+          }, child: const Text('Sheet')),
+
+          CarouselItem(
+              key: _two,
+              carouselData: const [
+                CarouselModel(),
+                CarouselModel(),
+                CarouselModel()
+              ],
+              skipButton: Material(
+                  child: IconButton(
+                onPressed: () {
+                  OnboardingClient.dismiss();
+                },
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.grey,
+                ),
               )),
-          TooltipItem(
-              key: _four,
-              description: "hehe",
-              child: const Text(
-                'Ban nang 55 can:',
-              )),
+          ),
+          // TooltipItem(
+          //     key: _three,
+          //     description: "hehe",
+          //     child: const Text(
+          //       'Ban nang 55 can:',
+          //     )),
+          // TooltipItem(
+          //     key: _four,
+          //     description: "hehe",
+          //     child: const Text(
+          //       'Ban nang 55 can:',
+          //     )),
           //
-          // Expanded(child: SheetItem(key: _three, animationDuration: const Duration(seconds: 2)),),
+          SheetItem(
+              key: _three,
+              animationDuration: const Duration(seconds: 2),
+              direction: SheetDirection.top,
+              // closeIcon: Material(
+              //   child : IconButton(
+              //     icon: const Icon(Icons.close,color: Colors.grey,),
+              //     onPressed: () {
+              //       OnboardingClient.dismiss();
+              //     },
+              //   ),
+              // )
+          ),
           PopupItem(
             key: _one,
             backgroundColor: Colors.white,

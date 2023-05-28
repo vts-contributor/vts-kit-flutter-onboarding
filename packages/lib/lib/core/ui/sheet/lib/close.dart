@@ -35,15 +35,17 @@ class _CloseWidgetState extends State<CloseWidget>{
         child: CircleAvatar(
           maxRadius: widget.maxRadiusBgIcon ?? 12,
           backgroundColor: widget.bgColor ?? Colors.grey,
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            icon:  Icon(
-                widget.icon ?? Icons.close,
-                color: widget.colorIcon ?? Colors.white,
-                size: widget.sizeIcon?? 20
+          child: Material(
+            child: IconButton(
+                padding: EdgeInsets.zero,
+                icon:  Icon(
+                    widget.icon ?? Icons.close,
+                    color: widget.colorIcon ?? Colors.grey,
+                    size: widget.sizeIcon?? 20
+                ),
+                onPressed: widget.action
             ),
-            onPressed: widget.action
-          ),
+          )
         )
     ) ;
   }

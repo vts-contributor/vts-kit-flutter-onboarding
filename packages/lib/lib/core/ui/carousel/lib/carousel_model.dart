@@ -71,6 +71,7 @@ class CarouselModel extends StatelessWidget{
                   const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
                   ),
             ),
           ),
@@ -91,6 +92,8 @@ class CarouselModel extends StatelessWidget{
                   const TextStyle(
                     fontSize: 14,
                     color: Colors.black54,
+                    decoration: TextDecoration.none,
+
                   ),
             ),
           ),

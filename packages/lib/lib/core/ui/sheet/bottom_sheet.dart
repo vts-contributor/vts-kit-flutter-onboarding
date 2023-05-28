@@ -40,9 +40,8 @@ class UISheet implements UIAbstract {
     final context = action.context;
     final payload = action.payload;
     context.read<SheetContext>().start(payload);
-    return Task.waitUtil(() =>
-    context.read<SheetContext>().activeWidgetId == null &&
-        context.read<SheetContext>().ids == null).then((_) {
+    return Task.waitUtil(
+            () => context.read<SheetContext>().activeWidgetId == null).then((_) {
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
     });

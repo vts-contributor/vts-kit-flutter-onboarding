@@ -16,10 +16,6 @@ class CarouselWidget extends StatelessWidget {
   /// OnTapping skip button action
   final VoidCallback? onSkip;
 
-  /// Controller for [PageView]
-  /// @Required
-  final PageController pageController;
-
   /// Title text style
   final TextStyle? titleStyles;
 
@@ -58,7 +54,6 @@ class CarouselWidget extends StatelessWidget {
       {Key? key,
       required this.carouselData,
       this.onSkip,
-      required this.pageController,
       this.titleStyles,
       this.descriptionStyles,
       this.imageWidth,
@@ -82,7 +77,6 @@ class CarouselWidget extends StatelessWidget {
     return ProviderScope(
       child: _Carousel(
           carouselData: carouselData,
-          pageController: pageController,
           onSkip: onSkip,
           titleStyles: titleStyles,
           descriptionStyles: descriptionStyles,
@@ -107,9 +101,6 @@ class _Carousel extends StatefulWidget {
   /// OnTapping skip button action
   final VoidCallback? onSkip;
 
-  /// Controller for [PageView]
-  /// @Required
-  final PageController pageController;
 
   /// Title text style
   final TextStyle? titleStyles;
@@ -152,7 +143,6 @@ class _Carousel extends StatefulWidget {
       {Key? key,
       required this.carouselData,
       this.onSkip,
-      required this.pageController,
       this.titleStyles,
       this.descriptionStyles,
       this.imageWidth,
@@ -194,7 +184,6 @@ class _CarouselState extends State<_Carousel> {
   }
 
   _onSkip() {
-
     widget.onSkip?.call();
   }
 
@@ -225,7 +214,6 @@ class _CarouselState extends State<_Carousel> {
             child: SizedBox(
                 height: pageViewHeight,
                 child: PageView.builder(
-                  controller: widget.pageController,
                   onPageChanged: _onPageChanged,
                   itemCount: widget.carouselData.length,
                   itemBuilder: (BuildContext context, int index) {

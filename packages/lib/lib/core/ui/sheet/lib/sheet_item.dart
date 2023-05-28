@@ -30,6 +30,7 @@ class SheetItem extends StatefulWidget {
   final double? top;
   final double? bottom;
   final double? left;
+  final Widget? closeIcon;
 
 
 
@@ -55,6 +56,7 @@ class SheetItem extends StatefulWidget {
     this.top,
     this.bottom,
     this.left,
+    this.closeIcon
   });
 
   @override
@@ -68,14 +70,14 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
   Color barrierColorCurrent = Colors.grey;
 
   SheetContext get state => context.read<SheetContext>();
-  bool _showItem = false;
-  Timer? timer;
+  OverlayEntry? _overlayEntry;
+
 
 
   @override
   void initState() {
     context.read<SheetContext>().addListener(() {
-      showSheet();
+      checkState();
     });
 
     if(widget.barrierColor != null){
@@ -87,7 +89,7 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
     );
 
     _animation = Tween<Offset>(
-      begin:  Offset(0, widget.direction == SheetDirection.top ? -1 : 1),
+      begin: Offset(0, widget.direction == SheetDirection.top ? -1 : 1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -95,7 +97,6 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
     ));
 
     super.initState();
-    _animationController.forward();
   }
 
   @override
@@ -104,76 +105,62 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    showSheet();
+
+  void checkState() {
+    final showItem = state.activeWidgetId == widget.key;
+    if (showItem)
+      _show();
+    else
+      _hide();
   }
 
-  void _hideContainer() {
-    if (_isVisible) {
-      _animationController.reverse();
-      _animationController.reverse();
+  void _dismiss() {
+    state.dismiss(notify: true);
+  }
 
-      setState(() {
-        _isVisible = false;
+  void _show() {
+    if (_overlayEntry == null) {
+      _overlayEntry = showSheetOverlay(context);
+      Overlay.of(context).insert(_overlayEntry!);
+      _animationController.forward();
+
+    }
+  }
+
+  void _hide() {
+    if (_overlayEntry != null) {
+      _animationController.reverse().then((value) {
+        _overlayEntry!.remove();
+        _overlayEntry = null;
       });
     }
   }
 
-  void showSheet() {
-    final activeStep = state.getActiveWidgetKey();
-    setState(() {
-      _showItem = activeStep == widget.key;
-    });
-
-    if (activeStep == widget.key) {
-      if (state.autoPlay) {
-        timer =
-            Timer(Duration(seconds: state.autoPlayDelay.inSeconds), _nextIfAny);
-      }
-    }
-  }
-
-  Future<void> _nextIfAny() async {
-    if (timer != null && timer!.isActive) {
-      if (state.enableAutoPlayLock) {
-        return;
-      }
-      timer!.cancel();
-    } else if (timer != null && !timer!.isActive) {
-      timer = null;
-    }
-    state.completed(widget.key);
-  }
 
 
-  @override
-  Widget build(BuildContext context) {
-    if (_showItem)
-      return Scaffold(
-        body: WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-          child: Container(
-              color: barrierColorCurrent.withOpacity(_isVisible ? widget.barrierOpacity ?? 0.6 : 0),
-              child: Stack(
-                children: [
-                  Expanded(
-                      child: GestureDetector(
+  OverlayEntry showSheetOverlay(BuildContext context) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => AnimatedBuilder(
+          animation: _animationController,
+          builder: (BuildContext context,Widget? child) {
+              return Container(
+                  color: barrierColorCurrent.withOpacity(widget.barrierOpacity ?? 0.6),
+                  child: Stack(
+                    children: [
+                      GestureDetector(
                           onTap: (){
-                            _hideContainer();
-
+                            if(!state.disableBarrierInteraction){
+                              _dismiss();
+                            }
                           },
                           child: Container(
                             color: Colors.transparent,
                           )
-                      ) ),
-                  Positioned(
-                    top: widget.direction == SheetDirection.top ? 0 : null,
-                    bottom: widget.direction == SheetDirection.bottom ? 0 : null,
-                    child:
+                      ) ,
+                      Positioned(
+                        top: widget.direction == SheetDirection.top ? 0 : null,
+                        bottom: widget.direction == SheetDirection.bottom ? 0 : null,
+                        child:
                         Align(
                             alignment: widget.alignSheet ?? Alignment.bottomCenter,
                             child: Stack(
@@ -203,12 +190,9 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
                                               left: widget.left,
                                               top: widget.top,
                                               bottom: widget.bottom,
-                                              child: CloseWidget(
+                                              child: widget.closeIcon ?? CloseWidget(
                                                 action: (){
-                                                  if (!state.disableBarrierInteraction) {
-                                                    _nextIfAny();
-                                                  }
-                                                  widget.onActionClick?.call();
+                                                  _dismiss();
                                                 },
                                               )
                                           )
@@ -219,11 +203,18 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
                               ],
                             )
                         ),
-                  )
-                ],
-              ))
-        )
-      );
+                      )
+                    ],
+                  ));
+          }
+      )
+    );
+    return overlayEntry;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox.shrink();
   }
 }

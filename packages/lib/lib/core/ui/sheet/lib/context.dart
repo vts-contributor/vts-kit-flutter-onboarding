@@ -17,13 +17,13 @@ class SheetContext extends ChangeNotifier {
   /// Default to `false`
   final bool enableAutoPlayLock;
 
-  /// Whether disabling bouncing/moving animation for all bottomsheet
+  /// Whether disabling bouncing/moving animation for all sheet
   /// while highlighting
   ///
   /// Default to `false`
   final bool disableMovingAnimation;
 
-  /// Whether disabling initial scale animation for all the default bottomsheet
+  /// Whether disabling initial scale animation for all the default sheet
   /// when item is started and completed
   ///
   /// Default to `false`
@@ -60,124 +60,89 @@ class SheetContext extends ChangeNotifier {
         required this.context});
 
   // State
-  List<GlobalKey>? ids;
-  int? activeWidgetId;
-  List<VoidCallback> _onFinishCb = [];
-  List<Function(int?, GlobalKey)> _onStartCb = [];
-  List<Function(int?, GlobalKey)> _onCompleteCb = [];
-
-  GlobalKey? getActiveWidgetKey() {
-    if (ids == null || ids!.isEmpty || activeWidgetId == null) return null;
-    return ids!.elementAt(activeWidgetId!);
-  }
+  GlobalKey? activeWidgetId;
+  List<Function()> _onStartCb = [];
+  List<Function()> _onCompleteCb = [];
 
   /// Starts SheetItem view from the beginning of specified list of widget ids.
   /// If this function is used when item has been disabled then it will
   /// throw an exception.
-  void start(List<GlobalKey> widgetIds) {
-    ids = widgetIds;
-    activeWidgetId = 0;
+  void start(GlobalKey widgetId) {
+    activeWidgetId = widgetId;
     notifyListeners();
     _onStart();
   }
 
   /// Completes item of given key and starts next one
   /// otherwise will finish the entire item view
-  void completed(GlobalKey? key) {
-    if (ids != null && ids![activeWidgetId!] == key) {
-      _onComplete();
-      activeWidgetId = activeWidgetId! + 1;
-      _onStart();
+  // void completed(GlobalKey? key, OverlayEntry? overlayEntry) {
 
-      if (activeWidgetId! >= ids!.length) {
-        dismiss();
-        _onFinish();
-      }
-    }
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
   /// Completes current active item and starts next one
   /// otherwise will finish the entire item view
-  void next() {
-    if (ids != null) {
-      _onComplete();
-      activeWidgetId = activeWidgetId! + 1;
-      _onStart();
+  // void next() {
+  //   if (ids != null) {
+  //     _onComplete();
+  //     activeWidgetId = activeWidgetId! + 1;
+  //     _onStart();
 
-      if (activeWidgetId! >= ids!.length) {
-        dismiss();
-        _onFinish();
-      }
-    }
-    notifyListeners();
-  }
+  //     if (activeWidgetId! >= ids!.length) {
+  //       dismiss();
+  //       _onFinish();
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
 
   /// Completes current active item and starts previous one
   /// otherwise will finish the entire item view
-  void previous() {
-    if (ids != null && ((activeWidgetId ?? 0) - 1) >= 0) {
-      _onComplete();
-      activeWidgetId = activeWidgetId! - 1;
-      _onStart();
-      if (activeWidgetId! >= ids!.length) {
-        dismiss();
-        _onFinish();
-      }
-    }
-    notifyListeners();
-  }
+  // void previous() {
+  //   if (ids != null && ((activeWidgetId ?? 0) - 1) >= 0) {
+  //     _onComplete();
+  //     activeWidgetId = activeWidgetId! - 1;
+  //     _onStart();
+  //     if (activeWidgetId! >= ids!.length) {
+  //       dismiss();
+  //       _onFinish();
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
 
   /// Dismiss entire item view
   void dismiss({notify = false}) {
-    ids = null;
     activeWidgetId = null;
     if (notify) notifyListeners();
+    _onComplete();
   }
 
   void _onStart() {
-    if (activeWidgetId! < ids!.length) {
-      _onStartCb.forEach((func) {
-        func.call(activeWidgetId, ids![activeWidgetId!]);
-      });
-    }
-  }
-
-  void _onComplete() {
-    _onCompleteCb.forEach((func) {
-      func.call(activeWidgetId, ids![activeWidgetId!]);
-    });
-  }
-
-  void _onFinish() {
-    _onFinishCb.forEach((func) {
-      print('123213');
+    _onStartCb.forEach((func) {
       func.call();
     });
   }
 
-  void onStart(Function(int?, GlobalKey) func) {
+  void _onComplete() {
+    _onCompleteCb.forEach((func) {
+      func.call();
+    });
+  }
+
+  void onStart(Function() func) {
     this._onStartCb.add(func);
   }
 
-  void onComplete(Function(int?, GlobalKey) func) {
+  void onComplete(Function() func) {
     this._onCompleteCb.add(func);
   }
 
-  void onFinish(VoidCallback func) {
-    this._onFinishCb.add(func);
-  }
-
-  void offStart(Function(int?, GlobalKey) func) {
+  void offStart(Function() func) {
     this._onStartCb.removeWhere((element) => element == func);
   }
 
-  void offComplete(Function(int?, GlobalKey) func) {
+  void offComplete(Function() func) {
     this._onCompleteCb.removeWhere((element) => element == func);
   }
-
-  void offFinish(VoidCallback func) {
-    this._onFinishCb.removeWhere((element) => element == func);
-  }
-
 }

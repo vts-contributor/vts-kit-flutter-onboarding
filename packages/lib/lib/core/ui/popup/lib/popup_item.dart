@@ -58,10 +58,6 @@ class _PopupState extends State<PopupItem> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
 
   void checkState() {
     final showItem = state.activeWidgetId == widget.key;
@@ -77,7 +73,7 @@ class _PopupState extends State<PopupItem> {
 
   void _show() {
     if (_overlayEntry == null) {
-      _overlayEntry = showDialogOverlay(context);
+      _overlayEntry = showCarouselOverlay(context);
       Overlay.of(context).insert(_overlayEntry!);
     }
   }
@@ -89,7 +85,7 @@ class _PopupState extends State<PopupItem> {
     }
   }
 
-  OverlayEntry showDialogOverlay(BuildContext context) {
+  OverlayEntry showCarouselOverlay(BuildContext context) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (BuildContext context) => Positioned.fill(
         child: GestureDetector(
@@ -102,7 +98,7 @@ class _PopupState extends State<PopupItem> {
                   children: [
                     Dialog(
                         insetPadding: EdgeInsets.zero,
-                        backgroundColor: Colors.white,
+                        backgroundColor: widget.backgroundColor ?? Colors.white,
                         shape: widget.dialogShape == null
                             ? dialogShape
                             : widget.dialogShape,
@@ -150,7 +146,7 @@ class _PopupState extends State<PopupItem> {
     );
 
     // overlayState.insert(overlayEntry!);
-    return overlayEntry!;
+    return overlayEntry;
   }
 
   @override

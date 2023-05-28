@@ -18,9 +18,6 @@ class CarouselItem extends StatefulWidget {
   /// OnTapping skip button action
   final VoidCallback? onSkip;
 
-  /// Controller for [PageView]
-  /// @Required
-  final PageController pageController;
 
   /// Title text style
   final TextStyle? titleStyles;
@@ -43,6 +40,8 @@ class CarouselItem extends StatefulWidget {
   ///  Button Widget
   final Widget? cancelWidget;
 
+  final Color? bgColor;
+
   /// Animation [Duration] for transition from one page to another
   /// @Default [Duration(milliseconds:250)]
   final Duration duration;
@@ -54,7 +53,6 @@ class CarouselItem extends StatefulWidget {
   /// [PageIndicatorStyle] dot styles
   final PageIndicatorStyle pageIndicatorStyle;
 
-  final VoidCallback action;
 
   final VoidCallback? onActionSwipe;
 
@@ -64,9 +62,7 @@ class CarouselItem extends StatefulWidget {
     required this.key,
     this.onActionSwipe,
     required this.carouselData,
-    required this.action,
     this.onSkip,
-    required this.pageController,
     this.titleStyles,
     this.descriptionStyles,
     this.imageWidth,
@@ -78,10 +74,11 @@ class CarouselItem extends StatefulWidget {
     this.curve = Curves.easeInOut,
     this.pageIndicatorStyle = const PageIndicatorStyle(
         width: 150,
-        activeColor: Colors.blue,
-        inactiveColor: Colors.blueAccent,
+        activeColor: Colors.red,
+        inactiveColor: Colors.redAccent,
         activeSize: Size(12, 12),
         inactiveSize: Size(8, 8)),
+    this.bgColor,
   });
 
   @override
@@ -92,72 +89,98 @@ class CarouselItemState extends State<CarouselItem> {
   CarouselContext get state => context.read<CarouselContext>();
   bool _showItem = false;
   Timer? timer;
+  OverlayEntry? _overlayEntry;
 
 
   @override
   void initState() {
     super.initState();
-
-
     context.read<CarouselContext>().addListener(() {
-      showCarousel();
+      checkState();
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    showCarousel();
-  }
-
-  void showCarousel() {
-    final activeWidgetKey = state.activeWidgetKey;
-    setState(() {
-      _showItem = activeWidgetKey == widget.key;
-    });
-  }
 
   void _onPageChanged(int page, int pageLength, bool forward) {
     state.next(page, pageLength, forward);
   }
 
-  Future<void> _skip() async {
-    if (timer != null && timer!.isActive) {
-      if (state.enableAutoPlayLock) {
-        return;
-      }
-      timer!.cancel();
-    } else if (timer != null && !timer!.isActive) {
-      timer = null;
+  void checkState() {
+    final showItem = state.activeWidgetKey == widget.key;
+    if (showItem)
+      _show();
+    else
+      _hide();
+  }
+
+
+  void _dismiss() {
+    state.dismiss(manual: true);
+  }
+
+
+  void _show() {
+    if (_overlayEntry == null) {
+      _overlayEntry = showDialogOverlay(context);
+      Overlay.of(context).insert(_overlayEntry!);
     }
-    state.completed();
+  }
+
+  void _hide() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
+
+
+  OverlayEntry showDialogOverlay(BuildContext context) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => Positioned.fill(
+        child: GestureDetector(
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: Container(
+                color: widget.bgColor ?? Colors.white,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child:
+                        CarouselWidget(
+                          carouselData: widget.carouselData,
+                          onSkip: () {
+                            _dismiss();
+                          },
+                          titleStyles: widget.titleStyles,
+                          descriptionStyles: widget.descriptionStyles,
+                          imageWidth: widget.imageWidth,
+                          imageHeight: widget.imageHeight,
+                          skipButton: widget.skipButton,
+                          okWidget: widget.okWidget,
+                          cancelWidget: widget.cancelWidget,
+                          duration: widget.duration,
+                          curve: widget.curve,
+                          pageIndicatorStyle: widget.pageIndicatorStyle,
+                          onPageChanged: _onPageChanged,
+                        )
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // overlayState.insert(overlayEntry!);
+    return overlayEntry;
   }
 
   @override
   Widget build(BuildContext context) {
-      if(_showItem ) {
-        return Dialog(
-                    insetPadding: EdgeInsets.zero,
-                    child: CarouselWidget(
-                      carouselData: widget.carouselData,
-                      pageController: widget.pageController,
-                      onSkip: () {
-                        _skip();
-                      },
-                      titleStyles: widget.titleStyles,
-                      descriptionStyles: widget.descriptionStyles,
-                      imageWidth: widget.imageWidth,
-                      imageHeight: widget.imageHeight,
-                      skipButton: widget.skipButton,
-                      okWidget: widget.okWidget,
-                      cancelWidget: widget.cancelWidget,
-                      duration: widget.duration,
-                      curve: widget.curve,
-                      pageIndicatorStyle: widget.pageIndicatorStyle,
-                      onPageChanged: _onPageChanged,
-                    )
-                );
-      }
     return SizedBox.shrink();
   }
 }
