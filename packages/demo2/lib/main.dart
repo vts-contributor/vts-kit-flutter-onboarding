@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/icon_button.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_item.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/enum.dart';
@@ -27,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
-        applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
+        applicationId: '6a35254d-1882-40fc-aa4d-77a81bf136ca',
         debug: true,
         offline: false);
     OnboardingClient.initialize(options);
@@ -80,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // OnboardingClient.start(
       //     guideCode: "SHOW_3",
@@ -107,35 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return MaterialApp(
+        debugShowCheckedModeBanner : false,
         home: Scaffold(
-            // appBar: AppBar(
-            //   // Here we take the value from the MyHomePage object that was created by
-            //   // the App.build method, and use it to set our appbar title.
-            //   title: Text(widget.title),
-            // ),
             body: Center(
       child: Column(
-        // Column is also a layout widget. It takes a list of children and
-        // arranges them vertically. By default, it sizes itself to fit its
-        // children horizontally, and tries to be as tall as its parent.
-        //
-        // Invoke "debug painting" (press "p" in the console, choose the
-        // "Toggle Debug Paint" action from the Flutter Inspector in Android
-        // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-        // to see the wireframe for each widget.
-        //
-        // Column has various properties to control how it sizes itself and
-        // how it positions its children. Here we use mainAxisAlignment to
-        // center the children vertically; the main axis here is the vertical
-        // axis because Columns are vertical (the cross axis would be
-        // horizontal).
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -170,20 +148,80 @@ class _MyHomePageState extends State<MyHomePage> {
           CarouselItem(
               key: _two,
               carouselData: const [
-                CarouselModel(),
-                CarouselModel(),
-                CarouselModel()
-              ],
-              skipButton: Material(
-                  child: IconButton(
-                onPressed: () {
-                  OnboardingClient.dismiss();
-                },
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.grey,
+                CarouselModel(
+                  title: 'Chào mừng bạn đến với Viettel-S',
+                  description: 'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                  imgUrl: 'images/anh1.png',
                 ),
-              )),
+                CarouselModel(
+                  title: 'Gửi phản ánh nhanh chóng',
+                  description: 'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                  imgUrl: 'images/anh2.png',
+                ),
+                CarouselModel(
+                  title: 'Thông tin truyền thông',
+                  description: 'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
+                  imgUrl: 'images/anh3.png',
+                )
+              ],
+              footerWidget:Padding(
+                padding: const EdgeInsets.only(top: 40,bottom: 30,left: 10,right: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 350,
+                      height: 40,
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: const BorderSide(color: Colors.red)
+                                )
+                            )
+                          ),
+                          onPressed: (){
+                          },
+                          child: const Text(
+                              "Đăng nhập",style: TextStyle(color: Colors.white),
+                          )
+                      ),
+                    ),
+                    const SizedBox(height: 20,),
+                    SizedBox(
+                      width: 350,
+                      height: 40,
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: const BorderSide(color: Colors.red)
+                                )
+                            )
+                          ),
+                          onPressed: (){
+                          },
+                          child: const Text(
+                              "Bỏ qua",style: TextStyle(color: Colors.red),
+                          )
+                      ),
+                    ),
+                  ],
+                )
+              ) ,
+              skipButton: IconButton(
+                  onPressed: () {
+                    OnboardingClient.dismiss();
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.grey,
+                  ),
+                )
           ),
           // TooltipItem(
           //     key: _three,
@@ -200,8 +238,8 @@ class _MyHomePageState extends State<MyHomePage> {
           //
           SheetItem(
               key: _three,
-              animationDuration: const Duration(seconds: 2),
-              direction: SheetDirection.top,
+              animationDuration: const Duration(seconds: 1),
+              direction: SheetDirection.bottom,
               // closeIcon: Material(
               //   child : IconButton(
               //     icon: const Icon(Icons.close,color: Colors.grey,),
@@ -218,28 +256,65 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Hệ thống tiếp nhận giải quyết góp ,phản ánh hiện trường Viettel-Solution',
             title: 'Chào mừng bạn đến với Viettel-S',
             image: "images/image.png",
-            popupWidth: kIsWeb ? 0.3 : null,
+            popupWidth: MediaQuery.of(context).size.width,
+            insetPadding: EdgeInsets.zero,
+            modeViewport: PopupViewport.half,
             context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  OnboardingClient.dismiss();
-                },
-                text: 'Test Bỏ qua',
-                color: Colors.white,
-                textStyle: const TextStyle(color: Colors.black),
-                iconColor: Colors.white,
+            footerWidget: Padding(
+              padding: const EdgeInsets.only(left: 20,right: 20,top: 30,bottom: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: 150,
+                    height: 40,
+                    child: IconsButton(
+                      onPressed: () {
+                        OnboardingClient.dismiss();
+                      },
+                      text: 'Test Bỏ qua',
+                      color: Colors.white,
+                      textStyle: const TextStyle(color: Colors.black),
+                      iconColor: Colors.white,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 150,
+                    height: 40,
+                    child: IconsButton(
+                      onPressed: () {
+                        OnboardingClient.dismiss();
+                      },
+                      text: 'Test Đăng ký',
+                      color: Colors.black,
+                      textStyle: const TextStyle(color: Colors.white),
+                      iconColor: Colors.white,
+                    ),
+                  )
+
+                ],
               ),
-              IconsButton(
-                onPressed: () {
-                  OnboardingClient.dismiss();
-                },
-                text: 'Test Đăng ký',
-                color: Colors.black,
-                textStyle: const TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ],
+            )
+            // actions: [
+            //   IconsButton(
+            //     onPressed: () {
+            //       OnboardingClient.dismiss();
+            //     },
+            //     text: 'Test Bỏ qua',
+            //     color: Colors.white,
+            //     textStyle: const TextStyle(color: Colors.black),
+            //     iconColor: Colors.white,
+            //   ),
+            //   IconsButton(
+            //     onPressed: () {
+            //       OnboardingClient.dismiss();
+            //     },
+            //     text: 'Test Đăng ký',
+            //     color: Colors.black,
+            //     textStyle: const TextStyle(color: Colors.white),
+            //     iconColor: Colors.white,
+            //   ),
+            // ],
           ),
           // TooltipItem(
           //     key: _four,
@@ -261,12 +336,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     )
-            // floatingActionButton: FloatingActionButton(
-            //   onPressed: _showDialog,
-            //   tooltip: 'Increment',
-            //   child: const Icon(Icons.add),
-            // ),
-            // This trailing comma makes auto-formatting nicer for build methods.
             ));
   }
 }

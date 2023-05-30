@@ -6,6 +6,7 @@ import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_widget.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 
+import 'enum.dart';
 import 'icon_button.dart';
 
 class PopupItem extends StatefulWidget {
@@ -14,12 +15,15 @@ class PopupItem extends StatefulWidget {
   final Color? backgroundColor;
   final String msg;
   final String title;
-  final List<Widget>? actions;
   final double? popupWidth;
   final BuildContext context;
   final ShapeBorder? dialogShape;
   final CustomViewPosition? customViewPosition;
   final String? image;
+  final EdgeInsets? insetPadding;
+  final PopupViewport? modeViewport;
+  final double? popupHeight;
+  final Widget? footerWidget;
 
   PopupItem(
       {required this.key,
@@ -27,12 +31,16 @@ class PopupItem extends StatefulWidget {
       this.backgroundColor,
       required this.msg,
       required this.title,
-      this.actions,
       this.popupWidth,
       required this.context,
       this.dialogShape,
       this.customViewPosition,
-      this.image});
+      this.image,
+      this.insetPadding,
+      this.modeViewport,
+      this.popupHeight,
+      this.footerWidget
+  });
 
   @override
   State<StatefulWidget> createState() => _PopupState();
@@ -97,7 +105,7 @@ class _PopupState extends State<PopupItem> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Dialog(
-                        insetPadding: EdgeInsets.zero,
+                        insetPadding: widget.insetPadding ?? EdgeInsets.symmetric(horizontal: 20),
                         backgroundColor: widget.backgroundColor ?? Colors.white,
                         shape: widget.dialogShape == null
                             ? dialogShape
@@ -107,29 +115,11 @@ class _PopupState extends State<PopupItem> {
                           msg: widget.msg,
                           image: widget.image,
                           popupWidth: widget.popupWidth,
-                          actions: widget.actions ??
-                              [
-                                IconsButton(
-                                  onPressed: () {
-                                    _dismiss();
-                                  },
-                                  text: 'Bỏ qua',
-                                  color: Colors.white,
-                                  textStyle:
-                                      const TextStyle(color: Colors.black),
-                                  iconColor: Colors.white,
-                                ),
-                                IconsButton(
-                                  onPressed: () {
-                                    _dismiss();
-                                  },
-                                  text: 'Đăng ký',
-                                  color: Colors.black,
-                                  textStyle:
-                                      const TextStyle(color: Colors.white),
-                                  iconColor: Colors.white,
-                                ),
-                              ],
+                          popupHeight: widget.popupHeight,
+                          modeViewport: widget.modeViewport,
+                          footerWidget: widget.footerWidget,
+                          actions: widget.footerWidget == null ?
+                              actionDefault() : [],
                           customViewPosition: widget.customViewPosition == null
                               ? customViewPosition
                               : widget.customViewPosition!,
@@ -147,6 +137,32 @@ class _PopupState extends State<PopupItem> {
 
     // overlayState.insert(overlayEntry!);
     return overlayEntry;
+  }
+
+
+  List<Widget> actionDefault(){
+    return [
+      IconsButton(
+        onPressed: () {
+          _dismiss();
+        },
+        text: 'Bỏ qua',
+        color: Colors.white,
+        textStyle:
+        const TextStyle(color: Colors.black),
+        iconColor: Colors.white,
+      ),
+      IconsButton(
+        onPressed: () {
+          _dismiss();
+        },
+        text: 'Đăng ký',
+        color: Colors.black,
+        textStyle:
+        const TextStyle(color: Colors.white),
+        iconColor: Colors.white,
+      ),
+    ];
   }
 
   @override

@@ -93,7 +93,7 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: widget.curve ?? Curves.bounceOut,
+      curve: widget.curve ?? Curves.easeOut,
     ));
 
     super.initState();

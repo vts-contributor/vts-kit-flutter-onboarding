@@ -31,11 +31,8 @@ class CarouselWidget extends StatelessWidget {
   /// Skip Button Widget
   final Widget? skipButton;
 
-  ///  Button Widget
-  final Widget? okWidget;
-
-  ///  Button Widget
-  final Widget? cancelWidget;
+  ///  footer Widget
+  final Widget? footerWidget;
 
   /// Animation [Duration] for transition from one page to another
   /// @Default [Duration(milliseconds:250)]
@@ -59,8 +56,7 @@ class CarouselWidget extends StatelessWidget {
       this.imageWidth,
       this.imageHeight,
       this.skipButton,
-      this.okWidget,
-      this.cancelWidget,
+      this.footerWidget,
       this.duration = const Duration(milliseconds: 250),
       this.curve = Curves.easeInOut,
       this.pageIndicatorStyle = const PageIndicatorStyle(
@@ -83,8 +79,7 @@ class CarouselWidget extends StatelessWidget {
           imageWidth: imageWidth,
           imageHeight: imageHeight,
           skipButton: skipButton,
-          okWidget: okWidget,
-          cancelWidget: cancelWidget,
+          footerWidget: footerWidget,
           duration: duration,
           curve: curve,
           pageIndicatorStyle: pageIndicatorStyle,
@@ -117,11 +112,9 @@ class _Carousel extends StatefulWidget {
   /// Skip Button Widget
   final Widget? skipButton;
 
-  /// Oke Button Widget
-  final Widget? okWidget;
+  /// footer Widget
+  final Widget? footerWidget;
 
-  /// Oke Button Widget
-  final Widget? cancelWidget;
 
   /// Animation [Duration] for transition from one page to another
   /// @Default [Duration(milliseconds:250)]
@@ -148,8 +141,7 @@ class _Carousel extends StatefulWidget {
       this.imageWidth,
       this.imageHeight,
       this.skipButton,
-      this.okWidget,
-      this.cancelWidget,
+      this.footerWidget,
       this.duration = const Duration(milliseconds: 250),
       this.curve = Curves.easeInOut,
       this.pageIndicatorStyle = const PageIndicatorStyle(
@@ -201,14 +193,17 @@ class _CarouselState extends State<_Carousel> {
           Container(
             height: skipContainerHeight,
             alignment: Alignment.centerRight,
-            child: widget.skipButton ??
-                TextButton(
-                  onPressed: _onSkip,
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.grey,
+            child: Material(
+              color: Colors.transparent,
+              child: widget.skipButton ??
+                  IconButton(
+                    onPressed: _onSkip,
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
+            )
           ),
           Expanded(
             child: SizedBox(
@@ -231,29 +226,7 @@ class _CarouselState extends State<_Carousel> {
               pageIndicatorStyle: widget.pageIndicatorStyle,
             ),
           ),
-          const SizedBox(height: 10),
-          widget.okWidget ??
-              BtnWidget(
-                  text: "Đăng nhập",
-                  onClick: () {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Center(child: Text("Đăng nhập")),
-                        backgroundColor: Colors.red));
-                  }),
-          const SizedBox(
-            height: 10,
-          ),
-          widget.cancelWidget ??
-              BtnWidget(
-                text: "Đăng ký",
-                onClick: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Center(child: Text("Đăng ký")),
-                      backgroundColor: Colors.red));
-                },
-                colorBgBtn: Colors.transparent,
-                colorText: Colors.red,
-              ),
+          widget.footerWidget ?? SizedBox.shrink(),
           const SizedBox(
             height: marginBottom,
           )

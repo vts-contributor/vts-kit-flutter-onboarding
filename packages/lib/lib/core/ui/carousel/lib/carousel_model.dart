@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CarouselModel extends StatelessWidget{
-  final String? title;
-  final String? description;
-  final String? imgUrl;
+  final String title;
+  final String description;
+  final String imgUrl;
   final double? imageWidth;
   final double? imageHeight;
   final BoxFit? fitImage;
@@ -22,9 +22,9 @@ class CarouselModel extends StatelessWidget{
 
 
   const CarouselModel({
-    this.title,
-    this.description,
-    this.imgUrl,
+    required this.title,
+    required this.description,
+    required this.imgUrl,
     this.imageWidth,
     this.imageHeight,
     this.fitImage,
@@ -44,61 +44,63 @@ class CarouselModel extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Image.asset(
-              imgUrl ?? "images/anh1.png",
-              width: imageWidth,
-              height: imageHeight,
-              fit: fitImage ?? BoxFit.contain,
+    return Material(
+      color: Colors.white,
+      child: SizedBox(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Image.asset(
+                imgUrl ?? "images/anh1.png",
+                width: imageWidth,
+                height: imageHeight,
+                fit: fitImage ?? BoxFit.contain,
+              ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(
-                      horizontal: titleMarginHorizontal ?? 12,
-                      vertical: titleMarginVertical ?? 0,
+            Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: titleMarginHorizontal ?? 12,
+                vertical: titleMarginVertical ?? 0,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: titlePaddingHorizontal ?? 0,
+                vertical: titlePaddingVertical ?? 0,
+              ),
+              child: Text(
+                title ?? "Chào mừng bạn đến với Viettel-S",
+                textAlign: alignTitle ?? TextAlign.center,
+                style: titleStyle ??
+                    const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
                     ),
-            padding: EdgeInsets.symmetric(
-                        horizontal: titlePaddingHorizontal ?? 0,
-                        vertical: titlePaddingVertical ?? 0,
-                      ),
-            child: Text(
-              title ?? "Chào mừng bạn đến với Viettel-S",
-              textAlign: alignTitle ?? TextAlign.center,
-              style: titleStyle ??
-                  const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
-                  ),
+              ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: descriptionMarginHorizontal ?? 12,
-              vertical: descriptionMarginVertical ?? 0,
+            Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: descriptionMarginHorizontal ?? 12,
+                vertical: descriptionMarginVertical ?? 0,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: descriptionPaddingHorizontal ?? 0,
+                vertical: descriptionPaddingVertical ?? 12,
+              ),
+              child: Text(
+                description ?? "Hệ thống tiếp nhận giải quyết góp ý"
+                    ",phản ảnh hiện trường Viettel Solution.",
+                textAlign: alignDescription ?? TextAlign.center,
+                style: descriptionStyles ??
+                    const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      decoration: TextDecoration.none,
+                    ),
+              ),
             ),
-            padding: EdgeInsets.symmetric(
-              horizontal: descriptionPaddingHorizontal ?? 0,
-              vertical: descriptionPaddingVertical ?? 12,
-            ),
-            child: Text(
-               description ?? "Hệ thống tiếp nhận giải quyết góp ý"
-                  ",phản ảnh hiện trường Viettel Solution.",
-              textAlign: alignDescription ?? TextAlign.center,
-              style: descriptionStyles ??
-                  const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                    decoration: TextDecoration.none,
-
-                  ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
+    ) ;
   }
 }

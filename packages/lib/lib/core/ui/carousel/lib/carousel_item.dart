@@ -34,11 +34,8 @@ class CarouselItem extends StatefulWidget {
   /// Skip Button Widget
   final Widget? skipButton;
 
-  ///  Button Widget
-  final Widget? okWidget;
-
-  ///  Button Widget
-  final Widget? cancelWidget;
+  ///  footer Widget
+  final Widget? footerWidget;
 
   final Color? bgColor;
 
@@ -68,8 +65,7 @@ class CarouselItem extends StatefulWidget {
     this.imageWidth,
     this.imageHeight,
     this.skipButton,
-    this.okWidget,
-    this.cancelWidget,
+    this.footerWidget,
     this.duration = const Duration(milliseconds: 250),
     this.curve = Curves.easeInOut,
     this.pageIndicatorStyle = const PageIndicatorStyle(
@@ -121,7 +117,7 @@ class CarouselItemState extends State<CarouselItem> {
 
   void _show() {
     if (_overlayEntry == null) {
-      _overlayEntry = showDialogOverlay(context);
+      _overlayEntry = showCarouselOverlay(context);
       Overlay.of(context).insert(_overlayEntry!);
     }
   }
@@ -134,7 +130,7 @@ class CarouselItemState extends State<CarouselItem> {
   }
 
 
-  OverlayEntry showDialogOverlay(BuildContext context) {
+  OverlayEntry showCarouselOverlay(BuildContext context) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (BuildContext context) => Positioned.fill(
         child: GestureDetector(
@@ -158,8 +154,7 @@ class CarouselItemState extends State<CarouselItem> {
                           imageWidth: widget.imageWidth,
                           imageHeight: widget.imageHeight,
                           skipButton: widget.skipButton,
-                          okWidget: widget.okWidget,
-                          cancelWidget: widget.cancelWidget,
+                          footerWidget: widget.footerWidget,
                           duration: widget.duration,
                           curve: widget.curve,
                           pageIndicatorStyle: widget.pageIndicatorStyle,

@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 
 /// Displays Material dialog above the current contents of the app
 
 class PopupWidget extends StatelessWidget {
   PopupWidget({
-    // required this.key,
     this.title,
     this.msg,
     this.actions,
@@ -19,6 +19,9 @@ class PopupWidget extends StatelessWidget {
     this.msgAlign,
     this.popupWidth,
     this.color,
+    this.modeViewport,
+    this.popupHeight,
+    this.footerWidget
   });
 
   // final GlobalKey key;
@@ -54,74 +57,85 @@ class PopupWidget extends StatelessWidget {
   /// [color] popup's backgorund color
   final Color? color;
 
-  /// [popupWidth] dialog's width compared to the screen width
+  /// [popupWidth] dialog's width
   final double? popupWidth;
+
+  final PopupViewport? modeViewport;
+
+  final double? popupHeight;
+
+  ///  footer Widget
+  final Widget? footerWidget;
 
   @override
   Widget build(BuildContext context) {
+    double? heightPopup;
+    if(modeViewport == PopupViewport.half){
+      heightPopup = MediaQuery.of(context).size.height / 2;
+    }else if(modeViewport == PopupViewport.full){
+      heightPopup = MediaQuery.of(context).size.height;
+    }else{
+      heightPopup = popupHeight;
+    }
     return Container(
-      width: popupWidth == null
-          ? null
-          : MediaQuery.of(context).size.width * popupWidth!,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          customViewPosition == CustomViewPosition.BEFORE_ANIMATION
-              ? customView
-              : const SizedBox(),
-          if (image != null)
-            Container(
-              padding: EdgeInsets.only(top: 20),
-              height: 200,
-              width: double.infinity,
-              child: Image.asset(image!),
+      width: popupWidth ?? MediaQuery.of(context).size.width,
+      height: heightPopup,
+      child:Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            customViewPosition == CustomViewPosition.BEFORE_ANIMATION
+                ? customView : const SizedBox(),
+            if (image != null)
+              Container(
+                padding: EdgeInsets.only(top: 20),
+                height: 200,
+                width: double.infinity,
+                child: Image.asset(image!),
+              ),
+            customViewPosition == CustomViewPosition.BEFORE_TITLE
+                ? customView : const SizedBox(),
+            title != null
+                ? Padding(
+              padding:
+              const EdgeInsets.only(right: 20, left: 20, top: 24.0),
+              child: Text(
+                title!,
+                style: titleStyle,
+                textAlign: titleAlign,
+              ),
+            ): SizedBox(
+              height: 4,
             ),
-          customViewPosition == CustomViewPosition.BEFORE_TITLE
-              ? customView
-              : const SizedBox(),
-          title != null
-              ? Padding(
-                  padding:
-                      const EdgeInsets.only(right: 20, left: 20, top: 24.0),
-                  child: Text(
-                    title!,
-                    style: titleStyle,
-                    textAlign: titleAlign,
-                  ),
-                )
-              : SizedBox(
-                  height: 4,
-                ),
-          customViewPosition == CustomViewPosition.BEFORE_MESSAGE
-              ? customView
-              : const SizedBox(),
-          msg != null
-              ? Padding(
-                  padding:
-                      const EdgeInsets.only(right: 20, left: 20, top: 16.0),
-                  child: Text(
-                    msg!,
-                    style: msgStyle,
-                    textAlign: msgAlign,
-                  ),
-                )
-              : SizedBox(
-                  height: 20,
-                ),
-          customViewPosition == CustomViewPosition.BEFORE_ACTION
-              ? customView
-              : const SizedBox(),
-          actions?.isNotEmpty == true
-              ? buttons(context)
-              : SizedBox(
-                  height: 20,
-                ),
-          customViewPosition == CustomViewPosition.AFTER_ACTION
-              ? customView
-              : const SizedBox(),
-        ],
-      ),
+            customViewPosition == CustomViewPosition.BEFORE_MESSAGE
+                ? customView
+                : const SizedBox(),
+            msg != null
+                ? Padding(
+              padding:
+              const EdgeInsets.only(right: 20, left: 20, top: 16.0),
+              child: Text(
+                msg!,
+                style: msgStyle,
+                textAlign: msgAlign,
+              ),
+            )
+                : SizedBox(
+              height: 20,
+            ),
+            customViewPosition == CustomViewPosition.BEFORE_ACTION
+                ? customView
+                : const SizedBox(),
+            actions?.length == 0
+                ? footerWidget!
+                : buttons(context),
+            customViewPosition == CustomViewPosition.AFTER_ACTION
+                ? customView
+                : const SizedBox(),
+          ],
+        ),
+      )
     );
   }
 
