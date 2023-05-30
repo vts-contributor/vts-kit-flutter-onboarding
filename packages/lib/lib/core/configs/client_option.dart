@@ -4,8 +4,9 @@ class ClientOption {
   final bool debug;
   final bool offline;
   final Duration logInterval = Duration(seconds: 5);
-  final Duration actionDelayAfterInit = Duration(seconds: 0);
   final Duration actionInterval = Duration(seconds: 5);
+  final Duration actionDelayAfterInit = Duration(seconds: 0);
+  final Duration actionDelayBetween = Duration(seconds: 0);
 
   ClientOption(
       {required this.serverUrl,

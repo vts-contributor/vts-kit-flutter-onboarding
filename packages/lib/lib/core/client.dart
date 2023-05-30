@@ -148,11 +148,18 @@ class OnboardingClient {
       {required String guideCode,
       required String guideType,
       required BuildContext context,
-      required dynamic payload}) async {
+      required dynamic payload,
+      Duration? delayBeforePlay,
+      Duration? delayUntilNext}) async {
     if (_ui.containsKey(guideType)) {
       final ui = _ui[guideType]!;
       OnboardingClient.context.actionQueue!.addAction(
-          guideCode: guideCode, ui: ui, context: context, payload: payload);
+          guideCode: guideCode,
+          ui: ui,
+          context: context,
+          payload: payload,
+          delayBeforePlay: delayBeforePlay,
+          delayUntilNext: delayUntilNext);
     } else {
       throw Logger.throwError("$guideType is not a valid type");
     }

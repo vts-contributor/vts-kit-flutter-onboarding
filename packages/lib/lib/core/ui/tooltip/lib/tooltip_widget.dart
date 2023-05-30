@@ -21,6 +21,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/measure_size.dart';
 
 import 'enum.dart';
 import 'get_position.dart';
@@ -37,7 +38,7 @@ class ToolTipWidget extends StatefulWidget {
   final TextAlign? descAlignment;
   final TextStyle? titleTextStyle;
   final TextStyle? descTextStyle;
-  final Widget? container;
+  final Widget? widget;
 
   final EdgeInsets tooltipPadding;
   final Color tooltipBackgroundColor;
@@ -63,40 +64,45 @@ class ToolTipWidget extends StatefulWidget {
   final Widget? footer;
   final EdgeInsets? footerPadding;
 
-  const ToolTipWidget({
-    Key? key,
-    required this.position,
-    required this.offset,
-    required this.screenSize,
-    required this.title,
-    required this.titleAlignment,
-    required this.description,
-    required this.titleTextStyle,
-    required this.descTextStyle,
-    required this.container,
-    required this.showArrow,
-    required this.height,
-    required this.width,
-    required this.onTooltipTap,
-    required this.movingAnimationDuration,
-    required this.descAlignment,
-    required this.disableMovingAnimation,
-    required this.disableScaleAnimation,
-    required this.scaleAnimationDuration,
-    required this.scaleAnimationCurve,
-    required this.tooltipPadding,
-    required this.tooltipBackgroundColor,
-    required this.tooltipBorderRadius,
-    this.footer,
-    this.footerPadding,
-    this.tooltipPosition,
-    this.scaleAnimationAlignment,
-    this.isTooltipDismissed = false,
-    this.titlePadding,
-    this.descPadding,
-    this.titleTextDirection,
-    this.descTextDirection,
-  }) : super(key: key);
+  final Widget? dismissIcon;
+  final VoidCallback? onDismissIconTap;
+
+  const ToolTipWidget(
+      {Key? key,
+      required this.position,
+      required this.offset,
+      required this.screenSize,
+      required this.title,
+      required this.titleAlignment,
+      required this.description,
+      required this.titleTextStyle,
+      required this.descTextStyle,
+      required this.widget,
+      required this.showArrow,
+      required this.height,
+      required this.width,
+      required this.onTooltipTap,
+      required this.movingAnimationDuration,
+      required this.descAlignment,
+      required this.disableMovingAnimation,
+      required this.disableScaleAnimation,
+      required this.scaleAnimationDuration,
+      required this.scaleAnimationCurve,
+      required this.tooltipPadding,
+      required this.tooltipBackgroundColor,
+      required this.tooltipBorderRadius,
+      this.footer,
+      this.footerPadding,
+      this.tooltipPosition,
+      this.scaleAnimationAlignment,
+      this.isTooltipDismissed = false,
+      this.titlePadding,
+      this.descPadding,
+      this.titleTextDirection,
+      this.descTextDirection,
+      this.dismissIcon,
+      this.onDismissIconTap})
+      : super(key: key);
 
   @override
   State<ToolTipWidget> createState() => UITooltipWidgetState();
@@ -109,6 +115,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
   final arrowWidth = 18.0;
   final arrowHeight = 9.0;
   final tooltipPadding = 8.0;
+  final animationPixel = 8.0;
 
   bool isArrowUp = false;
 
@@ -116,10 +123,6 @@ class UITooltipWidgetState extends State<ToolTipWidget>
   late final Animation<double> _movingAnimation;
   late final AnimationController _scaleAnimationController;
   late final Animation<double> _scaleAnimation;
-
-  double tooltipWidth = 0;
-  double tooltipScreenEdgePadding = 20;
-  double tooltipTextPadding = 15;
 
   TooltipPosition findPositionForContent(Offset position) {
     final height = widget.height;
@@ -143,10 +146,10 @@ class UITooltipWidgetState extends State<ToolTipWidget>
 
   double _getTooltipLeft() {
     var space = widget.position!.getCenter() - (widget.width / 2);
-    if (space + widget.width > widget.screenSize!.width) {
-      space = widget.screenSize!.width - widget.width - 8;
+    if (space + widget.width + 16 > widget.screenSize!.width) {
+      space = widget.screenSize!.width - widget.width - 16;
     } else if (space < (widget.width / 2)) {
-      space = 16;
+      space = 8;
     }
     return space;
   }
@@ -160,12 +163,13 @@ class UITooltipWidgetState extends State<ToolTipWidget>
 
   final GlobalKey _customContainerKey = GlobalKey();
   final ValueNotifier<double> _customContainerWidth = ValueNotifier<double>(1);
+  late Size? _measureOverlaySize = null;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.container != null &&
+      if (widget.widget != null &&
           _customContainerKey.currentContext != null &&
           _customContainerKey.currentContext?.size != null) {
         setState(() {
@@ -260,7 +264,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
               textAlign: widget.descAlignment,
               textDirection: widget.descTextDirection,
               style: widget.descTextStyle ??
-                  Theme.of(context).textTheme.titleMedium!,
+                  Theme.of(context).textTheme.bodyMedium!,
             ),
           ),
         )
@@ -269,7 +273,7 @@ class UITooltipWidgetState extends State<ToolTipWidget>
   }
 
   Widget _renderBodyCustom(BuildContext context) {
-    return widget.container!;
+    return widget.widget!;
   }
 
   Widget _renderFooter(BuildContext context) {
@@ -299,35 +303,37 @@ class UITooltipWidgetState extends State<ToolTipWidget>
     }
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         if (widget.showArrow)
           Positioned(
             left: _getArrowLeft(),
             top: contentY,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: FractionalTranslation(
-                translation: Offset(0.0, contentFractionalOffset as double),
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: Offset(0.0, 0),
-                    end: const Offset(0.0, 0.100),
-                  ).animate(_movingAnimation),
-                  child: Padding(
-                    padding: isArrowUp
-                        ? EdgeInsets.only(top: tooltipPadding)
-                        : EdgeInsets.only(bottom: tooltipPadding),
-                    child: CustomPaint(
-                      painter: _Arrow(
-                        strokeColor: widget.tooltipBackgroundColor,
-                        strokeWidth: 10,
-                        paintingStyle: PaintingStyle.fill,
-                        isUpArrow: isArrowUp,
-                      ),
-                      child: SizedBox(
-                        height: arrowHeight,
-                        width: arrowWidth,
-                      ),
+            child: FractionalTranslation(
+              translation: Offset(0.0, contentFractionalOffset as double),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0.0, 0),
+                  end: Offset(
+                      0.0,
+                      contentOffsetMultiplier *
+                          animationPixel /
+                          (arrowHeight + tooltipPadding)),
+                ).animate(_movingAnimation),
+                child: Padding(
+                  padding: isArrowUp
+                      ? EdgeInsets.only(top: tooltipPadding)
+                      : EdgeInsets.only(bottom: tooltipPadding),
+                  child: CustomPaint(
+                    painter: _Arrow(
+                      strokeColor: widget.tooltipBackgroundColor,
+                      strokeWidth: 10,
+                      paintingStyle: PaintingStyle.fill,
+                      isUpArrow: isArrowUp,
+                    ),
+                    child: SizedBox(
+                      height: arrowHeight,
+                      width: arrowWidth,
                     ),
                   ),
                 ),
@@ -344,18 +350,29 @@ class UITooltipWidgetState extends State<ToolTipWidget>
               child: SlideTransition(
                 position: Tween<Offset>(
                   begin: Offset(0.0, 0),
-                  end: const Offset(0.0, 0.100),
+                  end: Offset(
+                      0.0,
+                      _measureOverlaySize == null
+                          ? 0
+                          : contentOffsetMultiplier *
+                              animationPixel /
+                              _measureOverlaySize!.height),
                 ).animate(_movingAnimation),
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: Container(
-                    padding: isArrowUp
-                        ? EdgeInsets.only(top: tooltipPadding)
-                        : EdgeInsets.only(bottom: tooltipPadding),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
+                child: MeasureSize(
+                  onSizeChange: (size) {
+                    if (_measureOverlaySize != size)
+                      setState(() {
+                        _measureOverlaySize = size;
+                      });
+                  },
+                  child: Material(
+                    color: Colors.transparent,
+                    type: MaterialType.transparency,
+                    child: Container(
+                        padding: isArrowUp
+                            ? EdgeInsets.only(top: tooltipPadding)
+                            : EdgeInsets.only(bottom: tooltipPadding),
+                        child: Padding(
                           padding: EdgeInsets.only(
                             top: isArrowUp ? arrowHeight - 1 : 0,
                             bottom: isArrowUp ? 0 : arrowHeight - 1,
@@ -383,15 +400,37 @@ class UITooltipWidgetState extends State<ToolTipWidget>
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        )),
                   ),
                 ),
               ),
             ),
           ),
         ),
+        if (widget.dismissIcon != null && _measureOverlaySize != null)
+          Positioned(
+            left: _getTooltipLeft() + _measureOverlaySize!.width,
+            top: isArrowUp ? contentY : contentY - _measureOverlaySize!.height,
+            child: Padding(
+              padding: isArrowUp
+                  ? EdgeInsets.only(top: tooltipPadding)
+                  : EdgeInsets.only(bottom: tooltipPadding),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: isArrowUp ? arrowHeight - 1 : 0,
+                  bottom: isArrowUp ? 0 : arrowHeight - 1,
+                ),
+                child: FractionalTranslation(
+                  translation: Offset(-0.5, -0.4),
+                  child: GestureDetector(
+                      onTap: () {
+                        widget.onDismissIconTap?.call();
+                      },
+                      child: widget.dismissIcon),
+                ),
+              ),
+            ),
+          )
       ],
     );
   }
