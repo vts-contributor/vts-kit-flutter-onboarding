@@ -76,9 +76,7 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
 
   @override
   void initState() {
-    context.read<SheetContext>().addListener(() {
-      checkState();
-    });
+    context.read<SheetContext>().addListener(checkState);
 
     if(widget.barrierColor != null){
       barrierColorCurrent = widget.barrierColor!;
@@ -97,6 +95,12 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
     ));
 
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    context.read<SheetContext>().removeListener(checkState);
   }
 
   @override

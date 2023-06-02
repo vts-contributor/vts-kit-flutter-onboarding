@@ -76,11 +76,14 @@ class _PopupState extends State<PopupItem> {
   @override
   void initState() {
     super.initState();
-    context.read<PopupContext>().addListener(() {
-      checkState();
-    });
+    context.read<PopupContext>().addListener(checkState);
   }
 
+  @override
+  void deactivate() {
+    super.deactivate();
+    context.read<PopupContext>().removeListener(checkState);
+  }
 
   void checkState() {
     final showItem = state.activeWidgetId == widget.key;

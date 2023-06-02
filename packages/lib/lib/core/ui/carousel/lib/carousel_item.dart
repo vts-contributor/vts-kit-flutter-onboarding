@@ -91,9 +91,14 @@ class CarouselItemState extends State<CarouselItem> {
   @override
   void initState() {
     super.initState();
-    context.read<CarouselContext>().addListener(() {
-      checkState();
-    });
+    context.read<CarouselContext>().addListener(checkState);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    context.read<CarouselContext>().removeListener(checkState);
+
   }
 
 
