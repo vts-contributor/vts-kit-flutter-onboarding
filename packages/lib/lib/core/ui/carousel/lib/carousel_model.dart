@@ -51,7 +51,7 @@ class CarouselModel extends StatelessWidget{
           children: <Widget>[
             Expanded(
               child: Image.asset(
-                imgUrl ?? "images/anh1.png",
+                imgUrl ,
                 width: imageWidth,
                 height: imageHeight,
                 fit: fitImage ?? BoxFit.contain,
@@ -67,7 +67,7 @@ class CarouselModel extends StatelessWidget{
                 vertical: titlePaddingVertical ?? 0,
               ),
               child: Text(
-                title ?? "Chào mừng bạn đến với Viettel-S",
+                title ,
                 textAlign: alignTitle ?? TextAlign.center,
                 style: titleStyle ??
                     const TextStyle(
@@ -87,8 +87,7 @@ class CarouselModel extends StatelessWidget{
                 vertical: descriptionPaddingVertical ?? 12,
               ),
               child: Text(
-                description ?? "Hệ thống tiếp nhận giải quyết góp ý"
-                    ",phản ảnh hiện trường Viettel Solution.",
+                description,
                 textAlign: alignDescription ?? TextAlign.center,
                 style: descriptionStyles ??
                     const TextStyle(

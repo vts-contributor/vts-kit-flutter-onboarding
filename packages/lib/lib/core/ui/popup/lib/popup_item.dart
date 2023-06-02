@@ -7,7 +7,6 @@ import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/popup_widget.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
 
 import 'enum.dart';
-import 'icon_button.dart';
 
 class PopupItem extends StatefulWidget {
   final GlobalKey key;
@@ -25,6 +24,15 @@ class PopupItem extends StatefulWidget {
   final double? popupHeight;
   final Widget? footerWidget;
 
+  /// all properties below are of actionDefault() and only work when footerWidget is null
+  final VoidCallback? okClick;
+  final VoidCallback? cancelClick;
+  final String? okText;
+  final String? cancelText;
+  final TextStyle? textStyle;
+  final ButtonStyle? btnStyleCancel;
+  final ButtonStyle? btnStyleOk;
+
   PopupItem(
       {required this.key,
       this.onActionClick,
@@ -39,7 +47,14 @@ class PopupItem extends StatefulWidget {
       this.insetPadding,
       this.modeViewport,
       this.popupHeight,
-      this.footerWidget
+      this.footerWidget,
+      this.okClick,
+      this.cancelClick,
+      this.okText,
+      this.cancelText,
+      this.textStyle,
+      this.btnStyleCancel,
+      this.btnStyleOk
   });
 
   @override
@@ -119,7 +134,15 @@ class _PopupState extends State<PopupItem> {
                           modeViewport: widget.modeViewport,
                           footerWidget: widget.footerWidget,
                           actions: widget.footerWidget == null ?
-                              actionDefault() : [],
+                              actionDefault(
+                                  okClick: widget.okClick,
+                                  cancelClick: widget.cancelClick,
+                                  okText: widget.okText,
+                                  cancelText: widget.cancelText,
+                                  textStyle: widget.textStyle,
+                                  btnStyleCancel : widget.btnStyleCancel,
+                                  btnStyleOk: widget.btnStyleOk
+                              ) : [],
                           customViewPosition: widget.customViewPosition == null
                               ? customViewPosition
                               : widget.customViewPosition!,
@@ -134,33 +157,53 @@ class _PopupState extends State<PopupItem> {
         ),
       ),
     );
-
-    // overlayState.insert(overlayEntry!);
     return overlayEntry;
   }
 
 
-  List<Widget> actionDefault(){
+  List<Widget> actionDefault(
+    {
+      String? okText,
+      VoidCallback? okClick,
+      String? cancelText,
+      VoidCallback? cancelClick,
+      TextStyle? textStyle,
+      ButtonStyle? btnStyleCancel,
+      ButtonStyle? btnStyleOk
+    }
+      ){
     return [
-      IconsButton(
+      ElevatedButton(
         onPressed: () {
           _dismiss();
+          cancelClick;
         },
-        text: 'Bỏ qua',
-        color: Colors.white,
-        textStyle:
-        const TextStyle(color: Colors.black),
-        iconColor: Colors.white,
+        style: btnStyleCancel ??
+                  ButtonStyle(
+                    backgroundColor:  MaterialStateProperty.all<Color>(Colors.white),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                  ),
+        child: Text(cancelText ?? 'Bỏ qua',style: textStyle ?? TextStyle(color: Colors.black87)),
       ),
-      IconsButton(
+      ElevatedButton(
         onPressed: () {
           _dismiss();
+          okClick;
         },
-        text: 'Đăng ký',
-        color: Colors.black,
-        textStyle:
-        const TextStyle(color: Colors.white),
-        iconColor: Colors.white,
+        style: btnStyleOk ??
+            ButtonStyle(
+              backgroundColor:  MaterialStateProperty.all<Color>(Colors.black),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+        child: Text(okText ?? 'Đăng ký',style: textStyle ?? TextStyle(color: Colors.white)),
       ),
     ];
   }

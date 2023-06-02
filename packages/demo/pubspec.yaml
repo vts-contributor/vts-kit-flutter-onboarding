@@ -30,6 +30,9 @@ flutter:
   uses-material-design: true
   assets:
     - images/image.png
+    - images/anh1.png
+    - images/anh2.png
+    - images/anh3.png
     - lib/assets/icons/
     - lib/assets/images/giphy.gif
     - lib/assets/images/image.png

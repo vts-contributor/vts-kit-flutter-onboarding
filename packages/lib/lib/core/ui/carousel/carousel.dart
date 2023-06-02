@@ -48,7 +48,7 @@ class UICarousel implements UIAbstract {
       final _events = _buildTrackEvents(action, page);
       _events.forEach((element) {
         action.logEvent(
-            actionType: Events.TOOLTIP_STEP_CHANGE,
+            actionType: Events.CAROUSEL_STEP_CHANGE,
             payload: JsonEncoder().convert(element));
       });
     };

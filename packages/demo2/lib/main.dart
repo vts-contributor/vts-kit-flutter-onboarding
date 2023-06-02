@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding',
-        applicationId: '6a35254d-1882-40fc-aa4d-77a81bf136ca',
+        applicationId: '54aaeb8f-eebb-4070-83ad-75bad2690e4b',
         debug: true,
         offline: false);
     OnboardingClient.initialize(options);
@@ -77,35 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey _six = GlobalKey();
   final GlobalKey _seven = GlobalKey();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // OnboardingClient.start(
-      //     guideCode: "SHOW_3",
-      //     guideType: UIName.Sheet,
-      //     context: context,
-      //     payload: [_three]);
-      // OnboardingClient.start(
-      //     guideCode: "SHOW_1",
-      //     guideType: UIName.Tooltip,
-      //     context: context,
-      //     payload: [_three]);
-      // OnboardingClient.start(
-      //     guideCode: "SHOW_2",
-      //     guideType: UIName.Sheet,
-      //     context: context,
-      //     payload: [_five]);
-
-      // OnboardingClient.start(
-      //     guideCode: "SHOW_1",
-      //     guideType: UIName.CAROUSEL,
-      //     context: context,
-      //     payload: [_seven]);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,12 +109,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
           ElevatedButton(onPressed: (){
             OnboardingClient.start(
-                guideCode: "SHOW_2",
+                guideCode: "SHOW_3",
                 guideType: UIName.Sheet,
                 context: context,
                 payload: _three);
 
           }, child: const Text('Sheet')),
+          ElevatedButton(
+              onPressed: () {
+                OnboardingClient.start(
+                    guideCode: "SHOW_3",
+                    guideType: UIName.Tooltip,
+                    context: context,
+                    payload: [_four,_five,_six]);
+              },
+              child: const Text('ToolTip')),
 
           CarouselItem(
               key: _two,
@@ -223,31 +203,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 )
           ),
-          // TooltipItem(
-          //     key: _three,
-          //     description: "hehe",
-          //     child: const Text(
-          //       'Ban nang 55 can:',
-          //     )),
-          // TooltipItem(
-          //     key: _four,
-          //     description: "hehe",
-          //     child: const Text(
-          //       'Ban nang 55 can:',
-          //     )),
-          //
+          TooltipItem(
+              key: _four,
+              description: "hehe",
+              child: const Text(
+                'Ban nang 55 can:',
+              )),
+          TooltipItem(
+              key: _five,
+              description: "hehe",
+              child: const Text(
+                'Ban nang 55 can:',
+              )),
+
           SheetItem(
               key: _three,
               animationDuration: const Duration(seconds: 1),
               direction: SheetDirection.bottom,
-              // closeIcon: Material(
-              //   child : IconButton(
-              //     icon: const Icon(Icons.close,color: Colors.grey,),
-              //     onPressed: () {
-              //       OnboardingClient.dismiss();
-              //     },
-              //   ),
-              // )
           ),
           PopupItem(
             key: _one,
@@ -272,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         OnboardingClient.dismiss();
                       },
-                      text: 'Test Bỏ qua',
+                      text: 'Bỏ qua',
                       color: Colors.white,
                       textStyle: const TextStyle(color: Colors.black),
                       iconColor: Colors.white,
@@ -285,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         OnboardingClient.dismiss();
                       },
-                      text: 'Test Đăng ký',
+                      text: 'Đăng ký',
                       color: Colors.black,
                       textStyle: const TextStyle(color: Colors.white),
                       iconColor: Colors.white,
@@ -316,18 +288,18 @@ class _MyHomePageState extends State<MyHomePage> {
             //   ),
             // ],
           ),
-          // TooltipItem(
-          //     key: _four,
-          //     description: "haha",
-          //     child: const Text(
-          //       'Ban cao 1m8:',
-          //     )),
-          // TooltipItem(
-          //     key: _six,
-          //     description: "haha",
-          //     child: const Text(
-          //       'Second:',
-          //     )),
+          TooltipItem(
+              key: _six,
+              description: "haha",
+              child: const Text(
+                'Ban cao 1m8:',
+              )),
+          TooltipItem(
+              key: _seven,
+              description: "haha",
+              child: const Text(
+                'Second:',
+              )),
 
           // Text(
           //   '',

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_appbar.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_list_tile.dart';
 import 'icon_buttons.dart';
@@ -14,9 +18,19 @@ class ButtonTypes extends StatefulWidget {
 }
 
 class _ButtonTypesState extends State<ButtonTypes> {
+  final _six = GlobalKey();
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_1',
+          guideType: UIName.CAROUSEL,
+          payload: _six
+      );
+    });
   }
 
   @override
@@ -81,6 +95,84 @@ class _ButtonTypesState extends State<ButtonTypes> {
                       builder: (BuildContext context) => SocialButtons()),
                 );
               },
+            ),
+            CarouselItem(
+                key: _six,
+                carouselData: const [
+                  CarouselModel(
+                    title: 'Chào mừng bạn đến với Viettel-S',
+                    description: 'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                    imgUrl: 'images/anh1.png',
+                  ),
+                  CarouselModel(
+                    title: 'Gửi phản ánh nhanh chóng',
+                    description: 'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                    imgUrl: 'images/anh2.png',
+                  ),
+                  CarouselModel(
+                    title: 'Thông tin truyền thông',
+                    description: 'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
+                    imgUrl: 'images/anh3.png',
+                  )
+                ],
+                footerWidget:Padding(
+                    padding: const EdgeInsets.only(top: 40,bottom: 30,left: 10,right: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 350,
+                          height: 40,
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          side: const BorderSide(color: Colors.red)
+                                      )
+                                  )
+                              ),
+                              onPressed: (){
+                              },
+                              child: const Text(
+                                "Đăng nhập",style: TextStyle(color: Colors.white),
+                              )
+                          ),
+                        ),
+                        const SizedBox(height: 20,),
+                        SizedBox(
+                          width: 350,
+                          height: 40,
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          side: const BorderSide(color: Colors.red)
+                                      )
+                                  )
+                              ),
+                              onPressed: (){
+                              },
+                              child: const Text(
+                                "Bỏ qua",style: TextStyle(color: Colors.red),
+                              )
+                          ),
+                        ),
+                      ],
+                    )
+                ) ,
+                skipButton: IconButton(
+                  onPressed: () {
+                    OnboardingClient.dismiss();
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.grey,
+                  ),
+                )
             ),
           ],
         ),
