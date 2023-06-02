@@ -19,9 +19,4 @@ dependencies:
 
 dev_dependencies:
 
-
 flutter:
-  assets:
-    - images/anh1.png
-    - images/anh2.png
-    - images/anh3.png
