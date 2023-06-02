@@ -5,12 +5,13 @@ import 'package:vts_kit_flutter_onboarding/core/client.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/events.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/task.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
 
-class UIPopup implements UIAbstract {
+import 'lib/context.dart';
+
+class UISheet implements UIAbstract {
   @override
   Future<bool> validate(Type.Action action) {
     if (OnboardingClient.options.debug)
@@ -38,9 +39,9 @@ class UIPopup implements UIAbstract {
     // Play
     final context = action.context;
     final payload = action.payload;
-    context.read<PopupContext>().start(payload);
+    context.read<SheetContext>().start(payload);
     return Task.waitUtil(
-        () => context.read<PopupContext>().activeWidgetId == null).then((_) {
+            () => context.read<SheetContext>().activeWidgetId == null).then((_) {
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
     });
@@ -51,7 +52,7 @@ class UIPopup implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DISMISS ${getName()} for ${action.guideCode}');
     final context = action.context;
-    context.read<PopupContext>().dismiss(notify: true);
+    context.read<SheetContext>().dismiss(notify: true);
     return Future.value(true);
   }
 
@@ -64,6 +65,6 @@ class UIPopup implements UIAbstract {
 
   @override
   String getName() {
-    return UIName.Popup;
+    return UIName.Sheet;
   }
 }

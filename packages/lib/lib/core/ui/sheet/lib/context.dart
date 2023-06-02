@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PopupContext extends ChangeNotifier {
+class SheetContext extends ChangeNotifier {
   /// Whether all items will auto sequentially start
   /// having time interval of [autoPlayDelay] .
   ///
@@ -17,13 +17,13 @@ class PopupContext extends ChangeNotifier {
   /// Default to `false`
   final bool enableAutoPlayLock;
 
-  /// Whether disabling bouncing/moving animation for all popups
+  /// Whether disabling bouncing/moving animation for all sheet
   /// while highlighting
   ///
   /// Default to `false`
   final bool disableMovingAnimation;
 
-  /// Whether disabling initial scale animation for all the default popups
+  /// Whether disabling initial scale animation for all the default sheet
   /// when item is started and completed
   ///
   /// Default to `false`
@@ -35,7 +35,7 @@ class PopupContext extends ChangeNotifier {
   /// Provides time duration for auto scrolling when [enableAutoScroll] is true
   final Duration scrollDuration;
 
-  /// Default overlay blur used by item. if [PopupItem.blurValue]
+  /// Default overlay blur used by item. if [SheetItem.blurValue]
   /// is not provided.
   ///
   /// Default value is 0.
@@ -47,24 +47,24 @@ class PopupContext extends ChangeNotifier {
 
   final BuildContext context;
 
-  PopupContext(
+  SheetContext(
       {this.autoPlay = false,
-      this.autoPlayDelay = const Duration(milliseconds: 2000),
-      this.enableAutoPlayLock = false,
-      this.blurValue = 0,
-      this.scrollDuration = const Duration(milliseconds: 300),
-      this.disableMovingAnimation = false,
-      this.disableScaleAnimation = false,
-      this.enableAutoScroll = false,
-      this.disableBarrierInteraction = false,
-      required this.context});
+        this.autoPlayDelay = const Duration(milliseconds: 2000),
+        this.enableAutoPlayLock = false,
+        this.blurValue = 0,
+        this.scrollDuration = const Duration(milliseconds: 300),
+        this.disableMovingAnimation = false,
+        this.disableScaleAnimation = false,
+        this.enableAutoScroll = false,
+        this.disableBarrierInteraction = false,
+        required this.context});
 
   // State
   GlobalKey? activeWidgetId;
   List<Function()> _onStartCb = [];
   List<Function()> _onCompleteCb = [];
 
-  /// Starts PopupItem view from the beginning of specified list of widget ids.
+  /// Starts SheetItem view from the beginning of specified list of widget ids.
   /// If this function is used when item has been disabled then it will
   /// throw an exception.
   void start(GlobalKey widgetId) {

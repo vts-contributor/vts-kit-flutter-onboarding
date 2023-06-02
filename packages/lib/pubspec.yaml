@@ -12,7 +12,16 @@ dependencies:
   provider: ^6.0.5
   shared_preferences: ^2.1.0
   path_drawing: ^1.0.0
-
+  freezed_annotation: ^2.2.0
+  flutter_hooks: ^0.18.6
+  hooks_riverpod: ^2.3.6
 
 
 dev_dependencies:
+
+
+flutter:
+  assets:
+    - images/anh1.png
+    - images/anh2.png
+    - images/anh3.png

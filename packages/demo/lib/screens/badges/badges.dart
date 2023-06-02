@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:vts_component/common/style/vts_color.dart';
 import 'package:vts_component/vts_component.dart';
+import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/enum.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/sheet_item.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_appbar.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_box.dart';
 
@@ -11,10 +15,18 @@ class BadgesPage extends StatefulWidget {
 }
 
 class _BadgesPageState extends State<BadgesPage> {
+  final _eight = GlobalKey();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_3',
+          guideType: UIName.Sheet,
+          payload: _eight
+      );
+    });
   }
 
   @override
@@ -368,6 +380,11 @@ class _BadgesPageState extends State<BadgesPage> {
                         vtsSize: VTSBadgeSize.MD,
                         primaryColor: VTSColors.FUNC_GREEN_2,
                         offset: Offset(0.3, -0.1),
+                      ),
+                      SheetItem(
+                        key: _eight,
+                        animationDuration: const Duration(seconds: 1),
+                        direction: SheetDirection.bottom,
                       ),
                     ],
                   ),

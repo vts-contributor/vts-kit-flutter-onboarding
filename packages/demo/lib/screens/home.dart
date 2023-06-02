@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vts_component/vts_component.dart';
 import 'package:vts_kit_flutter_onboarding/core/client.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
@@ -42,16 +45,17 @@ class _HomePageState extends State<HomePage> {
   final _four = GlobalKey();
   final _five = GlobalKey();
 
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       OnboardingClient.start(
           context: context,
           guideCode: 'SHOW_1',
           guideType: UIName.Tooltip,
-          payload: [_one, _two, _three]);
+          payload: [_one, _two, _three]
+      );
       OnboardingClient.start(
           context: context,
           guideCode: 'SHOW_2',
@@ -244,6 +248,16 @@ class _HomePageState extends State<HomePage> {
       'title': 'LineChartStyle2',
       'route': LineChartStyle2()
     },
+    {
+      'icon': const IconData(
+        0xe412,
+        fontFamily: 'MaterialIcons',
+      ),
+      'title': 'LineChartStyle2',
+      'route': LineChartStyle2()
+    },
+
+
   ];
 
   @override
@@ -272,11 +286,13 @@ class _HomePageState extends State<HomePage> {
                           child: buildSquareTile(
                               gfComponents[index]['title'],
                               gfComponents[index]['icon'],
-                              gfComponents[index]['route']))),
+                              gfComponents[index]['route'])
+                      )),
             ),
           ],
         ),
       );
+
 
   Widget buildSquareTile(String title, IconData? icon, Widget? route) {
     final childContent = InkWell(

@@ -1,0 +1,1 @@
+enum PopupViewport { half, full }
