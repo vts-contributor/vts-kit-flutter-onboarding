@@ -31,6 +31,7 @@ class SheetItem extends StatefulWidget {
   final double? bottom;
   final double? left;
   final Widget? closeIcon;
+  final Widget? content;
 
 
 
@@ -56,7 +57,8 @@ class SheetItem extends StatefulWidget {
     this.top,
     this.bottom,
     this.left,
-    this.closeIcon
+    this.closeIcon,
+    this.content
   });
 
   @override
@@ -66,7 +68,6 @@ class SheetItem extends StatefulWidget {
 class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _animation;
-  bool _isVisible = true;
   Color barrierColorCurrent = Colors.grey;
 
   SheetContext get state => context.read<SheetContext>();
@@ -186,7 +187,7 @@ class _AnimatedContainerDisplayState extends State<SheetItem> with SingleTickerP
                                             color: widget.colorSheet ?? Colors.white,
                                             child:  Padding(
                                               padding: EdgeInsets.symmetric(vertical: widget.paddingVerticalContent ?? 20,horizontal: widget.paddingHorizontalContent ?? 20),
-                                              child: FlutterLogo(),
+                                              child: widget.content ?? FlutterLogo(),
                                             ) ,
                                           ),
                                           Positioned( //<-- SEE HERE
