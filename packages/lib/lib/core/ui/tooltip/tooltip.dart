@@ -15,8 +15,8 @@ class UITooltip implements UIAbstract {
   late Function(int?, GlobalKey) _startCb;
 
   // Temp state for tracking
-  late int prevStep = -1;
-  late int currentStep = -1;
+  late int _prevStep = -1;
+  late int _currentStep = -1;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -33,14 +33,14 @@ class UITooltip implements UIAbstract {
 
   List<Map<String, dynamic>> _buildTrackEvents(Type.Action action, int idx) {
     // Store current data
-    this.prevStep = this.currentStep;
-    this.currentStep = idx;
+    this._prevStep = this._currentStep;
+    this._currentStep = idx;
 
     List<Map<String, dynamic>> events = [];
 
     Map<String, dynamic> currentEvent = {};
-    currentEvent['current'] = this.currentStep;
-    currentEvent['from'] = this.prevStep;
+    currentEvent['current'] = this._currentStep;
+    currentEvent['from'] = this._prevStep;
     events.add(currentEvent);
     return events;
   }
@@ -107,8 +107,8 @@ class UITooltip implements UIAbstract {
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
 
     // Clean temp data
-    this.prevStep = -1;
-    this.currentStep = -1;
+    this._prevStep = -1;
+    this._currentStep = -1;
 
     // Clean callback event binding
     final context = action.context;

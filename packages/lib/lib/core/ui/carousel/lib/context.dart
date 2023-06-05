@@ -34,6 +34,7 @@ class CarouselContext extends ChangeNotifier {
 
   List<VoidCallback> _onFinishCb = [];
   List<Function(int page, int pageLength, bool forward)> _onStepChangeCb = [];
+  List<Function(bool manual)> _onDismissCb = [];
 
   void start(GlobalKey widgetKey) {
     activeWidgetKey = widgetKey;
@@ -73,6 +74,7 @@ class CarouselContext extends ChangeNotifier {
       manualDismiss = true;
       notifyListeners();
     }
+    _onDismiss(manual);
   }
 
   void _onStepChange() {
@@ -87,7 +89,13 @@ class CarouselContext extends ChangeNotifier {
     });
   }
 
-  void onStepChange(Function(int, int, bool) func) {
+  void _onDismiss(bool manual) {
+    _onDismissCb.forEach((func) {
+      func.call(manual);
+    });
+  }
+
+  void onStepChange(Function(int page, int pageLength, bool forward) func) {
     this._onStepChangeCb.add(func);
   }
 
@@ -95,11 +103,19 @@ class CarouselContext extends ChangeNotifier {
     this._onFinishCb.add(func);
   }
 
-  void offStepChange(Function(int, int, bool) func) {
+  void offStepChange(Function(int page, int pageLength, bool forward) func) {
     this._onStepChangeCb.removeWhere((element) => element == func);
   }
 
   void offFinish(VoidCallback func) {
     this._onFinishCb.removeWhere((element) => element == func);
+  }
+
+  void onDismiss(Function(bool) func) {
+    this._onDismissCb.add(func);
+  }
+
+  void offDismiss(Function(bool) func) {
+    this._onDismissCb.removeWhere((element) => element == func);
   }
 }

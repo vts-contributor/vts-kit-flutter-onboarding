@@ -89,7 +89,7 @@ class EventService {
     }
   }
 
-  void createInterval() {
+  void createPushTask() {
     // Uncreate interval on offline mode
     if (OnboardingClient.options.offline) return;
 
@@ -115,7 +115,7 @@ class EventService {
         guideCode: guideCode,
         guideType: guideType,
         actionType: actionType,
-        timeRun: DateTime.now().toIso8601String(),
+        timeRun: DateTime.now().toUtc().toIso8601String(),
         payload: payload);
 
     if (OnboardingClient.options.debug) {

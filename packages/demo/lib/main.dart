@@ -21,7 +21,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding/',
-        applicationId: '8a9df2bc-f837-4814-bc4c-b64c3d753d98',
+        applicationId: 'c189b058-42f0-4e65-9d96-e89e13f82e94',
+        routeTracking: true,
         debug: true,
         offline: true);
     OnboardingClient.initialize(options);
@@ -34,6 +35,7 @@ class _MyAppState extends State<MyApp> {
     return OnboardingProvider(
         child: MaterialApp(
       title: 'Flutter Demo',
+      navigatorObservers: [OnboardingRouteObserver()],
       theme: ThemeData(
           scaffoldBackgroundColor: VTSColors.ILUS_GRAY_7,
           fontFamily: 'Sarabun',

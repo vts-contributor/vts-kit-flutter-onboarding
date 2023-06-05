@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vts_component/vts_component.dart';
-import 'package:vts_kit_flutter_onboarding/core/client.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_item.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/carousel_model.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/page_indicator_style_model.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/enum.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
 import 'package:vts_kit_flutter_onboarding/index.dart';
@@ -45,7 +41,6 @@ class _HomePageState extends State<HomePage> {
   final _four = GlobalKey();
   final _five = GlobalKey();
 
-
   @override
   void initState() {
     super.initState();
@@ -54,13 +49,12 @@ class _HomePageState extends State<HomePage> {
           context: context,
           guideCode: 'SHOW_1',
           guideType: UIName.Tooltip,
-          payload: [_one, _two, _three]
-      );
-      OnboardingClient.start(
-          context: context,
-          guideCode: 'SHOW_2',
-          guideType: UIName.Tooltip,
-          payload: [_four, _five]);
+          payload: [_one, _two, _three]);
+      // OnboardingClient.start(
+      //     context: context,
+      //     guideCode: 'SHOW_2',
+      //     guideType: UIName.Tooltip,
+      //     payload: [_four, _five]);
     });
   }
 
@@ -71,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Button',
-      'route': ButtonTypes()
+      'route': '/button_types'
     },
     {
       'icon': const IconData(
@@ -79,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Tabs',
-      'route': TabTypes()
+      'route': '/tab_types'
     },
     {
       'icon': const IconData(
@@ -87,7 +81,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Badge',
-      'route': BadgesPage()
+      'route': '/badge'
     },
     {
       'icon': const IconData(
@@ -95,7 +89,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Cards',
-      'route': CardPage()
+      'route': '/card'
     },
     {
       'icon': const IconData(
@@ -103,7 +97,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Carousel',
-      'route': CarouselPage()
+      'route': '/carousel'
     },
     {
       'icon': const IconData(
@@ -111,7 +105,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Avatar',
-      'route': AvatarPage()
+      'route': '/avatar'
     },
     {
       'icon': const IconData(
@@ -119,7 +113,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Images',
-      'route': ImagesPage()
+      'route': '/image'
     },
     {
       'icon': const IconData(
@@ -127,7 +121,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Tiles',
-      'route': TilesPage()
+      'route': '/tile'
     },
     {
       'icon': const IconData(
@@ -135,7 +129,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Toggle',
-      'route': TogglesPage()
+      'route': '/toggle'
     },
     {
       'icon': const IconData(
@@ -143,7 +137,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Toast',
-      'route': ToastsPage()
+      'route': '/toast'
     },
     {
       'icon': const IconData(
@@ -151,7 +145,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFIconsneww',
       ),
       'title': 'DropDown',
-      'route': DropdownTypes()
+      'route': '/dropdown_type'
     },
     {
       'icon': const IconData(
@@ -159,7 +153,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Accordion',
-      'route': AccordionPage()
+      'route': '/accordion'
     },
     {
       'icon': const IconData(
@@ -167,22 +161,18 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Search Bar',
-      'route': SearchbarPage()
+      'route': '/search_bar'
     },
-    {
-      'icon': Icons.downloading,
-      'title': 'Progress Bar',
-      'route': ProgressBarPage()
-    },
+    {'icon': Icons.downloading, 'title': 'Progress Bar', 'route': '/progress'},
     {
       'icon': Icons.star_border_rounded,
       'title': 'Rating Bar',
-      'route': RatingBarPage()
+      'route': '/rating'
     },
     {
       'icon': Icons.blur_linear_rounded,
       'title': 'Shimmer',
-      'route': ShimmerPage()
+      'route': '/shimmer'
     },
     {
       'icon': const IconData(
@@ -190,7 +180,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Textfield',
-      'route': TextFieldPage()
+      'route': '/text_field'
     },
     {
       'icon': const IconData(
@@ -198,7 +188,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'MaterialIcons',
       ),
       'title': 'DateTime Picker',
-      'route': DateTimePickerPage()
+      'route': '/date_time_picker'
     },
     {
       'icon': const IconData(
@@ -206,7 +196,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'MaterialIcons',
       ),
       'title': 'Pie Chart',
-      'route': PieChartPage()
+      'route': '/pie_chart'
     },
     {
       'icon': const IconData(
@@ -214,7 +204,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFFontIcons',
       ),
       'title': 'Alert',
-      'route': AlertPage()
+      'route': '/alert'
     },
     {
       'icon': const IconData(
@@ -222,7 +212,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFIconsnew',
       ),
       'title': 'CheckBox',
-      'route': CheckBoxPage()
+      'route': '/checkbox'
     },
     {
       'icon': const IconData(
@@ -230,7 +220,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'GFIconsnew',
       ),
       'title': 'RadioButton',
-      'route': RadioButtonPage()
+      'route': '/radiobutton'
     },
     {
       'icon': const IconData(
@@ -238,7 +228,7 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'MaterialIcons',
       ),
       'title': 'LineChartStyle1',
-      'route': LineChartStyle1()
+      'route': '/linechartstyle1'
     },
     {
       'icon': const IconData(
@@ -246,18 +236,8 @@ class _HomePageState extends State<HomePage> {
         fontFamily: 'MaterialIcons',
       ),
       'title': 'LineChartStyle2',
-      'route': LineChartStyle2()
-    },
-    {
-      'icon': const IconData(
-        0xe412,
-        fontFamily: 'MaterialIcons',
-      ),
-      'title': 'LineChartStyle2',
-      'route': LineChartStyle2()
-    },
-
-
+      'route': '/linechartstyle2'
+    }
   ];
 
   @override
@@ -286,21 +266,16 @@ class _HomePageState extends State<HomePage> {
                           child: buildSquareTile(
                               gfComponents[index]['title'],
                               gfComponents[index]['icon'],
-                              gfComponents[index]['route'])
-                      )),
+                              gfComponents[index]['route']))),
             ),
           ],
         ),
       );
 
-
-  Widget buildSquareTile(String title, IconData? icon, Widget? route) {
+  Widget buildSquareTile(String title, IconData? icon, String route) {
     final childContent = InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (BuildContext context) => route!),
-        );
+        Navigator.pushNamed(context, route);
       },
       child: Container(
         decoration: BoxDecoration(

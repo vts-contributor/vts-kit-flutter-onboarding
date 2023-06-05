@@ -1,1 +1,0 @@
-enum PopupViewport { half, full }

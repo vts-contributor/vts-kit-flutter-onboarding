@@ -99,6 +99,7 @@ class DebugInterceptors extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     Logger.log(
         'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+    Logger.log('=> BODY: ${response.data}');
     super.onResponse(response, handler);
   }
 

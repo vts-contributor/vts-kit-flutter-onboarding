@@ -22,10 +22,9 @@ class _BadgesPageState extends State<BadgesPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       OnboardingClient.start(
           context: context,
-          guideCode: 'SHOW_3',
+          guideCode: 'SHOW_4',
           guideType: UIName.Sheet,
-          payload: _eight
-      );
+          payload: _eight);
     });
   }
 
@@ -383,7 +382,7 @@ class _BadgesPageState extends State<BadgesPage> {
                       ),
                       SheetItem(
                         key: _eight,
-                        animationDuration: const Duration(seconds: 1),
+                        animationDuration: const Duration(milliseconds: 500),
                         direction: SheetDirection.bottom,
                       ),
                     ],

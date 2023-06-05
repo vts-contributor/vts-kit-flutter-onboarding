@@ -12,9 +12,11 @@ import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
 import 'package:flutter/material.dart';
 
 class UICarousel implements UIAbstract {
-  late int prevStep = -1;
-  late int currentStep = -1;
-  late Function(int, int, bool) _stepChangeCb;
+  late int _prevStep = -1;
+  late int _currentStep = -1;
+  late bool _initialized = false;
+  late Function(int page, int pageLength, bool forward) _stepChangeCb;
+  late Function(bool manual) _dismissCb;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -27,13 +29,13 @@ class UICarousel implements UIAbstract {
 
   List<Map<String, dynamic>> _buildTrackEvents(Type.Action action, int idx) {
     // Store current data
-    this.prevStep = this.currentStep;
-    this.currentStep = idx;
+    this._prevStep = this._currentStep;
+    this._currentStep = idx;
 
     List<Map<String, dynamic>> events = [];
     Map<String, dynamic> currentEvent = {};
-    currentEvent['current'] = this.currentStep;
-    currentEvent['from'] = this.prevStep;
+    currentEvent['current'] = this._currentStep;
+    currentEvent['from'] = this._prevStep;
     events.add(currentEvent);
     return events;
   }
@@ -44,7 +46,15 @@ class UICarousel implements UIAbstract {
       Logger.logWarning('INITIALIZE ${getName()} for ${action.guideCode}');
 
     final context = action.context;
+    _initialized = false;
     _stepChangeCb = (page, pageLength, forward) {
+      if (!_initialized) {
+        final Map<String, dynamic> meta = {"stepNumber": pageLength};
+        action.logEvent(
+            actionType: Events.GUIDE_INITIALIZE, payload: json.encode(meta));
+        _initialized = true;
+      }
+
       final _events = _buildTrackEvents(action, page);
       _events.forEach((element) {
         action.logEvent(
@@ -52,7 +62,13 @@ class UICarousel implements UIAbstract {
             payload: JsonEncoder().convert(element));
       });
     };
+
+    _dismissCb = (manual) {
+      OnboardingClient.dismiss();
+    };
+
     context.read<CarouselContext>().onStepChange(_stepChangeCb);
+    context.read<CarouselContext>().onDismiss(_dismissCb);
     return Future.value(true);
   }
 
@@ -60,13 +76,6 @@ class UICarousel implements UIAbstract {
   Future<void> show(Type.Action action) {
     if (OnboardingClient.options.debug)
       Logger.logWarning('SHOWING ${getName()} for ${action.guideCode}');
-
-    // Push meta data event
-    // final Map<String, dynamic> meta = {
-    //   "stepNumber": (action.payload as List).length
-    // };
-    // action.logEvent(
-    //     actionType: Events.GUIDE_INITIALIZE, payload: json.encode(meta));
 
     // Play
     final context = action.context;
@@ -94,10 +103,15 @@ class UICarousel implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DESTROY ${getName()} for ${action.guideCode}');
 
+    // Clean temp data
+    this._prevStep = -1;
+    this._currentStep = -1;
+
     // Clean callback event binding
     final context = action.context;
     try {
       context.read<CarouselContext>().offStepChange(_stepChangeCb);
+      context.read<CarouselContext>().offDismiss(_dismissCb);
     } catch (e) {}
     ;
     return Future.value(true);
@@ -105,6 +119,6 @@ class UICarousel implements UIAbstract {
 
   @override
   String getName() {
-    return UIName.CAROUSEL;
+    return UIName.Carousel;
   }
 }

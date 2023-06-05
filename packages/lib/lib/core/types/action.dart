@@ -6,9 +6,10 @@ class Action {
   final String guideCode;
   final UIAbstract ui;
   final dynamic payload;
-  final BuildContext context;
+  late BuildContext context;
   final Duration? delayBeforePlay;
   final Duration? delayUntilNext;
+  late String? routeName;
   late CancelableCompleter? completer;
   late Function({required String actionType, String? payload}) logEvent =
       ({required actionType, payload}) => {};

@@ -156,9 +156,6 @@ class ToolTipContext extends ChangeNotifier {
   /// Scroll alignment relative to screen view
   final double scrollAlign;
 
-  /// This will blur the background while displaying item.
-  final double blurValue;
-
   //#endregion
 
   //#region Target & Outline
@@ -254,7 +251,6 @@ class ToolTipContext extends ChangeNotifier {
       this.scrollDuration = const Duration(milliseconds: 500),
       this.scrollLoadingWidget,
       this.scrollAlign = 0.5,
-      this.blurValue = 0,
       this.targetPadding = const EdgeInsets.all(0.0),
       this.targetBorderRadius = const Radius.circular(5.0),
       this.isCircle = false,

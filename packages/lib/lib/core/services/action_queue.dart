@@ -12,7 +12,7 @@ class ActionQueue {
   static ActionQueue? _singleton;
   List<Type.Action> _queue = [];
   Type.Action? isPlaying;
-  Timer? _interval;
+  Timer? _interval; // For non route-tracking user
 
   factory ActionQueue.create() {
     if (_singleton == null) {
@@ -26,21 +26,48 @@ class ActionQueue {
   ActionQueue._();
 
   //#region Private Methods
-  void createInterval() {
+  void createActionTask() {
     final delayBeforeCreate = OnboardingClient.options.actionDelayAfterInit;
-    Timer(delayBeforeCreate, () {
-      _interval = Timer.periodic(OnboardingClient.options.actionInterval, (_) {
+    if (OnboardingClient.options.routeTracking) {
+      // Use route traking to notify when to play action
+      Timer(delayBeforeCreate, () {
+        _playAction();
+      });
+      try {
+        OnboardingClient.context.routeObserver!
+            .onRouteChanged(_handleRouteChanged);
+      } catch (e) {}
+    } else {
+      final intervalCallBack = (_) {
         if (OnboardingClient.options.debug) {
           Logger.log('ACTION INTERVAL TRIGGER');
         }
         _playAction();
+      };
 
-        // Cancel on Authentication Failed
-        if (OnboardingClient.state == ClientState.UNAUTHORIZED)
-          _interval!.cancel();
+      // Create interval
+      Timer(delayBeforeCreate, () {
+        _interval = Timer.periodic(
+            OnboardingClient.options.actionInterval, intervalCallBack);
+        // Start once after created
+        intervalCallBack(null);
       });
-      _playAction();
+    }
+  }
+
+  void _handleRouteChanged(String? current, String? prev) {
+    _playAction();
+    final currentRoute = OnboardingClient.context.routeObserver!.currentRoute;
+    this._queue.forEach((element) {
+      if (element.routeName == currentRoute)
+        // Replace context of Widget where this is added with navigator context
+        // so it will exist
+        element.context =
+            OnboardingClient.context.routeObserver!.navigatorContext ??
+                element.context;
     });
+    if (isPlaying != null && isPlaying?.routeName != currentRoute)
+      this.dismiss();
   }
 
   void _playAction() async {
@@ -48,14 +75,25 @@ class ActionQueue {
         _queue.isEmpty ||
         isPlaying != null) return;
 
-    isPlaying = _queue.first;
+    if (OnboardingClient.options.routeTracking) {
+      // Only display action related to current screen route
+      final currentRoute = OnboardingClient.context.routeObserver!.currentRoute;
+      final sortedQueue =
+          _queue.where((element) => element.routeName == currentRoute).toList();
+
+      if (sortedQueue.isEmpty) return;
+      isPlaying = sortedQueue.first;
+    } else {
+      // Use default behavior, FIFO
+      isPlaying = _queue.first;
+    }
 
     // If guide is disabled, ignore and continue to next one
     final enabled = OnboardingClient.options.offline ||
         OnboardingClient.guides.contains(isPlaying!.guideCode);
     if (!enabled) {
+      _queue.removeWhere((element) => element == isPlaying);
       isPlaying = null;
-      _queue.removeAt(0);
       _playAction();
       return;
     }
@@ -75,7 +113,7 @@ class ActionQueue {
       Logger.logError("Payload for ${isPlaying!.guideCode} is not valid");
       isPlaying = null;
     } finally {
-      _queue.removeAt(0);
+      _queue.removeWhere((element) => element == isPlaying);
     }
 
     // If guide is not valid
@@ -145,13 +183,21 @@ class ActionQueue {
       required BuildContext context,
       Duration? delayBeforePlay,
       Duration? delayUntilNext}) {
-    _queue.add(Type.Action(
+    final action = Type.Action(
         guideCode: guideCode,
         ui: ui,
         payload: payload,
         context: context,
         delayBeforePlay: delayBeforePlay,
-        delayUntilNext: delayUntilNext));
+        delayUntilNext: delayUntilNext);
+    if (OnboardingClient.options.routeTracking) {
+      final routeName = ModalRoute.of(context)?.settings.name;
+      action.routeName = routeName;
+      _queue.add(action);
+      _playAction(); // Manual trigger play because routeTracking doesn't use interval
+    } else {
+      _queue.add(action);
+    }
   }
 
   void dismiss() async {

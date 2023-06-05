@@ -1,166 +1,280 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/enum.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/types.dart';
+import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 
-/// Displays Material dialog above the current contents of the app
+class Popup extends StatefulWidget {
+  /// A key that is unique across the entire app.
+  final GlobalKey key;
 
-class PopupWidget extends StatelessWidget {
-  PopupWidget({
-    this.title,
-    this.msg,
-    this.actions,
-    this.image,
-    this.customView = const SizedBox(),
-    this.customViewPosition = CustomViewPosition.BEFORE_TITLE,
-    this.titleStyle,
-    this.msgStyle,
-    this.titleAlign,
-    this.msgAlign,
-    this.popupWidth,
-    this.color,
-    this.modeViewport,
-    this.popupHeight,
-    this.footerWidget
-  });
+  final Color? overlayColor;
+  final double? overlayOpacity;
 
-  // final GlobalKey key;
+  final Color? backgroundColor;
+  final BorderRadius? borderRadius;
 
-  /// [actions]Widgets to display a row of buttons after the [msg] widget.
-  final List<Widget>? actions;
+  final EdgeInsets? innerPadding;
+  final EdgeInsets? outterPadding;
 
-  /// [customView] a widget to display a custom widget instead of the animation view.
-  final Widget customView;
+  final EdgeInsets? titlePadding;
+  final TextStyle? titleStyle;
+  final TextAlign? titleAlignment;
 
-  final CustomViewPosition customViewPosition;
+  final EdgeInsets? bodyPadding;
+  final TextStyle? bodyStyle;
+  final TextAlign? bodyAlignment;
 
-  /// [title] your popup title
+  final bool? fullscreen;
+
+  final Widget? image;
+  final String? body;
   final String? title;
 
-  /// [msg] your popup description message
-  final String? msg;
+  final Widget? child;
 
-  final String? image;
+  final Widget? dismissIcon;
+  final VoidCallback? onDismissIconTap;
 
-  /// [titleStyle] popup title text style
-  final TextStyle? titleStyle;
-
-  /// [animation] lottie animations path
-  final TextStyle? msgStyle;
-
-  /// [titleAlign] popup title text alignment
-  final TextAlign? titleAlign;
-
-  /// [textAlign] dialog description text alignment
-  final TextAlign? msgAlign;
-
-  /// [color] popup's backgorund color
-  final Color? color;
-
-  /// [popupWidth] dialog's width
-  final double? popupWidth;
-
-  final PopupViewport? modeViewport;
-
-  final double? popupHeight;
-
-  ///  footer Widget
+  final EdgeInsets? footerPadding;
   final Widget? footerWidget;
+  final VoidCallback? onOkClick;
+  final VoidCallback? onCancelClick;
+  final String? okText;
+  final String? cancelText;
+
+  final ButtonStyle? okBtnStyle;
+  final ButtonStyle? cancelBtnStyle;
+
+  Popup(
+      {required this.key,
+      required this.body,
+      required this.title,
+      this.titlePadding,
+      this.titleStyle,
+      this.titleAlignment,
+      this.bodyPadding,
+      this.bodyStyle,
+      this.bodyAlignment,
+      this.overlayColor,
+      this.overlayOpacity,
+      this.child,
+      this.backgroundColor,
+      this.borderRadius,
+      this.image,
+      this.outterPadding,
+      this.innerPadding,
+      this.fullscreen,
+      this.dismissIcon,
+      this.onDismissIconTap,
+      this.footerPadding,
+      this.footerWidget,
+      this.onOkClick,
+      this.onCancelClick,
+      this.okText,
+      this.cancelText,
+      this.cancelBtnStyle,
+      this.okBtnStyle});
 
   @override
-  Widget build(BuildContext context) {
-    double? heightPopup;
-    if(modeViewport == PopupViewport.half){
-      heightPopup = MediaQuery.of(context).size.height / 2;
-    }else if(modeViewport == PopupViewport.full){
-      heightPopup = MediaQuery.of(context).size.height;
-    }else{
-      heightPopup = popupHeight;
+  State<StatefulWidget> createState() => _PopupState();
+}
+
+class _PopupState extends State<Popup> {
+  PopupContext get state => context.read<PopupContext>();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<PopupContext>().addListener(checkState);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    context.read<PopupContext>().removeListener(checkState);
+  }
+
+  void checkState() {
+    final showItem = state.activeWidgetId == widget.key;
+    if (showItem)
+      _show();
+    else
+      _hide();
+  }
+
+  void _dismiss() {
+    state.dismiss(notify: true);
+  }
+
+  void _show() {
+    if (_overlayEntry == null) {
+      _overlayEntry = buildOverlay(context);
+      Overlay.of(context).insert(_overlayEntry!);
     }
-    return Container(
-      width: popupWidth ?? MediaQuery.of(context).size.width,
-      height: heightPopup,
-      child:Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            customViewPosition == CustomViewPosition.BEFORE_ANIMATION
-                ? customView : const SizedBox(),
-            if (image != null)
-              Container(
-                padding: EdgeInsets.only(top: 20),
-                height: 200,
-                width: double.infinity,
-                child: Image.asset(image!),
+  }
+
+  void _hide() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
+
+  OverlayEntry buildOverlay(BuildContext context) {
+    Color overlayColor = widget.overlayColor
+            ?.withOpacity(widget.overlayOpacity ?? state.overlayOpacity) ??
+        state.overlayColor
+            .withOpacity(widget.overlayOpacity ?? state.overlayOpacity);
+    BorderRadius? borderRadius = widget.borderRadius ?? state.borderRadius;
+
+    OverlayEntry overlayEntry = OverlayEntry(
+        builder: (BuildContext context) => Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  color: overlayColor,
+                  child: (widget.fullscreen ?? state.fullscreen) == true
+                      ? Dialog.fullscreen(
+                          child: buildContent(context),
+                        )
+                      : Dialog(
+                          shape: borderRadius != null
+                              ? RoundedRectangleBorder(
+                                  borderRadius: borderRadius)
+                              : null,
+                          insetPadding:
+                              widget.outterPadding ?? state.outterPadding,
+                          child: buildContent(context),
+                        ),
+                ),
               ),
-            customViewPosition == CustomViewPosition.BEFORE_TITLE
-                ? customView : const SizedBox(),
-            title != null
-                ? Padding(
-              padding:
-              const EdgeInsets.only(right: 20, left: 20, top: 24.0),
-              child: Text(
-                title!,
-                style: titleStyle,
-                textAlign: titleAlign,
-              ),
-            ): SizedBox(
-              height: 4,
-            ),
-            customViewPosition == CustomViewPosition.BEFORE_MESSAGE
-                ? customView
-                : const SizedBox(),
-            msg != null
-                ? Padding(
-              padding:
-              const EdgeInsets.only(right: 20, left: 20, top: 16.0),
-              child: Text(
-                msg!,
-                style: msgStyle,
-                textAlign: msgAlign,
-              ),
-            )
-                : SizedBox(
-              height: 20,
-            ),
-            customViewPosition == CustomViewPosition.BEFORE_ACTION
-                ? customView
-                : const SizedBox(),
-            actions?.length == 0
-                ? footerWidget!
-                : buttons(context),
-            customViewPosition == CustomViewPosition.AFTER_ACTION
-                ? customView
-                : const SizedBox(),
-          ],
-        ),
-      )
+            ));
+    return overlayEntry;
+  }
+
+  Widget buildContent(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+            padding: widget.innerPadding ?? state.innerPadding,
+            decoration: BoxDecoration(
+                color: widget.backgroundColor ?? state.backgroundColor,
+                borderRadius: widget.borderRadius ?? state.borderRadius),
+            child: widget.child ??
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    widget.image != null ? widget.image! : SizedBox(),
+                    widget.title != null
+                        ? Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: widget.titlePadding ??
+                                state.titlePadding ??
+                                EdgeInsets.zero,
+                            child: Text(
+                              widget.title!,
+                              style: widget.titleStyle ?? state.titleStyle,
+                              textAlign:
+                                  widget.titleAlignment ?? state.titleAlignment,
+                            ),
+                          )
+                        : SizedBox(),
+                    widget.body != null
+                        ? Container(
+                            padding: widget.bodyPadding ??
+                                state.bodyPadding ??
+                                EdgeInsets.zero,
+                            child: Text(
+                              widget.body!,
+                              style: widget.bodyStyle ?? state.bodyStyle,
+                              textAlign:
+                                  widget.bodyAlignment ?? state.bodyAlignment,
+                            ),
+                          )
+                        : SizedBox(),
+                    widget.footerWidget != null
+                        ? widget.footerWidget!
+                        : _defaultFooter()
+                  ],
+                )),
+        Positioned(
+          right: 16.0,
+          top: 16.0,
+          child: GestureDetector(
+              onTap: () {
+                _dismiss();
+                widget.onDismissIconTap?.call();
+              },
+              child: widget.dismissIcon != null
+                  ? widget.dismissIcon
+                  : _defaultDismissIcon()),
+        )
+      ],
     );
   }
 
-  Widget buttons(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(right: 20, left: 20, top: 16.0, bottom: 20.0),
+  Widget _defaultFooter() {
+    return Container(
+      padding: widget.footerPadding ?? state.footerPadding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(actions!.length, (index) {
-          final TextDirection direction = Directionality.of(context);
-          double padding = index != 0 ? 8 : 0;
-          double rightPadding = 0;
-          double leftPadding = 0;
-          direction == TextDirection.rtl
-              ? rightPadding = padding
-              : leftPadding = padding;
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: leftPadding, right: rightPadding),
-              child: actions![index],
-            ),
-          );
-        }),
+        children: [
+          widget.cancelText != null
+              ? OutlinedButton(
+                  onPressed: () {
+                    _dismiss();
+                    widget.onCancelClick?.call();
+                  },
+                  style: widget.cancelBtnStyle ?? state.cancelBtnStyle,
+                  child: Text(widget.cancelText!),
+                )
+              : SizedBox(),
+          widget.okText != null && widget.cancelText != null
+              ? SizedBox(
+                  width: 16,
+                )
+              : SizedBox(),
+          widget.okText != null
+              ? ElevatedButton(
+                  onPressed: () {
+                    widget.onOkClick?.call();
+                  },
+                  style: widget.okBtnStyle ?? state.okBtnStyle,
+                  child: Text(widget.okText!),
+                )
+              : SizedBox(),
+        ],
       ),
     );
+  }
+
+  Widget _defaultDismissIcon() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(100)),
+      child: Icon(
+        Icons.close,
+        color: Colors.black54,
+        size: 28,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+        onWillPop: () {
+          if (_overlayEntry != null) {
+            this._dismiss();
+            return Future.value(false);
+          } else {
+            return Future.value(true);
+          }
+        },
+        child: SizedBox.shrink());
   }
 }

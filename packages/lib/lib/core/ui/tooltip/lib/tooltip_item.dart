@@ -39,10 +39,6 @@ import 'tooltip_widget.dart';
 
 class TooltipItem extends StatefulWidget {
   /// A key that is unique across the entire app.
-  ///
-  /// This Key will be used to control state of individual item and also
-  /// used in [UITooltip.start] to define position of current
-  /// target widget while highlighting.
   @override
   final GlobalKey key;
 
@@ -219,9 +215,6 @@ class TooltipItem extends StatefulWidget {
   /// Scroll alignment relative to screen view
   final double? scrollAlign;
 
-  /// This will blur the background while displaying item.
-  final double? blurValue;
-
   //#endregion
 
   //#region Target & Outline
@@ -321,7 +314,6 @@ class TooltipItem extends StatefulWidget {
     this.scrollDuration,
     this.scrollLoadingWidget,
     this.scrollAlign,
-    this.blurValue,
     this.targetPadding,
     this.targetBorderRadius,
     this.isCircle,
@@ -451,15 +443,6 @@ class _TooltipItemState extends State<TooltipItem> {
     Rect rectBound,
     Size screenSize,
   ) {
-    var blur = 0.0;
-    if (_showItem) {
-      blur = widget.blurValue ?? state.blurValue;
-    }
-
-    // Set blur to 0 if application is running on web and
-    // provided blur is less than 0.
-    blur = kIsWeb && blur < 0 ? 0 : blur;
-
     if (!_showItem) return const Offstage();
 
     return Stack(
@@ -478,31 +461,16 @@ class _TooltipItemState extends State<TooltipItem> {
                     : BorderRadius.all(
                         widget.targetBorderRadius ?? state.targetBorderRadius),
                 overlayPadding: EdgeInsets.zero),
-            child: blur != 0
-                ? BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      decoration: BoxDecoration(
-                        color: widget.overlayColor?.withOpacity(
-                                widget.overlayOpacity ??
-                                    state.overlayOpacity) ??
-                            state.overlayColor.withOpacity(
-                                widget.overlayOpacity ?? state.overlayOpacity),
-                      ),
-                    ),
-                  )
-                : Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      color: widget.overlayColor?.withOpacity(
-                              widget.overlayOpacity ?? state.overlayOpacity) ??
-                          state.overlayColor.withOpacity(
-                              widget.overlayOpacity ?? state.overlayOpacity),
-                    ),
-                  ),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                color: widget.overlayColor?.withOpacity(
+                        widget.overlayOpacity ?? state.overlayOpacity) ??
+                    state.overlayColor.withOpacity(
+                        widget.overlayOpacity ?? state.overlayOpacity),
+              ),
+            ),
           ),
         ),
         if (_isScrollRunning)

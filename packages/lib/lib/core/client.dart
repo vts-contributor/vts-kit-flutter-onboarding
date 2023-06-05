@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/http_client_option.dart';
@@ -16,6 +18,7 @@ import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/platform.dart';
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
 const PREF_USERID_KEY = "PREF_USERID_KEY";
 
@@ -27,6 +30,7 @@ class OnboardingClient {
   static late String? userId;
   static late String sessionId;
   static late List<String> guides = [];
+  static OnboardingRouteObserver? routeObserver;
 
   static late ClientOption options;
   static late ClientContext context;
@@ -70,8 +74,8 @@ class OnboardingClient {
 
     _singleton!._prepare().then((_) async {
       await _singleton!._validateApplication(options.offline);
-      OnboardingClient.context.eventService!.createInterval();
-      OnboardingClient.context.actionQueue!.createInterval();
+      OnboardingClient.context.eventService!.createPushTask();
+      OnboardingClient.context.actionQueue!.createActionTask();
     });
     return _singleton!;
   }
@@ -93,12 +97,13 @@ class OnboardingClient {
   }
 
   Future<void> _prepare() async {
+    // Register UI Components
     OnboardingClient.registerUI(UITooltip());
     OnboardingClient.registerUI(UIPopup());
     OnboardingClient.registerUI(UICarousel());
     OnboardingClient.registerUI(UISheet());
 
-
+    // Fetch cache
     OnboardingClient.meta = await PlatformInfo.get();
     OnboardingClient.userId =
         await SharedPreferences.getInstance().then((instance) {
@@ -151,18 +156,40 @@ class OnboardingClient {
       required dynamic payload,
       Duration? delayBeforePlay,
       Duration? delayUntilNext}) async {
-    if (_ui.containsKey(guideType)) {
-      final ui = _ui[guideType]!;
-      OnboardingClient.context.actionQueue!.addAction(
-          guideCode: guideCode,
-          ui: ui,
-          context: context,
-          payload: payload,
-          delayBeforePlay: delayBeforePlay,
-          delayUntilNext: delayUntilNext);
-    } else {
+    // If mounting, retry later
+    if (!context.mounted) {
+      Timer(Duration(milliseconds: 200), () {
+        start(
+            guideCode: guideCode,
+            guideType: guideType,
+            context: context,
+            payload: payload,
+            delayBeforePlay: delayBeforePlay,
+            delayUntilNext: delayUntilNext);
+        return;
+      });
+    }
+
+    // Check if UI is registered
+    if (!_ui.containsKey(guideType)) {
       throw Logger.throwError("$guideType is not a valid type");
     }
+
+    // Check if route observer is created
+    if (OnboardingClient.options.routeTracking &&
+        OnboardingClient.routeObserver == null) {
+      throw Logger.throwError(
+          "[routeObserver] is being use but no instance of [OnboardingRouteObserver] found. Please provide [OnboardingRouteObserver] inside [navigatorObservers] of [MaterialApp].");
+    }
+
+    final ui = _ui[guideType]!;
+    OnboardingClient.context.actionQueue!.addAction(
+        guideCode: guideCode,
+        ui: ui,
+        context: context,
+        payload: payload,
+        delayBeforePlay: delayBeforePlay,
+        delayUntilNext: delayUntilNext);
   }
 
   static void dismiss() {

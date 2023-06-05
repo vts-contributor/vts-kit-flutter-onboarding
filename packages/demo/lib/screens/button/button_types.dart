@@ -26,10 +26,9 @@ class _ButtonTypesState extends State<ButtonTypes> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       OnboardingClient.start(
           context: context,
-          guideCode: 'SHOW_1',
-          guideType: UIName.CAROUSEL,
-          payload: _six
-      );
+          guideCode: 'SHOW_2',
+          guideType: UIName.Carousel,
+          payload: _six);
     });
   }
 
@@ -101,22 +100,26 @@ class _ButtonTypesState extends State<ButtonTypes> {
                 carouselData: const [
                   CarouselModel(
                     title: 'Chào mừng bạn đến với Viettel-S',
-                    description: 'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                    description:
+                        'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
                     imgUrl: 'images/anh1.png',
                   ),
                   CarouselModel(
                     title: 'Gửi phản ánh nhanh chóng',
-                    description: 'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                    description:
+                        'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
                     imgUrl: 'images/anh2.png',
                   ),
                   CarouselModel(
                     title: 'Thông tin truyền thông',
-                    description: 'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
+                    description:
+                        'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
                     imgUrl: 'images/anh3.png',
                   )
                 ],
-                footerWidget:Padding(
-                    padding: const EdgeInsets.only(top: 40,bottom: 30,left: 10,right: 10),
+                footerWidget: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 40, bottom: 30, left: 10, right: 10),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -125,45 +128,48 @@ class _ButtonTypesState extends State<ButtonTypes> {
                           height: 40,
                           child: ElevatedButton(
                               style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.red),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          side: const BorderSide(color: Colors.red)
-                                      )
-                                  )
-                              ),
-                              onPressed: (){
-                              },
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          side: const BorderSide(
+                                              color: Colors.red)))),
+                              onPressed: () {},
                               child: const Text(
-                                "Đăng nhập",style: TextStyle(color: Colors.white),
-                              )
-                          ),
+                                "Đăng nhập",
+                                style: TextStyle(color: Colors.white),
+                              )),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         SizedBox(
                           width: 350,
                           height: 40,
                           child: ElevatedButton(
                               style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.white),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          side: const BorderSide(color: Colors.red)
-                                      )
-                                  )
-                              ),
-                              onPressed: (){
-                              },
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          side: const BorderSide(
+                                              color: Colors.red)))),
+                              onPressed: () {},
                               child: const Text(
-                                "Bỏ qua",style: TextStyle(color: Colors.red),
-                              )
-                          ),
+                                "Bỏ qua",
+                                style: TextStyle(color: Colors.red),
+                              )),
                         ),
                       ],
-                    )
-                ) ,
+                    )),
                 skipButton: IconButton(
                   onPressed: () {
                     OnboardingClient.dismiss();
@@ -172,8 +178,7 @@ class _ButtonTypesState extends State<ButtonTypes> {
                     Icons.close,
                     color: Colors.grey,
                   ),
-                )
-            ),
+                )),
           ],
         ),
       );

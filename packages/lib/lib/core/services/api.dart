@@ -32,7 +32,7 @@ class ApiClient {
       "deviceType": OnboardingClient.meta.deviceType,
       "deviceId": OnboardingClient.meta.deviceId,
       "userId": OnboardingClient.userId,
-      "createdDate": DateTime.now().toIso8601String()
+      "createdDate": DateTime.now().toUtc().toIso8601String()
     });
     return info;
   }

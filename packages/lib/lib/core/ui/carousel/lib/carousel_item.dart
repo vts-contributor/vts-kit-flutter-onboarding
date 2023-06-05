@@ -18,7 +18,6 @@ class CarouselItem extends StatefulWidget {
   /// OnTapping skip button action
   final VoidCallback? onSkip;
 
-
   /// Title text style
   final TextStyle? titleStyles;
 
@@ -50,10 +49,7 @@ class CarouselItem extends StatefulWidget {
   /// [PageIndicatorStyle] dot styles
   final PageIndicatorStyle pageIndicatorStyle;
 
-
   final VoidCallback? onActionSwipe;
-
-
 
   CarouselItem({
     required this.key,
@@ -87,7 +83,6 @@ class CarouselItemState extends State<CarouselItem> {
   Timer? timer;
   OverlayEntry? _overlayEntry;
 
-
   @override
   void initState() {
     super.initState();
@@ -98,9 +93,7 @@ class CarouselItemState extends State<CarouselItem> {
   void deactivate() {
     super.deactivate();
     context.read<CarouselContext>().removeListener(checkState);
-
   }
-
 
   void _onPageChanged(int page, int pageLength, bool forward) {
     state.next(page, pageLength, forward);
@@ -114,11 +107,9 @@ class CarouselItemState extends State<CarouselItem> {
       _hide();
   }
 
-
   void _dismiss() {
     state.dismiss(manual: true);
   }
-
 
   void _show() {
     if (_overlayEntry == null) {
@@ -134,7 +125,6 @@ class CarouselItemState extends State<CarouselItem> {
     }
   }
 
-
   OverlayEntry showCarouselOverlay(BuildContext context) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (BuildContext context) => Positioned.fill(
@@ -148,24 +138,22 @@ class CarouselItemState extends State<CarouselItem> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child:
-                        CarouselWidget(
-                          carouselData: widget.carouselData,
-                          onSkip: () {
-                            _dismiss();
-                          },
-                          titleStyles: widget.titleStyles,
-                          descriptionStyles: widget.descriptionStyles,
-                          imageWidth: widget.imageWidth,
-                          imageHeight: widget.imageHeight,
-                          skipButton: widget.skipButton,
-                          footerWidget: widget.footerWidget,
-                          duration: widget.duration,
-                          curve: widget.curve,
-                          pageIndicatorStyle: widget.pageIndicatorStyle,
-                          onPageChanged: _onPageChanged,
-                        )
-                    )
+                        child: CarouselWidget(
+                      carouselData: widget.carouselData,
+                      onSkip: () {
+                        _dismiss();
+                      },
+                      titleStyles: widget.titleStyles,
+                      descriptionStyles: widget.descriptionStyles,
+                      imageWidth: widget.imageWidth,
+                      imageHeight: widget.imageHeight,
+                      skipButton: widget.skipButton,
+                      footerWidget: widget.footerWidget,
+                      duration: widget.duration,
+                      curve: widget.curve,
+                      pageIndicatorStyle: widget.pageIndicatorStyle,
+                      onPageChanged: _onPageChanged,
+                    ))
                   ],
                 ),
               ),
@@ -181,8 +169,15 @@ class CarouselItemState extends State<CarouselItem> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.shrink();
+    return WillPopScope(
+        onWillPop: () {
+          if (_overlayEntry != null) {
+            this._dismiss();
+            return Future.value(false);
+          } else {
+            return Future.value(true);
+          }
+        },
+        child: SizedBox.shrink());
   }
 }
-
-

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:provider/provider.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/context.dart';
-import 'btn_widget.dart';
-import 'carousel_model.dart';
 import 'constants.dart';
 import 'page_indicator.dart';
 import 'page_indicator_style_model.dart';
@@ -96,7 +92,6 @@ class _Carousel extends StatefulWidget {
   /// OnTapping skip button action
   final VoidCallback? onSkip;
 
-
   /// Title text style
   final TextStyle? titleStyles;
 
@@ -115,7 +110,6 @@ class _Carousel extends StatefulWidget {
   /// footer Widget
   final Widget? footerWidget;
 
-
   /// Animation [Duration] for transition from one page to another
   /// @Default [Duration(milliseconds:250)]
   final Duration duration;
@@ -127,10 +121,7 @@ class _Carousel extends StatefulWidget {
   /// [PageIndicatorStyle] dot styles
   final PageIndicatorStyle pageIndicatorStyle;
 
-
   final Function(int, int, bool)? onPageChanged;
-
-
 
   const _Carousel(
       {Key? key,
@@ -191,20 +182,19 @@ class _CarouselState extends State<_Carousel> {
       child: Column(
         children: <Widget>[
           Container(
-            height: skipContainerHeight,
-            alignment: Alignment.centerRight,
-            child: Material(
-              color: Colors.transparent,
-              child: widget.skipButton ??
-                  IconButton(
-                    onPressed: _onSkip,
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.grey,
+              height: skipContainerHeight,
+              alignment: Alignment.centerRight,
+              child: Material(
+                color: Colors.transparent,
+                child: widget.skipButton ??
+                    IconButton(
+                      onPressed: _onSkip,
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-            )
-          ),
+              )),
           Expanded(
             child: SizedBox(
                 height: pageViewHeight,
@@ -212,9 +202,9 @@ class _CarouselState extends State<_Carousel> {
                   onPageChanged: _onPageChanged,
                   itemCount: widget.carouselData.length,
                   itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                          child: widget.carouselData[index],
-                      );
+                    return SizedBox(
+                      child: widget.carouselData[index],
+                    );
                   },
                 )),
           ),

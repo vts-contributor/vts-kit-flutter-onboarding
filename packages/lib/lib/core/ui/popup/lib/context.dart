@@ -1,62 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
 class PopupContext extends ChangeNotifier {
-  /// Whether all items will auto sequentially start
-  /// having time interval of [autoPlayDelay] .
+  /// Background color of overlay.
+  final Color overlayColor;
+
+  /// Opacity apply on [overlayColor] (which ranges from 0.0 to 1.0)
   ///
-  /// Default to `false`
-  final bool autoPlay;
+  /// Default to 0.75
+  final double overlayOpacity;
+  final Color? backgroundColor;
+  final BorderRadius? borderRadius;
 
-  /// Visibility time of current item when [autoplay] sets to true.
-  ///
-  /// Default to [Duration(seconds: 3)]
-  final Duration autoPlayDelay;
+  final EdgeInsets? innerPadding;
+  final EdgeInsets? outterPadding;
 
-  /// Whether blocking user interaction while [autoPlay] is enabled.
-  ///
-  /// Default to `false`
-  final bool enableAutoPlayLock;
+  final EdgeInsets? titlePadding;
+  final TextStyle? titleStyle;
+  final TextAlign? titleAlignment;
 
-  /// Whether disabling bouncing/moving animation for all popups
-  /// while highlighting
-  ///
-  /// Default to `false`
-  final bool disableMovingAnimation;
+  final EdgeInsets? bodyPadding;
+  final TextStyle? bodyStyle;
+  final TextAlign? bodyAlignment;
 
-  /// Whether disabling initial scale animation for all the default popups
-  /// when item is started and completed
-  ///
-  /// Default to `false`
-  final bool disableScaleAnimation;
+  final EdgeInsets? footerPadding;
+  final ButtonStyle? okBtnStyle;
+  final ButtonStyle? cancelBtnStyle;
 
-  /// Whether disabling barrier interaction
-  final bool disableBarrierInteraction;
-
-  /// Provides time duration for auto scrolling when [enableAutoScroll] is true
-  final Duration scrollDuration;
-
-  /// Default overlay blur used by item. if [PopupItem.blurValue]
-  /// is not provided.
-  ///
-  /// Default value is 0.
-  final double blurValue;
-
-  /// While target widget is out viewport then
-  /// whether enabling auto scroll so as to make the target widget visible.
-  final bool enableAutoScroll;
+  final bool? fullscreen;
 
   final BuildContext context;
 
   PopupContext(
-      {this.autoPlay = false,
-      this.autoPlayDelay = const Duration(milliseconds: 2000),
-      this.enableAutoPlayLock = false,
-      this.blurValue = 0,
-      this.scrollDuration = const Duration(milliseconds: 300),
-      this.disableMovingAnimation = false,
-      this.disableScaleAnimation = false,
-      this.enableAutoScroll = false,
-      this.disableBarrierInteraction = false,
+      {this.overlayColor = const Color.fromARGB(255, 0, 0, 0),
+      this.overlayOpacity = 0.75,
+      this.backgroundColor = Colors.white,
+      this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
+      this.innerPadding = const EdgeInsets.fromLTRB(24.0, 36.0, 24.0, 24.0),
+      this.outterPadding = const EdgeInsets.symmetric(horizontal: 48.0),
+      this.titlePadding = const EdgeInsets.only(bottom: 8.0),
+      this.titleStyle = const TextStyle(
+          color: Colors.black87, fontSize: 20.0, fontWeight: FontWeight.bold),
+      this.titleAlignment = TextAlign.start,
+      this.bodyPadding,
+      this.bodyStyle =
+          const TextStyle(color: Colors.black87, fontSize: 16.0, height: 1.4),
+      this.bodyAlignment = TextAlign.justify,
+      this.footerPadding = const EdgeInsets.only(top: 16),
+      this.okBtnStyle = const ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: MaterialStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+          minimumSize: MaterialStatePropertyAll(Size.zero),
+          textStyle:
+              MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
+          backgroundColor:
+              MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+          shadowColor: MaterialStatePropertyAll(Colors.transparent)),
+      this.cancelBtnStyle = const ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+        minimumSize: MaterialStatePropertyAll(Size.zero),
+        textStyle:
+            MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
+        foregroundColor:
+            MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+        side: MaterialStatePropertyAll(BorderSide(
+            color: Color.fromARGB(255, 248, 69, 91),
+            width: 1.0,
+            style: BorderStyle.solid)),
+        backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
+        shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
+      ),
+      this.fullscreen = false,
       required this.context});
 
   // State
@@ -64,54 +81,12 @@ class PopupContext extends ChangeNotifier {
   List<Function()> _onStartCb = [];
   List<Function()> _onCompleteCb = [];
 
-  /// Starts PopupItem view from the beginning of specified list of widget ids.
-  /// If this function is used when item has been disabled then it will
-  /// throw an exception.
   void start(GlobalKey widgetId) {
     activeWidgetId = widgetId;
     notifyListeners();
     _onStart();
   }
 
-  /// Completes item of given key and starts next one
-  /// otherwise will finish the entire item view
-  // void completed(GlobalKey? key, OverlayEntry? overlayEntry) {
-
-  //   notifyListeners();
-  // }
-
-  /// Completes current active item and starts next one
-  /// otherwise will finish the entire item view
-  // void next() {
-  //   if (ids != null) {
-  //     _onComplete();
-  //     activeWidgetId = activeWidgetId! + 1;
-  //     _onStart();
-
-  //     if (activeWidgetId! >= ids!.length) {
-  //       dismiss();
-  //       _onFinish();
-  //     }
-  //   }
-  //   notifyListeners();
-  // }
-
-  /// Completes current active item and starts previous one
-  /// otherwise will finish the entire item view
-  // void previous() {
-  //   if (ids != null && ((activeWidgetId ?? 0) - 1) >= 0) {
-  //     _onComplete();
-  //     activeWidgetId = activeWidgetId! - 1;
-  //     _onStart();
-  //     if (activeWidgetId! >= ids!.length) {
-  //       dismiss();
-  //       _onFinish();
-  //     }
-  //   }
-  //   notifyListeners();
-  // }
-
-  /// Dismiss entire item view
   void dismiss({notify = false}) {
     activeWidgetId = null;
     if (notify) notifyListeners();
