@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:vts_component/common/style/vts_color.dart';
 import 'package:vts_component/vts_component.dart';
-import 'package:vts_kit_flutter_onboarding/core/client.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/ui_name.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/enum.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/sheet_item.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_appbar.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_box.dart';
 
@@ -380,10 +375,19 @@ class _BadgesPageState extends State<BadgesPage> {
                         primaryColor: VTSColors.FUNC_GREEN_2,
                         offset: Offset(0.3, -0.1),
                       ),
-                      SheetItem(
+                      Sheet(
                         key: _eight,
                         animationDuration: const Duration(milliseconds: 500),
-                        direction: SheetDirection.bottom,
+                        body:
+                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
+                        title: 'Welcome',
+                        image: const VTSImage(
+                          height: 300,
+                          boxFit: BoxFit.contain,
+                          imageProvider: AssetImage('images/anh1.png'),
+                        ),
+                        okText: "I know",
+                        cancelText: "Skip",
                       ),
                     ],
                   ),

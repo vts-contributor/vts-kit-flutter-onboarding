@@ -1,2 +1,0 @@
-enum SheetDirection { top, bottom }
-

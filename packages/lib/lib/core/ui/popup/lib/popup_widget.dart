@@ -25,14 +25,15 @@ class Popup extends StatefulWidget {
   final TextStyle? bodyStyle;
   final TextAlign? bodyAlignment;
 
-  final bool? fullscreen;
-
   final Widget? image;
-  final String? body;
   final String? title;
+  final String? body;
 
   final Widget? child;
 
+  final MainAxisAlignment? contentAlignment;
+
+  final bool? showDismissIcon;
   final Widget? dismissIcon;
   final VoidCallback? onDismissIconTap;
 
@@ -45,6 +46,12 @@ class Popup extends StatefulWidget {
 
   final ButtonStyle? okBtnStyle;
   final ButtonStyle? cancelBtnStyle;
+
+  final bool? fullscreen;
+  final bool? closeOnTapOutside;
+
+  final Duration? animationDuration;
+  final Curve? animationCurve;
 
   Popup(
       {required this.key,
@@ -59,12 +66,13 @@ class Popup extends StatefulWidget {
       this.overlayColor,
       this.overlayOpacity,
       this.child,
+      this.contentAlignment,
       this.backgroundColor,
       this.borderRadius,
       this.image,
       this.outterPadding,
       this.innerPadding,
-      this.fullscreen,
+      this.showDismissIcon,
       this.dismissIcon,
       this.onDismissIconTap,
       this.footerPadding,
@@ -74,20 +82,36 @@ class Popup extends StatefulWidget {
       this.okText,
       this.cancelText,
       this.cancelBtnStyle,
-      this.okBtnStyle});
+      this.okBtnStyle,
+      this.fullscreen,
+      this.closeOnTapOutside,
+      this.animationDuration,
+      this.animationCurve});
 
   @override
   State<StatefulWidget> createState() => _PopupState();
 }
 
-class _PopupState extends State<Popup> {
+class _PopupState extends State<Popup> with SingleTickerProviderStateMixin {
   PopupContext get state => context.read<PopupContext>();
+  late AnimationController _animationController;
+  late Animation<double> _animation;
   OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
     context.read<PopupContext>().addListener(checkState);
+
+    _animationController = AnimationController(
+      duration: widget.animationDuration ?? state.animationDuration,
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: widget.animationCurve ?? state.animationCurve,
+    );
   }
 
   @override
@@ -96,8 +120,14 @@ class _PopupState extends State<Popup> {
     context.read<PopupContext>().removeListener(checkState);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
+
   void checkState() {
-    final showItem = state.activeWidgetId == widget.key;
+    final showItem = state.activeWidgetKey == widget.key;
     if (showItem)
       _show();
     else
@@ -112,13 +142,16 @@ class _PopupState extends State<Popup> {
     if (_overlayEntry == null) {
       _overlayEntry = buildOverlay(context);
       Overlay.of(context).insert(_overlayEntry!);
+      _animationController.forward();
     }
   }
 
   void _hide() {
     if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = null;
+      _animationController.reverse().then((value) {
+        _overlayEntry!.remove();
+        _overlayEntry = null;
+      });
     }
   }
 
@@ -133,20 +166,51 @@ class _PopupState extends State<Popup> {
         builder: (BuildContext context) => Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
+                onTap: () => {
+                  if ((widget.closeOnTapOutside == true) ||
+                      (widget.closeOnTapOutside == null &&
+                          state.closeOnTapOutside))
+                    _dismiss()
+                },
                 child: Container(
                   color: overlayColor,
-                  child: (widget.fullscreen ?? state.fullscreen) == true
-                      ? Dialog.fullscreen(
-                          child: buildContent(context),
+                  child: (widget.fullscreen == true ||
+                          (widget.fullscreen == null && state.fullscreen))
+                      ? AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Transform.scale(
+                              scale: _animation.value,
+                              child: Opacity(
+                                opacity: _animation.value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Dialog.fullscreen(
+                            child: buildContent(context),
+                          ),
                         )
-                      : Dialog(
-                          shape: borderRadius != null
-                              ? RoundedRectangleBorder(
-                                  borderRadius: borderRadius)
-                              : null,
-                          insetPadding:
-                              widget.outterPadding ?? state.outterPadding,
-                          child: buildContent(context),
+                      : AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Transform.scale(
+                              scale: _animation.value,
+                              child: Opacity(
+                                opacity: _animation.value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Dialog(
+                            shape: borderRadius != null
+                                ? RoundedRectangleBorder(
+                                    borderRadius: borderRadius)
+                                : null,
+                            insetPadding:
+                                widget.outterPadding ?? state.outterPadding,
+                            child: buildContent(context),
+                          ),
                         ),
                 ),
               ),
@@ -155,69 +219,80 @@ class _PopupState extends State<Popup> {
   }
 
   Widget buildContent(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-            padding: widget.innerPadding ?? state.innerPadding,
-            decoration: BoxDecoration(
-                color: widget.backgroundColor ?? state.backgroundColor,
-                borderRadius: widget.borderRadius ?? state.borderRadius),
-            child: widget.child ??
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    widget.image != null ? widget.image! : SizedBox(),
-                    widget.title != null
-                        ? Container(
-                            width: MediaQuery.of(context).size.width,
-                            padding: widget.titlePadding ??
-                                state.titlePadding ??
-                                EdgeInsets.zero,
-                            child: Text(
-                              widget.title!,
-                              style: widget.titleStyle ?? state.titleStyle,
-                              textAlign:
-                                  widget.titleAlignment ?? state.titleAlignment,
-                            ),
-                          )
-                        : SizedBox(),
-                    widget.body != null
-                        ? Container(
-                            padding: widget.bodyPadding ??
-                                state.bodyPadding ??
-                                EdgeInsets.zero,
-                            child: Text(
-                              widget.body!,
-                              style: widget.bodyStyle ?? state.bodyStyle,
-                              textAlign:
-                                  widget.bodyAlignment ?? state.bodyAlignment,
-                            ),
-                          )
-                        : SizedBox(),
-                    widget.footerWidget != null
-                        ? widget.footerWidget!
-                        : _defaultFooter()
-                  ],
-                )),
-        Positioned(
-          right: 16.0,
-          top: 16.0,
-          child: GestureDetector(
-              onTap: () {
-                _dismiss();
-                widget.onDismissIconTap?.call();
-              },
-              child: widget.dismissIcon != null
-                  ? widget.dismissIcon
-                  : _defaultDismissIcon()),
-        )
-      ],
+    return GestureDetector(
+      onTap: () {}, // To ignore gesture from inside
+      child: Stack(
+        children: [
+          Container(
+              padding: widget.innerPadding ?? state.innerPadding,
+              decoration: BoxDecoration(
+                  color: widget.backgroundColor ?? state.backgroundColor,
+                  borderRadius: widget.borderRadius ?? state.borderRadius),
+              child: widget.child ??
+                  Column(
+                    mainAxisSize: (widget.fullscreen == true ||
+                            (widget.fullscreen == null && state.fullscreen))
+                        ? MainAxisSize.max
+                        : MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment:
+                        widget.contentAlignment ?? state.contentAlignment,
+                    children: [
+                      widget.image != null ? widget.image! : SizedBox(),
+                      widget.title != null
+                          ? Container(
+                              width: MediaQuery.of(context).size.width,
+                              padding: widget.titlePadding ??
+                                  state.titlePadding ??
+                                  EdgeInsets.zero,
+                              child: Text(
+                                widget.title!,
+                                style: widget.titleStyle ?? state.titleStyle,
+                                textAlign: widget.titleAlignment ??
+                                    state.titleAlignment,
+                              ),
+                            )
+                          : SizedBox(),
+                      widget.body != null
+                          ? Container(
+                              padding: widget.bodyPadding ??
+                                  state.bodyPadding ??
+                                  EdgeInsets.zero,
+                              child: Text(
+                                widget.body!,
+                                style: widget.bodyStyle ?? state.bodyStyle,
+                                textAlign:
+                                    widget.bodyAlignment ?? state.bodyAlignment,
+                              ),
+                            )
+                          : SizedBox(),
+                      widget.footerWidget != null
+                          ? widget.footerWidget!
+                          : _defaultFooter()
+                    ],
+                  )),
+          (widget.showDismissIcon == true) ||
+                  (widget.showDismissIcon == null && state.showDismissIcon)
+              ? Positioned(
+                  right: 16.0,
+                  top: 16.0,
+                  child: GestureDetector(
+                      onTap: () {
+                        _dismiss();
+                        widget.onDismissIconTap?.call();
+                      },
+                      child: widget.dismissIcon != null
+                          ? widget.dismissIcon
+                          : _defaultDismissIcon()),
+                )
+              : SizedBox()
+        ],
+      ),
     );
   }
 
   Widget _defaultFooter() {
+    if (widget.cancelText == null && widget.okText == null) return SizedBox();
     return Container(
       padding: widget.footerPadding ?? state.footerPadding,
       child: Row(

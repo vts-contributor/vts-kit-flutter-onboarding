@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vts_kit_flutter_onboarding/index.dart';
 
 class PopupContext extends ChangeNotifier {
   /// Background color of overlay.
@@ -27,7 +26,14 @@ class PopupContext extends ChangeNotifier {
   final ButtonStyle? okBtnStyle;
   final ButtonStyle? cancelBtnStyle;
 
-  final bool? fullscreen;
+  final MainAxisAlignment contentAlignment;
+
+  final bool fullscreen;
+  final bool showDismissIcon;
+  final bool closeOnTapOutside;
+
+  final Duration animationDuration;
+  final Curve animationCurve;
 
   final BuildContext context;
 
@@ -73,22 +79,27 @@ class PopupContext extends ChangeNotifier {
         backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
         shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
       ),
+      this.contentAlignment = MainAxisAlignment.start,
       this.fullscreen = false,
+      this.showDismissIcon = true,
+      this.closeOnTapOutside = false,
+      this.animationDuration = const Duration(milliseconds: 300),
+      this.animationCurve = Curves.easeOut,
       required this.context});
 
   // State
-  GlobalKey? activeWidgetId;
+  GlobalKey? activeWidgetKey;
   List<Function()> _onStartCb = [];
   List<Function()> _onCompleteCb = [];
 
-  void start(GlobalKey widgetId) {
-    activeWidgetId = widgetId;
+  void start(GlobalKey key) {
+    activeWidgetKey = key;
     notifyListeners();
     _onStart();
   }
 
   void dismiss({notify = false}) {
-    activeWidgetId = null;
+    activeWidgetKey = null;
     if (notify) notifyListeners();
     _onComplete();
   }

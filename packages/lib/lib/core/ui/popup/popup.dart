@@ -40,7 +40,7 @@ class UIPopup implements UIAbstract {
     final payload = action.payload;
     context.read<PopupContext>().start(payload);
     return Task.waitUtil(
-        () => context.read<PopupContext>().activeWidgetId == null).then((_) {
+        () => context.read<PopupContext>().activeWidgetKey == null).then((_) {
       if (OnboardingClient.options.debug)
         Logger.logWarning('SHOWING SUCCESSFUL ${action.guideCode}');
     });

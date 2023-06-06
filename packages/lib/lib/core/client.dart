@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/client_option.dart';
 import 'package:vts_kit_flutter_onboarding/core/configs/http_client_option.dart';
-import 'package:vts_kit_flutter_onboarding/core/configs/state.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/action_queue.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/api.dart';
 import 'package:vts_kit_flutter_onboarding/core/services/event_service.dart';
@@ -11,8 +9,8 @@ import 'package:vts_kit_flutter_onboarding/core/services/http_client.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/client_context.dart';
 import 'package:vts_kit_flutter_onboarding/core/types/meta.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/abstract.dart';
-import 'package:vts_kit_flutter_onboarding/core/ui/sheet/bottom_sheet.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/carousel.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/sheet/sheet.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/popup.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/tooltip.dart';
 import 'package:vts_kit_flutter_onboarding/core/utils/logger.dart';
