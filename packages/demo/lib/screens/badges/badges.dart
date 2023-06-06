@@ -10,16 +10,22 @@ class BadgesPage extends StatefulWidget {
 }
 
 class _BadgesPageState extends State<BadgesPage> {
-  final _eight = GlobalKey();
+  final _one = GlobalKey();
+  final _two = GlobalKey();
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       OnboardingClient.start(
           context: context,
-          guideCode: 'SHOW_4',
+          guideCode: 'SHOW_5',
           guideType: UIName.Sheet,
-          payload: _eight);
+          payload: _one);
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_6',
+          guideType: UIName.Sheet,
+          payload: _two);
     });
   }
 
@@ -376,11 +382,11 @@ class _BadgesPageState extends State<BadgesPage> {
                         offset: Offset(0.3, -0.1),
                       ),
                       Sheet(
-                        key: _eight,
+                        key: _one,
                         animationDuration: const Duration(milliseconds: 500),
                         body:
                             "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
-                        title: 'Welcome',
+                        title: 'Welcome Bottom',
                         image: const VTSImage(
                           height: 300,
                           boxFit: BoxFit.contain,
@@ -388,6 +394,19 @@ class _BadgesPageState extends State<BadgesPage> {
                         ),
                         okText: "I know",
                         cancelText: "Skip",
+                      ),
+                      Sheet(
+                        key: _two,
+                        animationDuration: const Duration(milliseconds: 500),
+                        body:
+                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
+                        title: 'Welcome Top',
+                        image: const VTSImage(
+                          height: 300,
+                          boxFit: BoxFit.contain,
+                          imageProvider: AssetImage('images/anh1.png'),
+                        ),
+                        topSheet: true,
                       ),
                     ],
                   ),

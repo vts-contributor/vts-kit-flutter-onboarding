@@ -15,7 +15,8 @@ class TabTypes extends StatefulWidget {
 }
 
 class _TabTypesState extends State<TabTypes> {
-  final _seven = GlobalKey();
+  final _one = GlobalKey();
+  final _two = GlobalKey();
 
   @override
   void initState() {
@@ -25,7 +26,12 @@ class _TabTypesState extends State<TabTypes> {
           context: context,
           guideCode: 'SHOW_3',
           guideType: UIName.Popup,
-          payload: _seven);
+          payload: _one);
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_4',
+          guideType: UIName.Popup,
+          payload: _two);
     });
   }
 
@@ -93,7 +99,7 @@ class _TabTypesState extends State<TabTypes> {
               },
             ),
             Popup(
-              key: _seven,
+              key: _one,
               body:
                   "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
               title: 'Chào mừng bạn đến với Viettel-S',
@@ -104,6 +110,21 @@ class _TabTypesState extends State<TabTypes> {
               ),
               okText: "I know",
               cancelText: "Skip",
+            ),
+            Popup(
+              key: _two,
+              body:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
+              title: 'Chào mừng bạn đến với Viettel-S',
+              image: const VTSImage(
+                height: 200,
+                boxFit: BoxFit.contain,
+                imageProvider: AssetImage('images/anh1.png'),
+              ),
+              okText: "I know",
+              cancelText: "Skip",
+              fullscreen: true,
+              contentAlignment: MainAxisAlignment.center,
             ),
           ],
         ),

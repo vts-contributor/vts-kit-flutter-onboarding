@@ -43,7 +43,7 @@ class PopupContext extends ChangeNotifier {
       this.backgroundColor = Colors.white,
       this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
       this.innerPadding = const EdgeInsets.fromLTRB(24.0, 36.0, 24.0, 24.0),
-      this.outterPadding = const EdgeInsets.symmetric(horizontal: 48.0),
+      this.outterPadding = const EdgeInsets.symmetric(horizontal: 24.0),
       this.titlePadding = const EdgeInsets.only(bottom: 8.0),
       this.titleStyle = const TextStyle(
           color: Colors.black87, fontSize: 20.0, fontWeight: FontWeight.bold),
@@ -56,7 +56,7 @@ class PopupContext extends ChangeNotifier {
       this.okBtnStyle = const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: MaterialStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
           minimumSize: MaterialStatePropertyAll(Size.zero),
           textStyle:
               MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
@@ -66,7 +66,7 @@ class PopupContext extends ChangeNotifier {
       this.cancelBtnStyle = const ButtonStyle(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: MaterialStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+            EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
         minimumSize: MaterialStatePropertyAll(Size.zero),
         textStyle:
             MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),

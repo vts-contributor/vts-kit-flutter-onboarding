@@ -33,7 +33,7 @@ class SheetContext extends ChangeNotifier {
       this.overlayOpacity = 0.75,
       this.backgroundColor = Colors.white,
       this.borderRadius = const Radius.circular(30.0),
-      this.padding = const EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 24.0),
+      this.padding = const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 24.0),
       this.titlePadding = const EdgeInsets.only(bottom: 36.0),
       this.titleStyle = const TextStyle(
           color: Colors.black87, fontSize: 24.0, fontWeight: FontWeight.bold),
@@ -46,7 +46,7 @@ class SheetContext extends ChangeNotifier {
       this.okBtnStyle = const ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: MaterialStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
           minimumSize: MaterialStatePropertyAll(Size.zero),
           textStyle:
               MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
@@ -56,7 +56,7 @@ class SheetContext extends ChangeNotifier {
       this.cancelBtnStyle = const ButtonStyle(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: MaterialStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)),
+            EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
         minimumSize: MaterialStatePropertyAll(Size.zero),
         textStyle:
             MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
