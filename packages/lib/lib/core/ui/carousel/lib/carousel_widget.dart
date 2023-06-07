@@ -1,227 +1,282 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'constants.dart';
-import 'page_indicator.dart';
-import 'page_indicator_style_model.dart';
+import 'package:provider/provider.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/context.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
-class CarouselWidget extends StatelessWidget {
-  /// Data for Carousel [List<CarouselModel>]
-  /// @Required
-  final List<Widget> carouselData;
+class Carousel extends StatefulWidget {
+  final GlobalKey key;
+  final List<Widget> children;
+  final Color? backgroundColor;
+  final EdgeInsets? outterPadding;
+  final EdgeInsets? innerPadding;
 
-  /// OnTapping skip button action
-  final VoidCallback? onSkip;
+  final EdgeInsets? indicatorPadding;
+  final CarouselPageIndicatorStyle? indicatorStyle;
 
-  /// Title text style
-  final TextStyle? titleStyles;
-
-  /// Description text style
-  final TextStyle? descriptionStyles;
-
-  /// Carousel Image width
-  final double? imageWidth;
-
-  /// Carousel Image height
-  final double? imageHeight;
-
-  /// Skip Button Widget
-  final Widget? skipButton;
-
-  ///  footer Widget
+  final EdgeInsets? footerPadding;
   final Widget? footerWidget;
+  final VoidCallback? onOkClick;
+  final VoidCallback? onCancelClick;
+  final String? okText;
+  final String? cancelText;
+  final ButtonStyle? okBtnStyle;
+  final ButtonStyle? cancelBtnStyle;
 
-  /// Animation [Duration] for transition from one page to another
-  /// @Default [Duration(milliseconds:250)]
-  final Duration duration;
+  final bool? showDismissIcon;
+  final Widget? dismissIcon;
+  final VoidCallback? onDismissIconTap;
 
-  /// [Curve] used for animation
-  /// @Default [Curves.easeInOut]
-  final Curve curve;
+  final Function(int page, int pageLength, bool forward)? onPageChanged;
 
-  /// [PageIndicatorStyle] dot styles
-  final PageIndicatorStyle pageIndicatorStyle;
+  final Duration? animationDuration;
+  final Curve? animationCurve;
 
-  final Function(int, int, bool)? onPageChanged;
-
-  const CarouselWidget(
-      {Key? key,
-      required this.carouselData,
-      this.onSkip,
-      this.titleStyles,
-      this.descriptionStyles,
-      this.imageWidth,
-      this.imageHeight,
-      this.skipButton,
-      this.footerWidget,
-      this.duration = const Duration(milliseconds: 250),
-      this.curve = Curves.easeInOut,
-      this.pageIndicatorStyle = const PageIndicatorStyle(
-          width: 150,
-          activeColor: Colors.blue,
-          inactiveColor: Colors.blueAccent,
-          activeSize: Size(12, 12),
-          inactiveSize: Size(8, 8)),
-      this.onPageChanged})
-      : super(key: key);
+  Carousel({
+    required this.key,
+    required this.children,
+    this.backgroundColor,
+    this.outterPadding,
+    this.innerPadding,
+    this.indicatorPadding,
+    this.indicatorStyle,
+    this.footerPadding,
+    this.footerWidget,
+    this.onOkClick,
+    this.onCancelClick,
+    this.okText,
+    this.cancelText,
+    this.okBtnStyle,
+    this.cancelBtnStyle,
+    this.showDismissIcon,
+    this.dismissIcon,
+    this.onDismissIconTap,
+    this.onPageChanged,
+    this.animationDuration,
+    this.animationCurve,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: _Carousel(
-          carouselData: carouselData,
-          onSkip: onSkip,
-          titleStyles: titleStyles,
-          descriptionStyles: descriptionStyles,
-          imageWidth: imageWidth,
-          imageHeight: imageHeight,
-          skipButton: skipButton,
-          footerWidget: footerWidget,
-          duration: duration,
-          curve: curve,
-          pageIndicatorStyle: pageIndicatorStyle,
-          onPageChanged: onPageChanged),
-    );
-  }
+  State<StatefulWidget> createState() => CarouselState();
 }
 
-class _Carousel extends StatefulWidget {
-  /// Data for Carousel [List<CarouselModel>]
-  /// @Required
-  final List<Widget> carouselData;
+class CarouselState extends State<Carousel>
+    with SingleTickerProviderStateMixin {
+  CarouselContext get state => context.read<CarouselContext>();
 
-  /// OnTapping skip button action
-  final VoidCallback? onSkip;
-
-  /// Title text style
-  final TextStyle? titleStyles;
-
-  /// Description text style
-  final TextStyle? descriptionStyles;
-
-  /// Carousel Image width
-  final double? imageWidth;
-
-  /// Carousel Image height
-  final double? imageHeight;
-
-  /// Skip Button Widget
-  final Widget? skipButton;
-
-  /// footer Widget
-  final Widget? footerWidget;
-
-  /// Animation [Duration] for transition from one page to another
-  /// @Default [Duration(milliseconds:250)]
-  final Duration duration;
-
-  /// [Curve] used for animation
-  /// @Default [Curves.easeInOut]
-  final Curve curve;
-
-  /// [PageIndicatorStyle] dot styles
-  final PageIndicatorStyle pageIndicatorStyle;
-
-  final Function(int, int, bool)? onPageChanged;
-
-  const _Carousel(
-      {Key? key,
-      required this.carouselData,
-      this.onSkip,
-      this.titleStyles,
-      this.descriptionStyles,
-      this.imageWidth,
-      this.imageHeight,
-      this.skipButton,
-      this.footerWidget,
-      this.duration = const Duration(milliseconds: 250),
-      this.curve = Curves.easeInOut,
-      this.pageIndicatorStyle = const PageIndicatorStyle(
-          width: 150,
-          activeColor: Colors.blue,
-          inactiveColor: Colors.blueAccent,
-          activeSize: Size(12, 12),
-          inactiveSize: Size(8, 8)),
-      this.onPageChanged})
-      : super(key: key);
-
-  @override
-  State<_Carousel> createState() => _CarouselState();
-}
-
-class _CarouselState extends State<_Carousel> {
-  int _page = 0;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  OverlayEntry? _overlayEntry;
+  int _activePage = 0;
 
   @override
   void initState() {
     super.initState();
-    // Emit index 0 page changed
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onPageChanged(0));
+    context.read<CarouselContext>().addListener(checkState);
+
+    _animationController = AnimationController(
+      duration: widget.animationDuration ?? state.animationDuration,
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: widget.animationCurve ?? state.animationCurve,
+    );
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    context.read<CarouselContext>().removeListener(checkState);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
+
+  void checkState() {
+    final showItem = state.activeWidgetKey == widget.key;
+    if (showItem)
+      _show();
+    else
+      _hide();
+  }
+
+  void _dismiss() {
+    state.dismiss(notify: true);
+  }
+
+  void _show() {
+    if (_overlayEntry == null) {
+      _overlayEntry = buildOverlay(context);
+      Overlay.of(context).insert(_overlayEntry!);
+      _animationController.forward();
+    }
+  }
+
+  void _hide() {
+    if (_overlayEntry != null) {
+      _animationController.reverse().then((value) {
+        _overlayEntry!.remove();
+        _overlayEntry = null;
+      });
+    }
   }
 
   _onPageChanged(int page) {
-    final forward = page > _page;
+    final forward = page > _activePage;
     setState(() {
-      _page = page;
+      _activePage = page;
     });
-    widget.onPageChanged?.call(page, widget.carouselData.length, forward);
+    state.next(page, widget.children.length, forward);
+    if (_overlayEntry != null) _overlayEntry!.markNeedsBuild();
   }
 
-  _onSkip() {
-    widget.onSkip?.call();
+  OverlayEntry buildOverlay(BuildContext context) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => Positioned.fill(
+        child: GestureDetector(
+          child: Container(
+            color: widget.backgroundColor ?? state.backgroundColor,
+            padding: widget.outterPadding ?? state.outterPadding,
+            child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _animation.value,
+                    child: Opacity(
+                      opacity: _animation.value,
+                      child: child,
+                    ),
+                  );
+                },
+                child: buildContent(context)),
+          ),
+        ),
+      ),
+    );
+    return overlayEntry;
+  }
+
+  Widget buildContent(BuildContext context) {
+    return SafeArea(
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          children: <Widget>[
+            (widget.showDismissIcon == true) ||
+                    (widget.showDismissIcon == null && state.showDismissIcon)
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: GestureDetector(
+                        onTap: () {
+                          _dismiss();
+                          widget.onDismissIconTap?.call();
+                        },
+                        child: widget.dismissIcon != null
+                            ? widget.dismissIcon
+                            : _defaultDismissIcon()),
+                  )
+                : SizedBox(),
+            Expanded(
+              child: Container(
+                padding: widget.innerPadding ?? state.innerPadding,
+                child: PageView.builder(
+                  onPageChanged: _onPageChanged,
+                  itemCount: widget.children.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return SizedBox(
+                      child: widget.children[index],
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              padding: widget.indicatorPadding ?? state.indicatorPadding,
+              child: CarouselPageIndicator(
+                count: widget.children.length,
+                activePage: _activePage,
+                pageIndicatorStyle:
+                    widget.indicatorStyle ?? state.indicatorStyle,
+              ),
+            ),
+            widget.footerWidget != null
+                ? widget.footerWidget!
+                : _defaultFooter()
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _defaultDismissIcon() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(100)),
+      child: Icon(
+        Icons.close,
+        color: Colors.black54,
+        size: 28,
+      ),
+    );
+  }
+
+  Widget _defaultFooter() {
+    if (widget.cancelText == null && widget.okText == null) return SizedBox();
+    return Container(
+      padding: widget.footerPadding ?? state.footerPadding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          widget.cancelText != null
+              ? Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      _dismiss();
+                      widget.onCancelClick?.call();
+                    },
+                    style: widget.cancelBtnStyle ?? state.cancelBtnStyle,
+                    child: Text(widget.cancelText!),
+                  ),
+                )
+              : SizedBox(),
+          widget.okText != null && widget.cancelText != null
+              ? SizedBox(
+                  width: 16,
+                )
+              : SizedBox(),
+          widget.okText != null
+              ? Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      widget.onOkClick?.call();
+                    },
+                    style: widget.okBtnStyle ?? state.okBtnStyle,
+                    child: Text(widget.okText!),
+                  ),
+                )
+              : SizedBox(),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final double pageViewHeight = screenSize.height -
-        skipContainerHeight -
-        footerContentHeight -
-        pageIndicatorHeight;
-
-    return SafeArea(
-      child: Column(
-        children: <Widget>[
-          Container(
-              height: skipContainerHeight,
-              alignment: Alignment.centerRight,
-              child: Material(
-                color: Colors.transparent,
-                child: widget.skipButton ??
-                    IconButton(
-                      onPressed: _onSkip,
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.grey,
-                      ),
-                    ),
-              )),
-          Expanded(
-            child: SizedBox(
-                height: pageViewHeight,
-                child: PageView.builder(
-                  onPageChanged: _onPageChanged,
-                  itemCount: widget.carouselData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      child: widget.carouselData[index],
-                    );
-                  },
-                )),
-          ),
-          SizedBox(
-            height: pageIndicatorHeight,
-            child: PageIndicator(
-              count: widget.carouselData.length,
-              activePage: _page,
-              pageIndicatorStyle: widget.pageIndicatorStyle,
-            ),
-          ),
-          widget.footerWidget ?? SizedBox.shrink(),
-          const SizedBox(
-            height: marginBottom,
-          )
-        ],
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () {
+          if (_overlayEntry != null) {
+            this._dismiss();
+            return Future.value(false);
+          } else {
+            return Future.value(true);
+          }
+        },
+        child: SizedBox.shrink());
   }
 }

@@ -4,6 +4,7 @@ import 'package:vts_kit_flutter_onboarding/core/ui/sheet/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/carousel/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/popup/lib/context.dart';
 import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/context.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
 class OnboardingProvider extends StatefulWidget {
   final Widget child;
@@ -23,9 +24,10 @@ class OnboardingProviderState extends State<OnboardingProvider> {
       ChangeNotifierProvider(
           create: (context) => PopupContext(context: context)),
       ChangeNotifierProvider(
-          create: (context) => CarouselContext(context: context)),
-      ChangeNotifierProvider(
           create: (context) => SheetContext(context: context)),
+      ChangeNotifierProvider(
+          create: (context) => CarouselContext(context: context)),
+      ChangeNotifierProvider(create: (context) => CarouselBasicItemContext()),
     ], child: widget.child);
   }
 }

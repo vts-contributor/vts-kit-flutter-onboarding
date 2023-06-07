@@ -312,7 +312,7 @@ class _AnimatedContainerDisplayState extends State<Sheet>
                 )
               : SizedBox(),
           widget.okText != null
-              ? ElevatedButton(
+              ? OutlinedButton(
                   onPressed: () {
                     widget.onOkClick?.call();
                   },

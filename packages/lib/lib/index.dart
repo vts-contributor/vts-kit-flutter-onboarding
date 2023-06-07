@@ -18,3 +18,10 @@ export 'core/ui/popup/lib/popup_widget.dart';
 
 // Sheet
 export 'core/ui/sheet/lib/sheet_widget.dart';
+
+// Carousel
+export 'core/ui/carousel/lib/page_indicator.dart';
+export 'core/ui/carousel/lib/page_indicator_style_model.dart';
+export 'core/ui/carousel/lib/carousel_widget.dart';
+export 'core/ui/carousel/lib/template/basic/item.dart';
+export 'core/ui/carousel/lib/template/basic/context.dart';

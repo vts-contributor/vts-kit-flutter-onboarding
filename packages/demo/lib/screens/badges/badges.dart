@@ -407,6 +407,7 @@ class _BadgesPageState extends State<BadgesPage> {
                           imageProvider: AssetImage('images/anh1.png'),
                         ),
                         topSheet: true,
+                        closeOnTapOutside: true,
                       ),
                     ],
                   ),

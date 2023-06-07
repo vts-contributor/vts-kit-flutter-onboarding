@@ -16,7 +16,7 @@ class UICarousel implements UIAbstract {
   late int _currentStep = -1;
   late bool _initialized = false;
   late Function(int page, int pageLength, bool forward) _stepChangeCb;
-  late Function(bool manual) _dismissCb;
+  late VoidCallback _dismissCb;
 
   @override
   Future<bool> validate(Type.Action action) {
@@ -63,7 +63,8 @@ class UICarousel implements UIAbstract {
       });
     };
 
-    _dismissCb = (manual) {
+    // This will dispatch GUIDE_DISMISS before GUIDE_END happened
+    _dismissCb = () {
       OnboardingClient.dismiss();
     };
 
@@ -94,7 +95,7 @@ class UICarousel implements UIAbstract {
     if (OnboardingClient.options.debug)
       Logger.logWarning('DISMISS ${getName()} for ${action.guideCode}');
     final context = action.context;
-    context.read<CarouselContext>().dismiss(manual: true);
+    context.read<CarouselContext>().dismiss();
     return Future.value(true);
   }
 

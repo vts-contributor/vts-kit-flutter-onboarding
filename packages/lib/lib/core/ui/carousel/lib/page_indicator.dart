@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'page_indicator_style_model.dart';
 
-class PageIndicator extends StatelessWidget {
+class CarouselPageIndicator extends StatelessWidget {
   /// No of dot to be appeared should be equal to
   /// the length of the [List<OnBoardModel>]
   final int count;
@@ -11,13 +11,13 @@ class PageIndicator extends StatelessWidget {
   final int activePage;
 
   /// styling [PageIndicatorStyle]
-  final PageIndicatorStyle? pageIndicatorStyle;
+  final CarouselPageIndicatorStyle pageIndicatorStyle;
 
-  const PageIndicator({
+  const CarouselPageIndicator({
     Key? key,
     required this.count,
     required this.activePage,
-    this.pageIndicatorStyle,
+    required this.pageIndicatorStyle,
   }) : super(key: key);
 
   @override
@@ -26,34 +26,36 @@ class PageIndicator extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOutSine,
-      width: pageIndicatorStyle!.width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: _dots,
       ),
     );
   }
 
   Widget _dotBuilder(index) {
-    final activeSize = pageIndicatorStyle!.activeSize;
-    final inactiveSize = pageIndicatorStyle!.inactiveSize;
+    final activeSize = pageIndicatorStyle.activeSize;
+    final inactiveSize = pageIndicatorStyle.inactiveSize;
 
-    return index == activePage
-        ? Container(
-            width: activeSize!.width,
-            height: activeSize.height,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: pageIndicatorStyle!.activeColor,
-            ),
-          )
-        : Container(
-            width: inactiveSize!.width,
-            height: inactiveSize.height,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: pageIndicatorStyle!.inactiveColor,
-            ),
-          );
+    return Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: pageIndicatorStyle.spaceBetween / 2),
+        child: index == activePage
+            ? Container(
+                width: activeSize.width,
+                height: activeSize.height,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: pageIndicatorStyle.activeColor,
+                ),
+              )
+            : Container(
+                width: inactiveSize.width,
+                height: inactiveSize.height,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: pageIndicatorStyle.inactiveColor,
+                ),
+              ));
   }
 }

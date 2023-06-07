@@ -52,6 +52,7 @@ class SheetContext extends ChangeNotifier {
               MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
           backgroundColor:
               MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+          foregroundColor: MaterialStatePropertyAll(Colors.white),
           shadowColor: MaterialStatePropertyAll(Colors.transparent)),
       this.cancelBtnStyle = const ButtonStyle(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

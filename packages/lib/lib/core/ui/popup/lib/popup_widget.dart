@@ -43,7 +43,6 @@ class Popup extends StatefulWidget {
   final VoidCallback? onCancelClick;
   final String? okText;
   final String? cancelText;
-
   final ButtonStyle? okBtnStyle;
   final ButtonStyle? cancelBtnStyle;
 
@@ -55,8 +54,8 @@ class Popup extends StatefulWidget {
 
   Popup(
       {required this.key,
-      required this.body,
       required this.title,
+      required this.body,
       this.titlePadding,
       this.titleStyle,
       this.titleAlignment,
@@ -314,7 +313,7 @@ class _PopupState extends State<Popup> with SingleTickerProviderStateMixin {
                 )
               : SizedBox(),
           widget.okText != null
-              ? ElevatedButton(
+              ? OutlinedButton(
                   onPressed: () {
                     widget.onOkClick?.call();
                   },

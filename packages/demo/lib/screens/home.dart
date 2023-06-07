@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
   final _two = GlobalKey();
   final _three = GlobalKey();
   final _four = GlobalKey();
-  final _five = GlobalKey();
 
   @override
   void initState() {
@@ -48,13 +47,13 @@ class _HomePageState extends State<HomePage> {
       OnboardingClient.start(
           context: context,
           guideCode: 'SHOW_1',
+          guideType: UIName.Carousel,
+          payload: _one);
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_2',
           guideType: UIName.Tooltip,
-          payload: [_one, _two, _three]);
-      // OnboardingClient.start(
-      //     context: context,
-      //     guideCode: 'SHOW_2',
-      //     guideType: UIName.Tooltip,
-      //     payload: [_four, _five]);
+          payload: [_two, _three, _four]);
     });
   }
 
@@ -243,30 +242,71 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: DemoAppbar(goBack: false),
-        body: ListView(
-          physics: const ScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(
-                  left: 15, bottom: 20, top: 20, right: 15),
-              child: GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemCount: gfComponents.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20),
-                  itemBuilder: (BuildContext context, int index) =>
-                      GestureDetector(
-                          onTap: () {},
-                          child: buildSquareTile(
-                              gfComponents[index]['title'],
-                              gfComponents[index]['icon'],
-                              gfComponents[index]['route']))),
+        body: Column(
+          children: [
+            Carousel(
+              key: _one,
+              cancelText: 'Skip',
+              okText: 'Understand',
+              children: const [
+                CarouselBasicItem(
+                  title: 'Chào mừng bạn đến với Viettel-S',
+                  body:
+                      'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                  image: VTSImage(
+                    height: 400,
+                    boxFit: BoxFit.contain,
+                    imageProvider: AssetImage('images/anh1.png'),
+                  ),
+                  okText: 'Skip',
+                ),
+                CarouselBasicItem(
+                    title: 'Gửi phản ánh nhanh chóng',
+                    body:
+                        'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                    image: VTSImage(
+                      height: 400,
+                      boxFit: BoxFit.cover,
+                      imageProvider: AssetImage('images/anh2.png'),
+                    )),
+                CarouselBasicItem(
+                    title: 'Thông tin truyền thông',
+                    body:
+                        'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
+                    image: VTSImage(
+                      height: 400,
+                      boxFit: BoxFit.contain,
+                      imageProvider: AssetImage('images/anh3.png'),
+                    ))
+              ],
+            ),
+            ListView(
+              physics: const ScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(
+                      left: 15, bottom: 20, top: 20, right: 15),
+                  child: GridView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: const ScrollPhysics(),
+                      itemCount: gfComponents.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 20,
+                              mainAxisSpacing: 20),
+                      itemBuilder: (BuildContext context, int index) =>
+                          GestureDetector(
+                              onTap: () {},
+                              child: buildSquareTile(
+                                  gfComponents[index]['title'],
+                                  gfComponents[index]['icon'],
+                                  gfComponents[index]['route']))),
+                ),
+              ],
             ),
           ],
         ),
@@ -305,15 +345,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget addOnboardingUI(String title, Widget child) {
     switch (title) {
-      case 'Toggle':
-        return TooltipItem(
-            key: _one,
-            width: 250,
-            scrollAlign: 0.3,
-            title: 'Hướng dẫn sử dụng:',
-            description:
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-            child: child);
       case 'Tabs':
         return TooltipItem(
             key: _two,
@@ -358,15 +389,6 @@ class _HomePageState extends State<HomePage> {
             tooltipPosition: TooltipPosition.top,
             description:
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-            child: child);
-      case 'CheckBox':
-        return TooltipItem(
-            key: _five,
-            width: 300,
-            allowBack: true,
-            tooltipPosition: TooltipPosition.top,
-            description:
-                "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
             child: child);
       default:
     }

@@ -1,52 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 
 class CarouselContext extends ChangeNotifier {
-  /// Whether all items will auto sequentially start
-  /// having time interval of [autoPlayDelay] .
-  ///
-  /// Default to `false`
-  final bool autoPlay;
-
-  /// Visibility time of current item when [autoplay] sets to true.
-  ///
-  /// Default to [Duration(seconds: 3)]
-  final Duration autoPlayDelay;
-
-  /// Whether blocking user interaction while [autoPlay] is enabled.
-  ///
-  /// Default to `false`
-  final bool enableAutoPlayLock;
+  final Color? backgroundColor;
+  final EdgeInsets? innerPadding;
+  final EdgeInsets? outterPadding;
+  final EdgeInsets? indicatorPadding;
+  final CarouselPageIndicatorStyle indicatorStyle;
+  final EdgeInsets? footerPadding;
+  final ButtonStyle? okBtnStyle;
+  final ButtonStyle? cancelBtnStyle;
+  final bool showDismissIcon;
+  final Duration animationDuration;
+  final Curve animationCurve;
 
   final BuildContext context;
 
   CarouselContext(
-      {this.autoPlay = false,
-      this.autoPlayDelay = const Duration(milliseconds: 2000),
-      this.enableAutoPlayLock = false,
+      {this.backgroundColor = Colors.white,
+      this.innerPadding = const EdgeInsets.symmetric(vertical: 8),
+      this.outterPadding = const EdgeInsets.all(24),
+      this.indicatorPadding = const EdgeInsets.symmetric(vertical: 16),
+      this.indicatorStyle = const CarouselPageIndicatorStyle(
+          spaceBetween: 16,
+          activeColor: Color.fromARGB(255, 248, 69, 91),
+          inactiveColor: Colors.black45,
+          activeSize: Size.square(12),
+          inactiveSize: Size.square(8)),
+      this.footerPadding = const EdgeInsets.only(top: 8),
+      this.okBtnStyle = const ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: MaterialStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
+          minimumSize: MaterialStatePropertyAll(Size.zero),
+          textStyle:
+              MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
+          backgroundColor:
+              MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+          foregroundColor: MaterialStatePropertyAll(Colors.white),
+          shadowColor: MaterialStatePropertyAll(Colors.transparent)),
+      this.cancelBtnStyle = const ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0)),
+        minimumSize: MaterialStatePropertyAll(Size.zero),
+        textStyle:
+            MaterialStatePropertyAll(TextStyle(fontSize: 16.0, height: 1.5)),
+        foregroundColor:
+            MaterialStatePropertyAll(Color.fromARGB(255, 248, 69, 91)),
+        side: MaterialStatePropertyAll(BorderSide(
+            color: Color.fromARGB(255, 248, 69, 91),
+            width: 1.0,
+            style: BorderStyle.solid)),
+        backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
+        shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
+      ),
+      this.showDismissIcon = true,
+      this.animationDuration = const Duration(milliseconds: 200),
+      this.animationCurve = Curves.easeOut,
       required this.context});
 
   // State
   GlobalKey? activeWidgetKey;
-  bool manualDismiss = false;
   int page = -1;
   int pageLength = -1;
   bool forward = false;
 
-  List<VoidCallback> _onFinishCb = [];
   List<Function(int page, int pageLength, bool forward)> _onStepChangeCb = [];
-  List<Function(bool manual)> _onDismissCb = [];
+  List<VoidCallback> _onDismissCb = [];
+  List<VoidCallback> _onFinishCb = [];
 
   void start(GlobalKey widgetKey) {
     activeWidgetKey = widgetKey;
-    manualDismiss = false;
-    notifyListeners();
-  }
-
-  /// Completes item of given key and starts next one
-  /// otherwise will finish the entire item view
-  void completed() {
-    activeWidgetKey = null;
-    _onFinish();
     notifyListeners();
   }
 
@@ -62,19 +87,16 @@ class CarouselContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dismiss({manual = false}) {
-    if (manualDismiss) {
+  void dismiss({notify = false}) {
+    if (activeWidgetKey == null) {
       // Already be dismissed
       // Do nothing
       return;
     }
     activeWidgetKey = null;
-    manualDismiss = false;
-    if (manual) {
-      manualDismiss = true;
-      notifyListeners();
-    }
-    _onDismiss(manual);
+
+    if (notify) notifyListeners();
+    _onDismiss();
   }
 
   void _onStepChange() {
@@ -89,9 +111,9 @@ class CarouselContext extends ChangeNotifier {
     });
   }
 
-  void _onDismiss(bool manual) {
+  void _onDismiss() {
     _onDismissCb.forEach((func) {
-      func.call(manual);
+      func.call();
     });
   }
 
@@ -111,11 +133,11 @@ class CarouselContext extends ChangeNotifier {
     this._onFinishCb.removeWhere((element) => element == func);
   }
 
-  void onDismiss(Function(bool) func) {
+  void onDismiss(VoidCallback func) {
     this._onDismissCb.add(func);
   }
 
-  void offDismiss(Function(bool) func) {
+  void offDismiss(VoidCallback func) {
     this._onDismissCb.removeWhere((element) => element == func);
   }
 }

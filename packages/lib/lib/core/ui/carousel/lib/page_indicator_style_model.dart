@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class PageIndicatorStyle {
-  final double? width;
-  final Color? activeColor;
-  final Color? inactiveColor;
-  final Size? activeSize;
-  final Size? inactiveSize;
+class CarouselPageIndicatorStyle {
+  final double spaceBetween;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Size activeSize;
+  final Size inactiveSize;
 
-  const PageIndicatorStyle({
-    this.width,
-    this.activeColor,
-    this.inactiveColor,
-    this.activeSize,
-    this.inactiveSize,
+  const CarouselPageIndicatorStyle({
+    required this.spaceBetween,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.activeSize,
+    required this.inactiveSize,
   });
 }

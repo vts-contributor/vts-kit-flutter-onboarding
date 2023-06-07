@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
         applicationId: 'c189b058-42f0-4e65-9d96-e89e13f82e94',
         routeTracking: true,
         debug: true,
-        offline: true);
+        offline: false);
     OnboardingClient.initialize(options);
     OnboardingClient.onStateChange((state) => {print(state)});
     super.initState();
