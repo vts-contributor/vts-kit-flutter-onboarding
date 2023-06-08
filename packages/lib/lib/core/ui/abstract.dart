@@ -2,6 +2,7 @@ import 'package:vts_kit_flutter_onboarding/core/types/action.dart' as Type;
 
 abstract class UIAbstract {
   String getName();
+  bool useManualDismiss();
 
   // Validate function to validate payload before making it display
   Future<bool> validate(Type.Action action);

@@ -92,6 +92,9 @@ class ActionQueue {
     final enabled = OnboardingClient.options.offline ||
         OnboardingClient.guides.contains(isPlaying!.guideCode);
     if (!enabled) {
+      if (OnboardingClient.options.debug)
+        Logger.logWarning(
+            'Remove guide ${isPlaying!.guideCode} due to inactive');
       _queue.removeWhere((element) => element == isPlaying);
       isPlaying = null;
       _playAction();
@@ -209,9 +212,10 @@ class ActionQueue {
 
       Future.value(true).then((_) {
         // Push dismiss event
-        OnboardingClient.context.eventService!.logDismissEvent(
-            guideCode: isPlaying!.guideCode,
-            guideType: isPlaying!.ui.getName());
+        if (!isPlaying!.ui.useManualDismiss())
+          OnboardingClient.context.eventService!.logDismissEvent(
+              guideCode: isPlaying!.guideCode,
+              guideType: isPlaying!.ui.getName());
         // Dismiss lifecycle
         return isPlaying!.ui.dismiss(isPlaying!);
       }).then((_) async {

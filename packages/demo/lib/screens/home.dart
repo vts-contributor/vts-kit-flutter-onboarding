@@ -36,9 +36,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _one = GlobalKey();
-  final _two = GlobalKey();
-  final _three = GlobalKey();
-  final _four = GlobalKey();
 
   @override
   void initState() {
@@ -49,11 +46,6 @@ class _HomePageState extends State<HomePage> {
           guideCode: 'SHOW_1',
           guideType: UIName.Carousel,
           payload: _one);
-      OnboardingClient.start(
-          context: context,
-          guideCode: 'SHOW_2',
-          guideType: UIName.Tooltip,
-          payload: [_two, _three, _four]);
     });
   }
 
@@ -242,49 +234,49 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: DemoAppbar(goBack: false),
-        body: Column(
-          children: [
-            Carousel(
-              key: _one,
-              cancelText: 'Skip',
-              okText: 'Understand',
-              children: const [
-                CarouselBasicItem(
-                  title: 'Chào mừng bạn đến với Viettel-S',
-                  body:
-                      'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
-                  image: VTSImage(
-                    height: 400,
-                    boxFit: BoxFit.contain,
-                    imageProvider: AssetImage('images/anh1.png'),
-                  ),
-                  okText: 'Skip',
+        body: ListView(
+          physics: const ScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: <Widget>[
+            Column(
+              children: [
+                Carousel(
+                  key: _one,
+                  children: [
+                    CarouselBasicItem(
+                      title: 'Chào mừng bạn đến với Viettel-S',
+                      body:
+                          'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                      image: VTSImage(
+                        height: 400,
+                        boxFit: BoxFit.contain,
+                        imageProvider: AssetImage('images/anh1.png'),
+                      ),
+                    ),
+                    CarouselBasicItem(
+                        title: 'Gửi phản ánh nhanh chóng',
+                        body:
+                            'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                        image: VTSImage(
+                          height: 400,
+                          boxFit: BoxFit.cover,
+                          imageProvider: AssetImage('images/anh2.png'),
+                        )),
+                    CarouselBasicItem(
+                      title: 'Thông tin truyền thông',
+                      body:
+                          'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
+                      image: VTSImage(
+                        height: 400,
+                        boxFit: BoxFit.contain,
+                        imageProvider: AssetImage('images/anh3.png'),
+                      ),
+                      okText: 'Understand',
+                      onOkClick: () => {OnboardingClient.dismiss()},
+                    ),
+                  ],
                 ),
-                CarouselBasicItem(
-                    title: 'Gửi phản ánh nhanh chóng',
-                    body:
-                        'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
-                    image: VTSImage(
-                      height: 400,
-                      boxFit: BoxFit.cover,
-                      imageProvider: AssetImage('images/anh2.png'),
-                    )),
-                CarouselBasicItem(
-                    title: 'Thông tin truyền thông',
-                    body:
-                        'Cho phép xem tư liệu, ấn phẩm về các sản phẩm, dịch vụ nổi bật của TCT',
-                    image: VTSImage(
-                      height: 400,
-                      boxFit: BoxFit.contain,
-                      imageProvider: AssetImage('images/anh3.png'),
-                    ))
-              ],
-            ),
-            ListView(
-              physics: const ScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              children: <Widget>[
                 Container(
                   margin: const EdgeInsets.only(
                       left: 15, bottom: 20, top: 20, right: 15),
@@ -344,54 +336,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget addOnboardingUI(String title, Widget child) {
-    switch (title) {
-      case 'Tabs':
-        return TooltipItem(
-            key: _two,
-            width: 300,
-            allowBack: true,
-            title: "Không biết:",
-            description:
-                "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-            child: child);
-      case 'Badge':
-        return TooltipItem(
-            key: _three,
-            width: 250,
-            allowBack: true,
-            scrollAlign: 0.4,
-            nextText: 'OK la',
-            widget: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const VTSImage(
-                  height: 100,
-                  boxFit: BoxFit.fitWidth,
-                  imageProvider: AssetImage('lib/assets/images/giphy.gif'),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontSize: 16.0)),
-                ),
-              ],
-            ),
-            child: child);
-      case 'Cards':
-        return TooltipItem(
-            key: _four,
-            width: 250,
-            tooltipPosition: TooltipPosition.top,
-            description:
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-            child: child);
-      default:
-    }
+    // switch (title) {
+    //   case 'Tabs':
+    //     return TooltipItem(
+    //         key: _two,
+    //         width: 300,
+    //         allowBack: true,
+    //         title: "Không biết:",
+    //         description:
+    //             "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
+    //         child: child);
+    //   case 'Badge':
+    //     return TooltipItem(
+    //         key: _three,
+    //         width: 250,
+    //         allowBack: true,
+    //         scrollAlign: 0.4,
+    //         nextText: 'OK la',
+    //         widget: Column(
+    //           mainAxisAlignment: MainAxisAlignment.start,
+    //           children: [
+    //             const VTSImage(
+    //               height: 100,
+    //               boxFit: BoxFit.fitWidth,
+    //               imageProvider: AssetImage('lib/assets/images/giphy.gif'),
+    //             ),
+    //             Container(
+    //               padding: const EdgeInsets.only(top: 8.0),
+    //               child: Text(
+    //                   'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+    //                   textAlign: TextAlign.start,
+    //                   style: Theme.of(context)
+    //                       .textTheme
+    //                       .bodyMedium!
+    //                       .copyWith(fontSize: 16.0)),
+    //             ),
+    //           ],
+    //         ),
+    //         child: child);
+    //   case 'Cards':
+    //     return TooltipItem(
+    //         key: _four,
+    //         width: 250,
+    //         tooltipPosition: TooltipPosition.top,
+    //         description:
+    //             "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+    //         child: child);
+    //   default:
+    // }
     return child;
   }
 }

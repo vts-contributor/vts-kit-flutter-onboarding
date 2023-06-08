@@ -66,4 +66,9 @@ class UIPopup implements UIAbstract {
   String getName() {
     return UIName.Popup;
   }
+
+  @override
+  bool useManualDismiss() {
+    return false;
+  }
 }

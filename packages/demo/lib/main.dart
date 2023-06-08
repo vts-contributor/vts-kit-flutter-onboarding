@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     ClientOption options = ClientOption(
         serverUrl: 'http://vtskit.atviettelsolutions.com/gateway/onboarding/',
-        applicationId: 'c189b058-42f0-4e65-9d96-e89e13f82e94',
+        applicationId: 'b77fab4c-1c23-46fb-a046-3e51ee76228c',
         routeTracking: true,
         debug: true,
         offline: false);
@@ -44,7 +44,6 @@ class _MyAppState extends State<MyApp> {
           scrollbarTheme: ScrollbarThemeData(
             isAlwaysShown: true,
             thickness: MaterialStateProperty.all(5),
-            thumbColor: MaterialStateProperty.all(Color(0xFF8F9294)),
             radius: Radius.circular(8),
           )),
       initialRoute: '/',

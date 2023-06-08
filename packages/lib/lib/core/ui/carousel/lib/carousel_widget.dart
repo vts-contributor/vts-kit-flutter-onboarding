@@ -115,6 +115,7 @@ class CarouselState extends State<Carousel>
       _overlayEntry = buildOverlay(context);
       Overlay.of(context).insert(_overlayEntry!);
       _animationController.forward();
+      this._onPageChanged(0);
     }
   }
 

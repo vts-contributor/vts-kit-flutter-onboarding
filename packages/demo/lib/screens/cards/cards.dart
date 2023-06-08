@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vts_component/vts_component.dart';
+import 'package:vts_kit_flutter_onboarding/core/ui/tooltip/lib/tooltip_item.dart';
+import 'package:vts_kit_flutter_onboarding/index.dart';
 import 'package:vts_kit_flutter_onboarding_demo/components/demo_appbar.dart';
 
 class CardPage extends StatefulWidget {
@@ -15,10 +17,21 @@ class _CardPageState extends State<CardPage>
   late bool isFavorite = false;
   late bool isSubscribe = false;
 
+  final _one = GlobalKey();
+  final _two = GlobalKey();
+  final _three = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      OnboardingClient.start(
+          context: context,
+          guideCode: 'SHOW_7',
+          guideType: UIName.Tooltip,
+          payload: [_one, _two, _three]);
+    });
   }
 
   @override
@@ -56,43 +69,96 @@ class _CardPageState extends State<CardPage>
                       children: <Widget>[
                         SizedBox(height: 8),
                         VTSCard(
-                          vtsType: VTSCardType.BASIC,
-                          title: 'Card title',
-                          anchorActions: [
-                            VTSButton(
-                              onPressed: () => setState(() {
-                                isFavorite = !isFavorite;
-                              }),
-                              vtsSize: VTSButtonSize.SM,
-                              background: VTSColors.WHITE_1,
-                              vtsType: VTSButtonType.TEXT,
-                              icon: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_outline,
-                                color: isFavorite
-                                    ? VTSColors.PRIMARY_2
-                                    : VTSColors.GRAY_2,
-                                size: 24,
+                            vtsType: VTSCardType.BASIC,
+                            title: 'Card title',
+                            anchorActions: [
+                              TooltipItem(
+                                key: _one,
+                                width: 300,
+                                allowBack: true,
+                                title: "Không biết:",
+                                description:
+                                    "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
+                                child: VTSButton(
+                                  onPressed: () => setState(() {
+                                    isFavorite = !isFavorite;
+                                  }),
+                                  vtsSize: VTSButtonSize.SM,
+                                  background: VTSColors.WHITE_1,
+                                  vtsType: VTSButtonType.TEXT,
+                                  icon: Icon(
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_outline,
+                                    color: isFavorite
+                                        ? VTSColors.PRIMARY_2
+                                        : VTSColors.GRAY_2,
+                                    size: 24,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                          bodyText:
-                              'Lorem ipsum dolor sit amet, consectu adipis scling elit. Amet sed vel leo erati.',
-                          footerButtons: [
-                            VTSButton(
-                              onPressed: () => {},
-                              text: "Secondary",
-                              vtsType: VTSButtonType.SECONDARY,
-                              vtsSize: VTSButtonSize.SM,
-                            ),
-                            VTSButton(
-                              onPressed: () => {},
-                              text: "Primary",
-                              vtsSize: VTSButtonSize.SM,
-                            ),
-                          ],
-                        ),
+                            ],
+                            bodyText:
+                                'Lorem ipsum dolor sit amet, consectu adipis scling elit. Amet sed vel leo erati.',
+                            footer: Container(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TooltipItem(
+                                    key: _two,
+                                    width: 250,
+                                    allowBack: true,
+                                    scrollAlign: 0.4,
+                                    nextText: 'OK la',
+                                    widget: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const VTSImage(
+                                          height: 100,
+                                          boxFit: BoxFit.fitWidth,
+                                          imageProvider: AssetImage(
+                                              'lib/assets/images/giphy.gif'),
+                                        ),
+                                        Container(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                              'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                                              textAlign: TextAlign.start,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 16.0)),
+                                        ),
+                                      ],
+                                    ),
+                                    child: VTSButton(
+                                      onPressed: () => {},
+                                      text: "Secondary",
+                                      vtsType: VTSButtonType.SECONDARY,
+                                      vtsSize: VTSButtonSize.SM,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  TooltipItem(
+                                    key: _three,
+                                    width: 250,
+                                    tooltipPosition: TooltipPosition.top,
+                                    description:
+                                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+                                    child: VTSButton(
+                                      onPressed: () => {},
+                                      text: "Primary",
+                                      vtsSize: VTSButtonSize.SM,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
                         VTSCard(
                           vtsType: VTSCardType.BASIC,
                           title: 'Card title',

@@ -123,4 +123,9 @@ class UITooltip implements UIAbstract {
   String getName() {
     return UIName.Tooltip;
   }
+
+  @override
+  bool useManualDismiss() {
+    return false;
+  }
 }

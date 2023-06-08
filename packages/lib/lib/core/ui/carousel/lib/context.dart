@@ -94,9 +94,13 @@ class CarouselContext extends ChangeNotifier {
       return;
     }
     activeWidgetKey = null;
-
     if (notify) notifyListeners();
-    _onDismiss();
+
+    final isLast = page == pageLength - 1;
+    if (isLast)
+      _onFinish();
+    else
+      _onDismiss();
   }
 
   void _onStepChange() {

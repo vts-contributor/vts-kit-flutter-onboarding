@@ -67,4 +67,9 @@ class UISheet implements UIAbstract {
   String getName() {
     return UIName.Sheet;
   }
+
+  @override
+  bool useManualDismiss() {
+    return false;
+  }
 }

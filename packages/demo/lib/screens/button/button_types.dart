@@ -18,7 +18,7 @@ class ButtonTypes extends StatefulWidget {
 }
 
 class _ButtonTypesState extends State<ButtonTypes> {
-  final _six = GlobalKey();
+  final _one = GlobalKey();
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _ButtonTypesState extends State<ButtonTypes> {
           context: context,
           guideCode: 'SHOW_2',
           guideType: UIName.Carousel,
-          payload: _six);
+          payload: _one);
     });
   }
 
@@ -94,6 +94,32 @@ class _ButtonTypesState extends State<ButtonTypes> {
                       builder: (BuildContext context) => SocialButtons()),
                 );
               },
+            ),
+            Carousel(
+              key: _one,
+              cancelText: 'Skip',
+              okText: 'Understand',
+              children: const [
+                CarouselBasicItem(
+                  title: 'Chào mừng bạn đến với Viettel-S',
+                  body:
+                      'Hệ thống tiếp nhận giải quyết góp ý,phản ánh hiện trường Viettel Solution',
+                  image: VTSImage(
+                    height: 400,
+                    boxFit: BoxFit.contain,
+                    imageProvider: AssetImage('lib/assets/images/giphy.gif'),
+                  ),
+                ),
+                CarouselBasicItem(
+                    title: 'Gửi phản ánh nhanh chóng',
+                    body:
+                        'Cho phép cá nhân, đơn vị gửi phản ánh, kiến nghị tới các phòng, trung tâm TCT phụ trách xử lý',
+                    image: VTSImage(
+                      height: 400,
+                      boxFit: BoxFit.contain,
+                      imageProvider: AssetImage('lib/assets/images/giphy.gif'),
+                    ))
+              ],
             ),
           ],
         ),
